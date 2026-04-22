@@ -2,13 +2,24 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <title>熟語つなぎパズル - 陣取り対戦</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>熟語爆弾</title>
     <link rel="stylesheet" href="style.css">
     <script src="dictionary.js"></script>
 </head>
 <body>
 
-    <div id="stats-container">
+    <!-- Title Screen -->
+    <div id="title-screen">
+        <h1 class="title-logo">熟語爆弾</h1>
+        <div class="difficulty-selection">
+            <button class="diff-btn easy" onclick="startGame('easy')">かんたん</button>
+            <button class="diff-btn normal" onclick="startGame('normal')">ふつう</button>
+            <button class="diff-btn hard" onclick="startGame('hard')">むずかしい</button>
+        </div>
+    </div>
+
+    <div id="stats-container" style="display:none;">
         <div>ステージ: <span id="stage-val">1</span></div>
         <div>のこり敵: <span id="enemy-val">0</span></div>
     </div>
@@ -47,6 +58,8 @@
                     <span>フルスクリーン</span>
                     <button onclick="toggleFullscreen()">切替</button>
                 </div>
+                <hr>
+                <button class="menu-btn" onclick="backToTitle()">たいとるに戻る</button>
                 <button id="close-settings-btn" onclick="toggleSettings()">とじる</button>
             </div>
         </div>
@@ -75,7 +88,8 @@ const state = {
     spawnSpeed: 20000,
     isSoundOn: true,
     currentStage: 0,
-    enemies: {}
+    enemies: {},
+    difficulty: 'normal'
 };
 
 const bgm = new Audio('BGM.mp3');
@@ -216,8 +230,8 @@ const cellDOMs = {};
 function init() {
     setupDeck();
     initGridDOM();
-    loadStage(0);
-
+    // loadStage(0) は startGame から呼び出すように変更
+    
     resetView();
     fillHand();
     renderHand();
@@ -230,10 +244,29 @@ function init() {
             bgmInteracted = true;
             bgm.play().then(() => {
                 isBgmPlaying = true;
-                document.getElementById('bgm-btn').style.opacity = "1";
             }).catch(e => console.log("BGM Blocked", e));
         }
     }, { once: true });
+}
+
+function startGame(difficulty) {
+    state.difficulty = difficulty;
+    document.getElementById('title-screen').style.display = 'none';
+    document.getElementById('stats-container').style.display = 'flex';
+    
+    // ゲームをリセットして開始
+    loadStage(0);
+    state.score = 0;
+    setupDeck();
+    fillHand();
+    renderHand();
+    refreshHighlights();
+}
+
+function backToTitle() {
+    document.getElementById('title-screen').style.display = 'flex';
+    document.getElementById('stats-container').style.display = 'none';
+    toggleSettings(); // 設定画面を閉じる
 }
 
 function setupDeck() {
@@ -797,7 +830,13 @@ function renderHand() {
 }
 
 function refreshHighlights() {
+    // 全てのリセット
     document.querySelectorAll('.hint-highlight').forEach(c => c.classList.remove('hint-highlight'));
+    document.querySelectorAll('.hint-specific').forEach(c => c.classList.remove('hint-specific'));
+
+    // むずかしいモードはヒントなし
+    if (state.difficulty === 'hard') return;
+
     const hand = state.playerHand;
     if (hand.length === 0) return;
 
@@ -809,8 +848,10 @@ function refreshHighlights() {
     ];
 
     const uniqueValidTargets = new Set();
+    const specificTargets = new Set();
+    const selectedChar = hand[state.selectedHandIndex];
 
-    hand.forEach(char => {
+    hand.forEach((char, idx) => {
         directions.forEach(({dir, range}) => {
             range.forEach(([ex, ey]) => {
                 if (state.grid[`${ex},${ey}`]) return;
@@ -818,7 +859,6 @@ function refreshHighlights() {
                 const landing = getLandingCell(ex, ey, dir);
                 if (landing) {
                     const {x, y} = landing;
-                    // すでにこの場所が有効だと分かっているならスキップ（高速化）
                     const key = `${x},${y}`;
                     
                     state.grid[key] = char;
@@ -828,6 +868,10 @@ function refreshHighlights() {
 
                     if (h.isValid || v.isValid) {
                         uniqueValidTargets.add(key);
+                        // かんたんモードかつ現在選択中の文字で熟撃できる場合
+                        if (state.difficulty === 'easy' && char === selectedChar) {
+                            specificTargets.add(key);
+                        }
                     }
                 }
             });
@@ -836,6 +880,10 @@ function refreshHighlights() {
 
     uniqueValidTargets.forEach(key => {
         if (cellDOMs[key]) cellDOMs[key].classList.add('hint-highlight');
+    });
+    
+    specificTargets.forEach(key => {
+        if (cellDOMs[key]) cellDOMs[key].classList.add('hint-specific');
     });
 }
 
@@ -857,12 +905,30 @@ function getLandingCell(startX, startY, dir) {
 function updateStats() {}
 
 function resetView() {
-    const rect = gameWindow.getBoundingClientRect();
-    translateX = (rect.width - (GRID_SIZE * TILE_SIZE * scale)) / 2;
-    translateY = (rect.height - (GRID_SIZE * TILE_SIZE * scale)) / 2;
+    // ゲームウィンドウの元サイズ
+    const GAME_W = 750;
+    const GAME_H = 750;
+    const HAND_H = 100; // 手札エリアの高さ見込み
+    const STATS_H = 50; // ステータスバーの高さ見込み
+    const PADDING = 20;
+
+    const availableW = window.innerWidth - PADDING * 2;
+    const availableH = window.innerHeight - HAND_H - STATS_H - PADDING * 2;
+
+    const scaleByW = availableW / GAME_W;
+    const scaleByH = availableH / GAME_H;
+    scale = Math.min(scaleByW, scaleByH, 1.0); // 最大1.0（拡大はしない）
+
+    gameWindow.style.transform = `scale(${scale})`;
+    gameWindow.style.transformOrigin = 'top center';
+    gameWindow.style.marginBottom = `${-(GAME_H * (1 - scale))}px`;
+
+    // グリッドは中央に配置
+    const translateX = (GAME_W - (GRID_SIZE * TILE_SIZE)) / 2;
+    const translateY = (GAME_H - (GRID_SIZE * TILE_SIZE)) / 2;
     gridElement.style.left = `${translateX}px`;
     gridElement.style.top = `${translateY}px`;
-    gridElement.style.transform = `scale(${scale})`;
+    gridElement.style.transform = `scale(1)`;
 }
 
 function placeTile(x, y, char, skipCheck = false) {
@@ -873,6 +939,7 @@ function placeTile(x, y, char, skipCheck = false) {
 }
 
 init();
+window.addEventListener('resize', resetView);
 </script>
 </body>
 </html>
