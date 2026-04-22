@@ -1,3 +1,6 @@
+/* =========================================
+   1. Root Variables & Base Styles
+   ========================================= */
 :root {
     --primary-color: #6c5ce7;
     --secondary-color: #a29bfe;
@@ -32,22 +35,9 @@ h1 {
     color: var(--primary-color);
 }
 
-#stats-container {
-    display: flex;
-    gap: 30px;
-    margin-bottom: 10px;
-    background: var(--panel-bg);
-    padding: 8px 30px;
-    border-radius: 50px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-    font-weight: bold;
-}
-
-#stats-container span {
-    color: var(--primary-color);
-    font-size: 1.1em;
-}
-
+/* =========================================
+   2. Layout & Containers
+   ========================================= */
 #game-layout {
     display: flex;
     gap: 20px;
@@ -64,6 +54,22 @@ h1 {
     align-items: center;
 }
 
+#stats-container {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 10px;
+    background: var(--panel-bg);
+    padding: 8px 30px;
+    border-radius: 50px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    font-weight: bold;
+}
+
+#stats-container span {
+    color: var(--primary-color);
+    font-size: 1.1em;
+}
+
 #side-controls {
     display: flex;
     flex-direction: column;
@@ -77,6 +83,9 @@ h1 {
     margin-bottom: 10px;
 }
 
+/* =========================================
+   3. UI Components (Buttons, Modals, Title)
+   ========================================= */
 button {
     padding: 10px 20px;
     font-size: 16px;
@@ -116,6 +125,146 @@ button#settings-btn {
     font-size: 30px;
 }
 
+.menu-btn {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 8px;
+    background-color: #636e72;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.menu-btn:hover {
+    background-color: #2d3436;
+}
+
+/* Title Screen */
+#title-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #eac88b;
+    background-image: radial-gradient(circle, rgba(255,255,255,0.4) 0%, rgba(234,200,139,1) 100%);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #4e342e;
+}
+
+.title-logo {
+    font-size: 80px;
+    font-weight: 900;
+    margin-bottom: 50px;
+    color: #f28d35;
+    text-shadow: 4px 4px 0px #b85b17, 0 0 30px rgba(184, 91, 23, 0.3);
+    letter-spacing: 10px;
+    animation: titlePulse 2s infinite alternate;
+}
+
+.difficulty-selection {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 300px;
+}
+
+.diff-btn {
+    padding: 20px;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    background-color: #f28d35;
+    border-style: solid;
+    border-width: 6px;
+    border-top-color: #fdb863;
+    border-left-color: #f49f47;
+    border-right-color: #d97325;
+    border-bottom-color: #b85b17;
+    border-radius: 15px;
+    color: white;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+    transition: all 0.2s;
+}
+
+.diff-btn.easy { filter: hue-rotate(150deg); }
+.diff-btn.hard { filter: hue-rotate(330deg); }
+
+.diff-btn:hover {
+    filter: brightness(1.2);
+    transform: scale(1.05);
+}
+
+/* Settings Modal */
+#settings-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+#settings-modal {
+    width: 300px;
+    background-color: #eac88b;
+    border: 6px solid #b85b17;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    color: #4e342e;
+}
+
+#settings-modal h2 {
+    margin: 0;
+    text-align: center;
+    font-size: 24px;
+}
+
+.setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+}
+
+.setting-item select {
+    padding: 5px;
+    border-radius: 5px;
+    border: 2px solid #b85b17;
+    background: #fdfaf0;
+    font-weight: bold;
+}
+
+#close-settings-btn {
+    align-self: center;
+    margin-top: 10px;
+}
+
+#status-message {
+    height: 20px;
+    color: var(--danger-color);
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+
+/* =========================================
+   4. Game Board (Grid & Cells)
+   ========================================= */
 #game-window {
     width: 750px;
     height: 750px;
@@ -141,7 +290,7 @@ button#settings-btn {
     width: 60px;
     height: 60px;
     box-sizing: border-box;
-    border: 1px solid rgba(139, 69, 19, 0.3); /* 将棋盤のマス目風の少し濃い茶色 */
+    border: 1px solid rgba(139, 69, 19, 0.3);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -149,6 +298,9 @@ button#settings-btn {
     font-weight: bold;
 }
 
+/* =========================================
+   5. Game States & Elements
+   ========================================= */
 .cell.occupied {
     background-color: #f28d35;
     border-style: solid;
@@ -161,36 +313,6 @@ button#settings-btn {
     color: white;
     text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
     animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.cell.player-owner {
-    border-color: var(--primary-color) !important;
-    background-color: rgba(108, 92, 231, 0.1);
-    box-shadow: inset 0 0 8px rgba(108, 92, 231, 0.2);
-}
-
-.cell.cpu-owner {
-    border-color: var(--danger-color) !important;
-    background-color: rgba(214, 48, 49, 0.1);
-    box-shadow: inset 0 0 8px rgba(214, 48, 49, 0.2);
-}
-
-@keyframes countdown-flash {
-    0%, 100% { background-color: #ff9f43; color: white; }
-    50% { background-color: var(--accent-color); color: var(--text-color); }
-}
-
-.cell.exploding {
-    animation: countdown-flash 0.6s infinite !important;
-    z-index: 10;
-}
-
-.cell.exploding.fast {
-    animation-duration: 0.3s !important;
-}
-
-.cell.exploding.faster {
-    animation-duration: 0.1s !important;
 }
 
 .cell.obstacle {
@@ -213,68 +335,6 @@ button#settings-btn {
     border: none !important;
     animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     z-index: 5;
-}
-
-@keyframes popIn { 
-    0% { transform: scale(0); opacity: 0.5; } 
-    60% { transform: scale(1.15); opacity: 1; } 
-    100% { transform: scale(1); opacity: 1; } 
-}
-
-@keyframes shake {
-    0% { transform: translate(0, 0); }
-    10% { transform: translate(-5px, -5px); }
-    20% { transform: translate(5px, -2px); }
-    30% { transform: translate(-5px, 2px); }
-    40% { transform: translate(5px, 5px); }
-    50% { transform: translate(-2px, -5px); }
-    60% { transform: translate(2px, 5px); }
-    70% { transform: translate(-5px, 2px); }
-    80% { transform: translate(5px, -2px); }
-    90% { transform: translate(-2px, 5px); }
-    100% { transform: translate(0, 0); }
-}
-
-.shake {
-    animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
-}
-
-.particle {
-    position: absolute;
-    width: 8px;
-    height: 8px;
-    background-color: var(--accent-color);
-    border-radius: 50%;
-    pointer-events: none;
-    z-index: 100;
-}
-
-@keyframes highlight-glow {
-    0% { background-color: var(--accent-color); box-shadow: 0 0 5px var(--accent-color); }
-    50% { background-color: #fff176; box-shadow: 0 0 20px #fff176; }
-    100% { background-color: var(--accent-color); box-shadow: 0 0 5px var(--accent-color); }
-}
-
-.cell.clearing-highlight {
-    animation: highlight-glow 0.5s ease-in-out 2;
-    z-index: 10;
-    border-color: var(--accent-color) !important;
-}
-
-@keyframes success-flash {
-    0% { background-color: white; transform: scale(1.1); box-shadow: 0 0 20px white; color: var(--primary-color); }
-    100% { background-color: var(--panel-bg); transform: scale(1); box-shadow: none; color: var(--text-color); }
-}
-
-.cell.success-flash {
-    animation: success-flash 0.4s ease-out;
-    z-index: 15;
-    border-color: var(--primary-color) !important;
-}
-
-@keyframes blink {
-    0%, 100% { background-color: rgba(255, 245, 157, 0.3); }
-    50% { background-color: rgba(255, 245, 157, 0.8); }
 }
 
 /* Launcher and Guide styles */
@@ -335,11 +395,69 @@ button#settings-btn {
     transition: transform 0.1s linear;
 }
 
+.particle {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background-color: var(--accent-color);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 100;
+}
+
+/* Status Highlighting */
 .cell.hint-highlight {
     animation: blink 0.8s infinite;
     z-index: 5;
 }
 
+.cell.hint-specific {
+    border: 4px solid #d63031 !important;
+}
+
+.cell.clearing-highlight {
+    animation: highlight-glow 0.5s ease-in-out 2;
+    z-index: 10;
+    border-color: var(--accent-color) !important;
+}
+
+.cell.success-flash {
+    animation: success-flash 0.4s ease-out;
+    z-index: 15;
+    border-color: var(--primary-color) !important;
+}
+
+.cell.exploding {
+    animation: countdown-flash 0.6s infinite !important;
+    z-index: 10;
+}
+.cell.exploding.fast {
+    animation-duration: 0.3s !important;
+}
+.cell.exploding.faster {
+    animation-duration: 0.1s !important;
+}
+
+.shake {
+    animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+}
+
+/* Optional Area Ownership */
+.cell.player-owner {
+    border-color: var(--primary-color) !important;
+    background-color: rgba(108, 92, 231, 0.1);
+    box-shadow: inset 0 0 8px rgba(108, 92, 231, 0.2);
+}
+
+.cell.cpu-owner {
+    border-color: var(--danger-color) !important;
+    background-color: rgba(214, 48, 49, 0.1);
+    box-shadow: inset 0 0 8px rgba(214, 48, 49, 0.2);
+}
+
+/* =========================================
+   6. Player Hand Area
+   ========================================= */
 #solo-hand-area {
     margin-top: 15px;
     background: var(--panel-bg);
@@ -401,148 +519,51 @@ button#settings-btn {
     box-shadow: 0 5px 15px rgba(242, 141, 53, 0.5);
 }
 
-#status-message {
-    height: 20px;
-    color: var(--danger-color);
-    font-weight: bold;
-    font-size: 14px;
-    margin-bottom: 5px;
-}
-
-/* Settings Modal */
-#settings-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.5);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-#settings-modal {
-    width: 300px;
-    background-color: #eac88b;
-    border: 6px solid #b85b17;
-    border-radius: 20px;
-    padding: 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    color: #4e342e;
-}
-
-#settings-modal h2 {
-    margin: 0;
-    text-align: center;
-    font-size: 24px;
-}
-
-.setting-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-weight: bold;
-}
-
-.setting-item select {
-    padding: 5px;
-    border-radius: 5px;
-    border: 2px solid #b85b17;
-    background: #fdfaf0;
-    font-weight: bold;
-}
-
-#close-settings-btn {
-    align-self: center;
-    margin-top: 10px;
-}
-
-/* Title Screen */
-#title-screen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: #eac88b;
-    background-image: radial-gradient(circle, rgba(255,255,255,0.4) 0%, rgba(234,200,139,1) 100%);
-    z-index: 1000;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    color: #4e342e;
-}
-
-.title-logo {
-    font-size: 80px;
-    font-weight: 900;
-    margin-bottom: 50px;
-    color: #f28d35;
-    text-shadow: 4px 4px 0px #b85b17, 0 0 30px rgba(184, 91, 23, 0.3);
-    letter-spacing: 10px;
-    animation: titlePulse 2s infinite alternate;
-}
-
+/* =========================================
+   7. Animations (@keyframes)
+   ========================================= */
 @keyframes titlePulse {
     from { transform: scale(1); text-shadow: 0 0 20px rgba(255, 255, 255, 0.5), 5px 5px 0px var(--primary-color); }
     to { transform: scale(1.05); text-shadow: 0 0 40px rgba(255, 255, 255, 0.8), 8px 8px 0px var(--primary-color); }
 }
 
-.difficulty-selection {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    width: 300px;
+@keyframes popIn { 
+    0% { transform: scale(0); opacity: 0.5; } 
+    60% { transform: scale(1.15); opacity: 1; } 
+    100% { transform: scale(1); opacity: 1; } 
 }
 
-.diff-btn {
-    padding: 20px;
-    font-size: 24px;
-    font-weight: bold;
-    cursor: pointer;
-    background-color: #f28d35;
-    border-style: solid;
-    border-width: 6px;
-    border-top-color: #fdb863;
-    border-left-color: #f49f47;
-    border-right-color: #d97325;
-    border-bottom-color: #b85b17;
-    border-radius: 15px;
-    color: white;
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
-    transition: all 0.2s;
+@keyframes countdown-flash {
+    0%, 100% { background-color: #ff9f43; color: white; }
+    50% { background-color: var(--accent-color); color: var(--text-color); }
 }
 
-.diff-btn.easy { filter: hue-rotate(150deg); } /* Greenish-blue */
-.diff-btn.normal { } /* Orange */
-.diff-btn.hard { filter: hue-rotate(330deg); } /* Reddish */
-
-.diff-btn:hover {
-    filter: brightness(1.2);
-    transform: scale(1.05);
+@keyframes highlight-glow {
+    0% { background-color: var(--accent-color); box-shadow: 0 0 5px var(--accent-color); }
+    50% { background-color: #fff176; box-shadow: 0 0 20px #fff176; }
+    100% { background-color: var(--accent-color); box-shadow: 0 0 5px var(--accent-color); }
 }
 
-.menu-btn {
-    width: 100%;
-    padding: 12px;
-    margin-top: 10px;
-    border: none;
-    border-radius: 8px;
-    background-color: #636e72;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
+@keyframes success-flash {
+    0% { background-color: white; transform: scale(1.1); box-shadow: 0 0 20px white; color: var(--primary-color); }
+    100% { background-color: var(--panel-bg); transform: scale(1); box-shadow: none; color: var(--text-color); }
 }
 
-.menu-btn:hover { background-color: #2d3436; }
+@keyframes blink {
+    0%, 100% { background-color: rgba(255, 245, 157, 0.3); }
+    50% { background-color: rgba(255, 245, 157, 0.8); }
+}
 
-/* Enhanced Highlights */
-.cell.hint-specific {
-    border: 4px solid #d63031 !important;
+@keyframes shake {
+    0% { transform: scale(var(--current-scale, 1)) translate(0, 0); }
+    10% { transform: scale(var(--current-scale, 1)) translate(-5px, -5px); }
+    20% { transform: scale(var(--current-scale, 1)) translate(5px, -2px); }
+    30% { transform: scale(var(--current-scale, 1)) translate(-5px, 2px); }
+    40% { transform: scale(var(--current-scale, 1)) translate(5px, 5px); }
+    50% { transform: scale(var(--current-scale, 1)) translate(-2px, -5px); }
+    60% { transform: scale(var(--current-scale, 1)) translate(2px, 5px); }
+    70% { transform: scale(var(--current-scale, 1)) translate(-5px, 2px); }
+    80% { transform: scale(var(--current-scale, 1)) translate(5px, -2px); }
+    90% { transform: scale(var(--current-scale, 1)) translate(-2px, 5px); }
+    100% { transform: scale(var(--current-scale, 1)) translate(0, 0); }
 }
