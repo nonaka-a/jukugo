@@ -486,26 +486,31 @@ function refreshHighlights() {
 }
 
 function resetView() {
+    // ゲームウィンドウ（750px） + 手札エリア（約200px）の合計
     const GAME_W = 750;
-    const GAME_H = 750;
-    const HAND_H = 100; 
-    const STATS_H = 50; 
+    const GAME_H = 950; // 手札エリアを含めた仮想の高さ
+    const STATS_H = 60; 
     const PADDING = 20;
 
     const availableW = window.innerWidth - PADDING * 2;
-    const availableH = window.innerHeight - HAND_H - STATS_H - PADDING * 2;
+    const availableH = window.innerHeight - STATS_H - PADDING * 2;
 
     const scaleByW = availableW / GAME_W;
     const scaleByH = availableH / GAME_H;
     scale = Math.min(scaleByW, scaleByH, 1.0); 
 
-    gameWindow.style.transform = `scale(${scale})`;
-    gameWindow.style.transformOrigin = 'top center';
-    gameWindow.style.marginBottom = `${-(GAME_H * (1 - scale))}px`;
+    // main-area全体をスケールさせる
+    const mainArea = document.getElementById('main-area');
+    mainArea.style.transform = `scale(${scale})`;
+    mainArea.style.transformOrigin = 'top center';
+    
+    // game-windowの個別設定を解除（親がスケールするため）
+    gameWindow.style.transform = 'none';
+    gameWindow.style.marginBottom = '0';
     gameWindow.style.setProperty('--current-scale', scale);
 
     const translateX = (GAME_W - (GRID_SIZE * TILE_SIZE)) / 2;
-    const translateY = (GAME_H - (GRID_SIZE * TILE_SIZE)) / 2;
+    const translateY = (GAME_H - 200 - (GRID_SIZE * TILE_SIZE)) / 2; // 少し上に調整
     gridElement.style.left = `${translateX}px`;
     gridElement.style.top = `${translateY}px`;
     gridElement.style.transform = `scale(1)`;

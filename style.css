@@ -459,24 +459,36 @@ button#settings-btn {
    6. Player Hand Area
    ========================================= */
 #solo-hand-area {
-    margin-top: 15px;
+    margin-top: 20px;
     background: var(--panel-bg);
-    padding: 10px 20px;
-    border-radius: 15px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    padding: 20px;
+    border-radius: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     display: flex;
+    flex-direction: column;  /* 1段目：手札、2段目：ボタン */
     align-items: center;
-    gap: 15px;
+    gap: 20px;
+    /* スケール管理されるため、親の幅（750px）に固定 */
+    width: 750px;
+    box-sizing: border-box;
 }
 
 .hand-container {
     display: flex;
+    flex-direction: row;     /* 必ず横に並べる */
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    gap: 10px;               /* ブロック間の隙間を固定 */
 }
 
 .hand-tile {
+    /* ステージ側のサイズ（60px）と完全に一致 */
     width: 60px;
     height: 60px;
-    margin-right: 10px;
+    flex: 0 0 60px;          /* 勝手に縮まないように固定 */
+    
     box-sizing: border-box;
     background-color: #f28d35;
     border-style: solid;
@@ -491,23 +503,19 @@ button#settings-btn {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 28px;
+    
+    font-size: 32px;
     font-weight: bold;
     cursor: pointer;
-    overflow: hidden;
-    transition: width 0.6s ease-out, margin 0.6s ease-out, opacity 0.6s ease-out, transform 0.6s ease-out, border-width 0.6s ease-out, filter 0.2s;
-}
-
-.hand-tile:last-child {
-    margin-right: 0;
+    transition: transform 0.2s, filter 0.2s, width 0.6s, opacity 0.6s;
 }
 
 .hand-tile.removing, .hand-tile.adding {
     width: 0;
-    margin-right: 0;
-    border-width: 0;
+    flex: 0 0 0;
     opacity: 0;
     transform: scale(0.5);
+    margin: 0;
 }
 
 .hand-tile:hover {
@@ -515,8 +523,14 @@ button#settings-btn {
 }
 
 .hand-tile.selected {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(242, 141, 53, 0.5);
+    transform: translateY(-15px); /* 選択時に上に浮かせる */
+    box-shadow: 0 10px 25px rgba(242, 141, 53, 0.6);
+}
+
+.shuffle-btn {
+    width: 300px;            /* ボタンも固定幅で押しやすく */
+    height: 60px;
+    font-size: 24px;
 }
 
 /* =========================================
