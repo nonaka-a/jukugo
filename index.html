@@ -583,34 +583,38 @@ async function placeAndCheck(x, y, char) {
 }
 
 function damageNearbyEnemies(x, y) {
-    // 上下左右の4方向チェック（爆発の範囲）
-    const adjacent = [[0, -1], [0, 1], [-1, 0], [1, 0]];
-    for (const [dx, dy] of adjacent) {
-        const ex = x + dx, ey = y + dy;
-        const key = `${ex},${ey}`;
-        
-        if (!state.grid[key]) continue;
+    // 周囲8マス（斜め含む）のチェック
+    for (let dy = -1; dy <= 1; dy++) {
+        for (let dx = -1; dx <= 1; dx++) {
+            if (dx === 0 && dy === 0) continue;
+            const ex = x + dx, ey = y + dy;
+            const key = `${ex},${ey}`;
+            
+            if (!state.grid[key]) continue;
 
-        if (state.grid[key] === 'ENEMY' && state.enemies[key]) {
-            state.enemies[key].hp -= 1;
-            if (state.enemies[key].hp <= 0) {
-                killEnemy(ex, ey);
+            if (state.grid[key] === 'ENEMY' && state.enemies[key]) {
+                state.enemies[key].hp -= 1;
+                if (state.enemies[key].hp <= 0) {
+                    killEnemy(ex, ey);
+                } else {
+                    // 被弾演出
+                    cellDOMs[key].style.filter = 'brightness(2) contrast(2)';
+                    setTimeout(() => {
+                        if (cellDOMs[key]) cellDOMs[key].style.filter = '';
+                    }, 200);
+                }
             } else {
-                // 被弾演出
-                cellDOMs[key].style.filter = 'brightness(2) contrast(2)';
-                setTimeout(() => {
-                    if (cellDOMs[key]) cellDOMs[key].style.filter = '';
-                }, 200);
+                // 敵以外のブロック（漢字やお邪魔）を消去
+                const isObstacle = state.grid[key] === 'OBSTACLE';
+                delete state.grid[key];
+                const cell = cellDOMs[key];
+                if (cell) {
+                    cell.textContent = '';
+                    cell.classList.remove('occupied', 'obstacle', 'exploding', 'fast', 'faster');
+                }
+                createParticles(ex, ey);
+                if (!isObstacle) state.score++;
             }
-        } else {
-            // 敵以外のブロック（漢字やお邪魔）を消去
-            const isObstacle = state.grid[key] === 'OBSTACLE';
-            delete state.grid[key];
-            const cell = cellDOMs[key];
-            cell.textContent = '';
-            cell.classList.remove('occupied', 'obstacle', 'exploding', 'fast', 'faster');
-            createParticles(ex, ey);
-            if (!isObstacle) state.score++;
         }
     }
 }
