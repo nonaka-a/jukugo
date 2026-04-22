@@ -8,6 +8,10 @@
 </head>
 <body>
 
+    <div id="stats-container">
+        <div>ステージ: <span id="stage-val">1</span></div>
+        <div>のこり敵: <span id="enemy-val">0</span></div>
+    </div>
     <div id="game-layout">
         <div id="main-area">
             <div id="game-window">
@@ -54,6 +58,12 @@
 const GRID_SIZE = 10;
 const TILE_SIZE = 60;
 
+const STAGES = [
+    { enemyCount: 4, obstacles: [] },
+    { enemyCount: 8, obstacles: [{x: 4, y: 3}, {x: 5, y: 3}, {x: 4, y: 6}, {x: 5, y: 6}] },
+    { enemyCount: 12, obstacles: [{x: 4, y: 4}, {x: 5, y: 4}, {x: 4, y: 5}, {x: 5, y: 5}] }
+];
+
 const state = {
     grid: {},
     playerHand: [],
@@ -63,7 +73,9 @@ const state = {
     isShooting: false,
     score: 0,
     spawnSpeed: 20000,
-    isSoundOn: true
+    isSoundOn: true,
+    currentStage: 0,
+    enemies: {}
 };
 
 const bgm = new Audio('BGM.mp3');
@@ -123,6 +135,71 @@ function toggleFullscreen() {
     }
 }
 
+function loadStage(index) {
+    state.currentStage = index;
+    state.grid = {};
+    state.enemies = {};
+    
+    // 盤面クリア
+    Object.keys(cellDOMs).forEach(key => {
+        const cell = cellDOMs[key];
+        cell.textContent = '';
+        cell.className = 'cell';
+    });
+
+    const stage = STAGES[index % STAGES.length];
+    
+    // お邪魔ブロックの配置を先に（敵が重ならないように）
+    if (stage.obstacles) {
+        stage.obstacles.forEach(o => {
+            const key = `${o.x},${o.y}`;
+            state.grid[key] = 'OBSTACLE';
+            const cell = cellDOMs[key];
+            cell.textContent = '■';
+            cell.classList.add('occupied', 'obstacle');
+        });
+    }
+
+    // 敵をランダムに配置（中央寄りに）
+    let enemiesPlaced = 0;
+    while (enemiesPlaced < stage.enemyCount) {
+        const rx = 2 + Math.floor(Math.random() * (GRID_SIZE - 4));
+        const ry = 2 + Math.floor(Math.random() * (GRID_SIZE - 4));
+        const key = `${rx},${ry}`;
+        if (!state.grid[key]) {
+            state.grid[key] = 'ENEMY';
+            state.enemies[key] = { hp: 1 };
+            const cell = cellDOMs[key];
+            cell.classList.add('enemy');
+            enemiesPlaced++;
+        }
+    }
+    
+    // 初期漢字をランダムに少し配置（敵・お邪魔以外）
+    const initialCount = 8;
+    let placed = 0;
+    while (placed < initialCount) {
+        const rx = Math.floor(Math.random() * GRID_SIZE);
+        const ry = Math.floor(Math.random() * GRID_SIZE);
+        const key = `${rx},${ry}`;
+        if (!state.grid[key]) {
+            const char = hubKanji[Math.floor(Math.random() * hubKanji.length)];
+            placeTile(rx, ry, char, true);
+            placed++;
+        }
+    }
+    
+    refreshHighlights();
+    updateStatsUI();
+}
+
+function updateStatsUI() {
+    const stageEl = document.getElementById('stage-val');
+    const enemyEl = document.getElementById('enemy-val');
+    if (stageEl) stageEl.textContent = state.currentStage + 1;
+    if (enemyEl) enemyEl.textContent = Object.keys(state.enemies).length;
+}
+
 const hubKanji = "用的力学不内生物地人動中定行合通化一自作意大理対外会成出事体電目国日分野気法実名面性入文和度最路感".split("");
 
 let scale = 1.0;
@@ -139,26 +216,12 @@ const cellDOMs = {};
 function init() {
     setupDeck();
     initGridDOM();
-    
-    // 初期盤面をランダムに配置（中央付近 5x5 〜 7x7 の範囲）
-    const initialCount = 12;
-    const placed = new Set();
-    while (placed.size < initialCount) {
-        const rx = 2 + Math.floor(Math.random() * 6);
-        const ry = 2 + Math.floor(Math.random() * 6);
-        const key = `${rx},${ry}`;
-        if (!placed.has(key)) {
-            const char = hubKanji[Math.floor(Math.random() * hubKanji.length)];
-            placeTile(rx, ry, char, true);
-            placed.add(key);
-        }
-    }
+    loadStage(0);
 
     resetView();
     fillHand();
     renderHand();
     setupEvents();
-    refreshHighlights();
     
     startSpawnInterval();
     
@@ -425,6 +488,9 @@ async function shoot(startX, startY, dir, char) {
         curY = nextY;
     }
 
+    // 着弾地点を予約（アニメーション中にランダムブロックが出現するのを防ぐ）
+    state.grid[`${targetX},${targetY}`] = 'RESERVED';
+
     // アニメーション用の一時要素
     const shooter = document.createElement('div');
     shooter.id = 'shooting-tile';
@@ -498,31 +564,74 @@ async function placeAndCheck(x, y, char) {
         // 爆発
         screenShake();
         
-        const finalClearSet = new Set();
         coordsToClear.forEach(c => {
             const [cx, cy] = c.split(',').map(Number);
-            // 周囲8マスも含めてクリア対象に追加
-            for (let dy = -1; dy <= 1; dy++) {
-                for (let dx = -1; dx <= 1; dx++) {
-                    const nx = cx + dx, ny = cy + dy;
-                    if (nx >= 0 && nx < GRID_SIZE && ny >= 0 && ny < GRID_SIZE) {
-                        finalClearSet.add(`${nx},${ny}`);
-                    }
-                }
-            }
             createParticles(cx, cy);
+            
+            // 周囲の敵にダメージを与える
+            damageNearbyEnemies(cx, cy);
+
+            delete state.grid[c];
+            const cell = cellDOMs[c];
+            cell.textContent = '';
+            cell.classList.remove('occupied', 'exploding', 'fast', 'faster', 'success-flash');
         });
 
-        // 実際の消去
-        finalClearSet.forEach(c => {
-            delete state.grid[c];
-            const dom = cellDOMs[c];
-            dom.textContent = '';
-            dom.classList.remove('occupied', 'exploding', 'clearing-highlight', 'obstacle');
-            state.score++;
-        });
-        
         refreshHighlights();
+        checkStageClear();
+    }
+}
+
+function damageNearbyEnemies(x, y) {
+    // 上下左右の4方向チェック（爆発の範囲）
+    const adjacent = [[0, -1], [0, 1], [-1, 0], [1, 0]];
+    for (const [dx, dy] of adjacent) {
+        const ex = x + dx, ey = y + dy;
+        const key = `${ex},${ey}`;
+        
+        if (!state.grid[key]) continue;
+
+        if (state.grid[key] === 'ENEMY' && state.enemies[key]) {
+            state.enemies[key].hp -= 1;
+            if (state.enemies[key].hp <= 0) {
+                killEnemy(ex, ey);
+            } else {
+                // 被弾演出
+                cellDOMs[key].style.filter = 'brightness(2) contrast(2)';
+                setTimeout(() => {
+                    if (cellDOMs[key]) cellDOMs[key].style.filter = '';
+                }, 200);
+            }
+        } else {
+            // 敵以外のブロック（漢字やお邪魔）を消去
+            const isObstacle = state.grid[key] === 'OBSTACLE';
+            delete state.grid[key];
+            const cell = cellDOMs[key];
+            cell.textContent = '';
+            cell.classList.remove('occupied', 'obstacle', 'exploding', 'fast', 'faster');
+            createParticles(ex, ey);
+            if (!isObstacle) state.score++;
+        }
+    }
+}
+
+function killEnemy(x, y) {
+    const key = `${x},${y}`;
+    createParticles(x, y);
+    delete state.grid[key];
+    delete state.enemies[key];
+    const cell = cellDOMs[key];
+    cell.classList.remove('enemy', 'occupied');
+    updateStatsUI();
+}
+
+function checkStageClear() {
+    const remainingEnemies = Object.keys(state.enemies).length;
+    if (remainingEnemies === 0) {
+        setTimeout(() => {
+            alert("ステージクリア！次のレベルへ進みます。");
+            loadStage(state.currentStage + 1);
+        }, 500);
     }
 }
 
