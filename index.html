@@ -30,6 +30,7 @@
     </div>
     
     <div id="game-layout">
+    <div id="main-area-container"> <!-- 追加：サイズ管理用の親 -->
         <div id="main-area">
             <div id="game-window">
                 <div id="grid-container"></div>
@@ -38,12 +39,13 @@
                 <button id="settings-btn" onclick="toggleSettings()" style="position: absolute; top: 10px; right: 10px; z-index: 100;">⚙️</button>
             </div>
 
-            <!-- main-areaの中に含めることで一括スケール管理を行う -->
             <div id="solo-hand-area">
                 <div id="player-hand-container" class="hand-container"></div>
                 <button class="shuffle-btn" onclick="shuffleHand()">しゃっふる</button>
             </div>
         </div>
+    </div>
+</div>
 
         <!-- Settings Modal -->
         <div id="settings-overlay" onclick="if(event.target === this) toggleSettings()">

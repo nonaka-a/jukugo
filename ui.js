@@ -330,10 +330,11 @@ function spawnObstacle() {
 }
 
 function screenShake() {
-    gameWindow.classList.remove('shake');
-    void gameWindow.offsetWidth; 
-    gameWindow.classList.add('shake');
-    setTimeout(() => gameWindow.classList.remove('shake'), 500);
+    const mainArea = document.getElementById('main-area');
+    mainArea.classList.remove('shake');
+    void mainArea.offsetWidth; // 強制リフロー
+    mainArea.classList.add('shake');
+    setTimeout(() => mainArea.classList.remove('shake'), 500);
 }
 
 function createParticles(x, y) {
@@ -486,9 +487,8 @@ function refreshHighlights() {
 }
 
 function resetView() {
-    // ゲームウィンドウ（750px） + 手札エリア（約200px）の合計
     const GAME_W = 750;
-    const GAME_H = 950; // 手札エリアを含めた仮想の高さ
+    const GAME_H = 1000; // 手札エリアを含めた全体の高さ目安
     const STATS_H = 60; 
     const PADDING = 20;
 
@@ -499,21 +499,21 @@ function resetView() {
     const scaleByH = availableH / GAME_H;
     scale = Math.min(scaleByW, scaleByH, 1.0); 
 
-    // main-area全体をスケールさせる
-    const mainArea = document.getElementById('main-area');
-    mainArea.style.transform = `scale(${scale})`;
-    mainArea.style.transformOrigin = 'top center';
+    // containerでサイズを固定する
+    const container = document.getElementById('main-area-container');
+    container.style.width = `${GAME_W}px`;
+    container.style.height = `${GAME_H}px`;
+    container.style.transform = `scale(${scale})`;
+    container.style.transformOrigin = 'top center';
     
-    // game-windowの個別設定を解除（親がスケールするため）
-    gameWindow.style.transform = 'none';
-    gameWindow.style.marginBottom = '0';
-    gameWindow.style.setProperty('--current-scale', scale);
+    // アニメーション中のスケール上書きを防ぐため、ここでのtransform設定を整理
+    const mainArea = document.getElementById('main-area');
+    mainArea.style.transform = 'none'; 
 
     const translateX = (GAME_W - (GRID_SIZE * TILE_SIZE)) / 2;
-    const translateY = (GAME_H - 200 - (GRID_SIZE * TILE_SIZE)) / 2; // 少し上に調整
+    const translateY = (750 - (GRID_SIZE * TILE_SIZE)) / 2; 
     gridElement.style.left = `${translateX}px`;
     gridElement.style.top = `${translateY}px`;
-    gridElement.style.transform = `scale(1)`;
 }
 
 function placeTile(x, y, char) {

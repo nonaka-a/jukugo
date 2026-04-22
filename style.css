@@ -48,6 +48,14 @@ h1 {
     overflow: hidden;
 }
 
+/* 追加：サイズ管理用の親コンテナ */
+#main-area-container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    overflow: visible;
+}
+
 #main-area {
     display: flex;
     flex-direction: column;
@@ -569,15 +577,17 @@ button#settings-btn {
 }
 
 @keyframes shake {
-    0% { transform: scale(var(--current-scale, 1)) translate(0, 0); }
-    10% { transform: scale(var(--current-scale, 1)) translate(-5px, -5px); }
-    20% { transform: scale(var(--current-scale, 1)) translate(5px, -2px); }
-    30% { transform: scale(var(--current-scale, 1)) translate(-5px, 2px); }
-    40% { transform: scale(var(--current-scale, 1)) translate(5px, 5px); }
-    50% { transform: scale(var(--current-scale, 1)) translate(-2px, -5px); }
-    60% { transform: scale(var(--current-scale, 1)) translate(2px, 5px); }
-    70% { transform: scale(var(--current-scale, 1)) translate(-5px, 2px); }
-    80% { transform: scale(var(--current-scale, 1)) translate(5px, -2px); }
-    90% { transform: scale(var(--current-scale, 1)) translate(-2px, 5px); }
-    100% { transform: scale(var(--current-scale, 1)) translate(0, 0); }
+    0% { transform: translate(0, 0); }
+    10% { transform: translate(-5px, -5px); }
+    20% { transform: translate(5px, -2px); }
+    30% { transform: translate(-5px, 2px); }
+    40% { transform: translate(5px, 5px); }
+    50% { transform: translate(-2px, -5px); }
+    60% { transform: translate(2px, 5px); }
+    70% { transform: translate(-5px, 2px); }
+    80% { transform: translate(5px, -2px); }
+    90% { transform: translate(-2px, 5px); }
+    100% { transform: translate(0, 0); }
 }
+
+
