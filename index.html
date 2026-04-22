@@ -14,6 +14,7 @@
                 <div id="grid-container"></div>
                 <div id="launcher" style="display:none;"></div>
                 <div id="guide-line" style="display:none;"></div>
+                <button id="settings-btn" onclick="toggleSettings()" style="position: absolute; top: 10px; right: 10px; z-index: 100;">⚙️</button>
             </div>
 
             <!-- Player Hand area -->
@@ -46,8 +47,6 @@
             </div>
         </div>
 
-        <div id="side-controls">
-            <button id="settings-btn" onclick="toggleSettings()">⚙️</button>
         </div>
     </div>
 
@@ -265,14 +264,31 @@ function setupEvents() {
         guideLineElement.style.display = 'none';
     });
     gameWindow.addEventListener('click', handleGameClick);
+    
+    // タッチ操作のサポート
+    gameWindow.addEventListener('touchstart', (e) => {
+        if (state.isShooting) return;
+        const touch = e.touches[0];
+        updateLauncherPosition(touch.clientX, touch.clientY);
+    }, {passive: true});
+    
+    gameWindow.addEventListener('touchmove', (e) => {
+        if (state.isShooting) return;
+        e.preventDefault(); // スクロールを防止してドラッグ操作を優先
+        const touch = e.touches[0];
+        updateLauncherPosition(touch.clientX, touch.clientY);
+    }, {passive: false});
 }
 
 function handleMouseMove(e) {
     if (state.isShooting) return;
+    updateLauncherPosition(e.clientX, e.clientY);
+}
 
+function updateLauncherPosition(clientX, clientY) {
     const rect = gameWindow.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
 
     // グリッドの表示位置を取得
     const gx = (rect.width - (GRID_SIZE * TILE_SIZE * scale)) / 2;
@@ -280,7 +296,7 @@ function handleMouseMove(e) {
 
     // 外周の判定
     let edgeX = -1, edgeY = -1, dir = null;
-    const threshold = 75; // 外周と判定する距離（margin 75pxに合わせて調整）
+    const threshold = 100; // iPad等のタッチ操作を考慮して少し判定範囲を広げる
 
     if (y < threshold) { edgeY = 0; edgeX = Math.floor((x - gx) / (TILE_SIZE * scale)); dir = 'down'; }
     else if (y > rect.height - threshold) { edgeY = GRID_SIZE - 1; edgeX = Math.floor((x - gx) / (TILE_SIZE * scale)); dir = 'up'; }
@@ -420,6 +436,8 @@ async function shoot(startX, startY, dir, char) {
     const gy = (rect.height - (GRID_SIZE * TILE_SIZE * scale)) / 2;
 
     const startPos = launcherElement.getBoundingClientRect();
+    launcherElement.style.display = 'none';
+    guideLineElement.style.display = 'none';
     const startXpx = startPos.left - rect.left;
     const startYpx = startPos.top - rect.top;
     const endXpx = gx + targetX * TILE_SIZE * scale;
