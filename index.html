@@ -19,18 +19,41 @@
             <!-- Player Hand area -->
             <div id="solo-hand-area">
                 <div id="player-hand-container" class="hand-container"></div>
-                <button class="shuffle-btn" onclick="shuffleHand()">シャッフル</button>
+                <button class="shuffle-btn" onclick="shuffleHand()">しゃっふる</button>
+            </div>
+        </div>
+
+        <!-- Settings Modal -->
+        <div id="settings-overlay" onclick="if(event.target === this) toggleSettings()">
+            <div id="settings-modal">
+                <h2>せってい</h2>
+                <div class="setting-item">
+                    <span>ブロック追加</span>
+                    <select id="speed-select" onchange="updateDifficulty()">
+                        <option value="10000">10秒（はやい）</option>
+                        <option value="20000" selected>20秒（ゆっくり）</option>
+                    </select>
+                </div>
+                <div class="setting-item">
+                    <span>サウンド</span>
+                    <button id="sound-toggle-btn" onclick="toggleSound()">ON</button>
+                </div>
+                <div class="setting-item">
+                    <span>フルスクリーン</span>
+                    <button onclick="toggleFullscreen()">切替</button>
+                </div>
+                <button id="close-settings-btn" onclick="toggleSettings()">とじる</button>
             </div>
         </div>
 
         <div id="side-controls">
-            <button id="bgm-btn" class="bgm-btn" onclick="toggleBGM()" style="border-radius:50%; width:40px; height:40px; padding:0; font-size:20px;">♪</button>
+            <button id="settings-btn" onclick="toggleSettings()">⚙️</button>
         </div>
     </div>
 
 <script>
-const GRID_SIZE = 15;
-const TILE_SIZE = 40;
+const GRID_SIZE = 10;
+const TILE_SIZE = 60;
 
 const state = {
     grid: {},
@@ -39,7 +62,9 @@ const state = {
     selectedHandIndex: 0,
     launcher: { x: -1, y: -1, dir: null, char: '' },
     isShooting: false,
-    score: 0
+    score: 0,
+    spawnSpeed: 20000,
+    isSoundOn: true
 };
 
 const bgm = new Audio('BGM.mp3');
@@ -51,11 +76,51 @@ function toggleBGM() {
     if (isBgmPlaying) {
         bgm.pause();
         isBgmPlaying = false;
-        document.getElementById('bgm-btn').style.opacity = "0.5";
     } else {
         bgm.play().catch(e => console.log("BGM再生エラー:", e));
         isBgmPlaying = true;
-        document.getElementById('bgm-btn').style.opacity = "1";
+    }
+}
+
+let spawnInterval = null;
+
+function startSpawnInterval() {
+    if (spawnInterval) clearInterval(spawnInterval);
+    spawnInterval = setInterval(() => {
+        spawnRandomTile();
+        spawnRandomTile();
+        spawnObstacle();
+    }, state.spawnSpeed);
+}
+
+function updateDifficulty() {
+    const select = document.getElementById('speed-select');
+    state.spawnSpeed = parseInt(select.value);
+    startSpawnInterval();
+}
+
+function toggleSettings() {
+    const overlay = document.getElementById('settings-overlay');
+    overlay.style.display = overlay.style.display === 'flex' ? 'none' : 'flex';
+}
+
+function toggleSound() {
+    state.isSoundOn = !state.isSoundOn;
+    document.getElementById('sound-toggle-btn').textContent = state.isSoundOn ? 'ON' : 'OFF';
+    if (state.isSoundOn) {
+        if (isBgmPlaying) bgm.play();
+    } else {
+        bgm.pause();
+    }
+}
+
+function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        }
     }
 }
 
@@ -80,8 +145,8 @@ function init() {
     const initialCount = 12;
     const placed = new Set();
     while (placed.size < initialCount) {
-        const rx = 4 + Math.floor(Math.random() * 7);
-        const ry = 4 + Math.floor(Math.random() * 7);
+        const rx = 2 + Math.floor(Math.random() * 6);
+        const ry = 2 + Math.floor(Math.random() * 6);
         const key = `${rx},${ry}`;
         if (!placed.has(key)) {
             const char = hubKanji[Math.floor(Math.random() * hubKanji.length)];
@@ -96,12 +161,7 @@ function init() {
     setupEvents();
     refreshHighlights();
     
-    // 10秒ごとに新しい漢字(2つ)とお邪魔ブロックを出現させる
-    setInterval(() => {
-        spawnRandomTile();
-        spawnRandomTile();
-        spawnObstacle();
-    }, 10000);
+    startSpawnInterval();
     
     window.addEventListener('click', () => {
         if (!bgmInteracted) {
@@ -220,7 +280,7 @@ function handleMouseMove(e) {
 
     // 外周の判定
     let edgeX = -1, edgeY = -1, dir = null;
-    const threshold = 50; // 外周と判定する距離（margin 50pxに合わせて調整）
+    const threshold = 75; // 外周と判定する距離（margin 75pxに合わせて調整）
 
     if (y < threshold) { edgeY = 0; edgeX = Math.floor((x - gx) / (TILE_SIZE * scale)); dir = 'down'; }
     else if (y > rect.height - threshold) { edgeY = GRID_SIZE - 1; edgeX = Math.floor((x - gx) / (TILE_SIZE * scale)); dir = 'up'; }
@@ -245,7 +305,7 @@ function updateLauncherUI(gx, gy) {
     const lY = gy + state.launcher.y * TILE_SIZE * scale;
     
     // 発射台の位置を外側にずらす
-    let offset = 45 * scale;
+    let offset = (TILE_SIZE + 10) * scale;
     let finalX = lX, finalY = lY;
     if (state.launcher.dir === 'down') finalY -= offset;
     if (state.launcher.dir === 'up') finalY += offset;
@@ -314,11 +374,11 @@ async function handleGameClick() {
     updateHandSelection();
     refreshHighlights();
 
-    // 0.3秒後に古い要素を消して安全に再描画
+    // 0.6秒後に古い要素を消して安全に再描画
     setTimeout(() => {
         if (tileToRemove && tileToRemove.parentNode) tileToRemove.remove();
         renderHand();
-    }, 300);
+    }, 600);
 
     // 発射アニメーション
     await shoot(x, y, dir, char);
@@ -360,17 +420,27 @@ async function shoot(startX, startY, dir, char) {
     const gy = (rect.height - (GRID_SIZE * TILE_SIZE * scale)) / 2;
 
     const startPos = launcherElement.getBoundingClientRect();
-    shooter.style.left = `${startPos.left - rect.left}px`;
-    shooter.style.top = `${startPos.top - rect.top}px`;
+    const startXpx = startPos.left - rect.left;
+    const startYpx = startPos.top - rect.top;
+    const endXpx = gx + targetX * TILE_SIZE * scale;
+    const endYpx = gy + targetY * TILE_SIZE * scale;
+
+    shooter.style.left = `${startXpx}px`;
+    shooter.style.top = `${startYpx}px`;
     shooter.style.transform = `scale(${scale})`;
+
+    // 距離を計算してスピードを一定にする
+    const distance = Math.max(Math.abs(endXpx - startXpx), Math.abs(endYpx - startYpx));
+    const speed = 1200; // 1秒間に進むピクセル数（少し速め）
+    const duration = Math.max(0.15, distance / speed); // 最短でも0.15秒はかける
 
     // 移動アニメーション (最初早く、だんだんゆっくりに)
     await new Promise(resolve => {
         setTimeout(() => {
-            shooter.style.transition = `all 0.4s cubic-bezier(0.16, 1, 0.3, 1)`;
-            shooter.style.left = `${gx + targetX * TILE_SIZE * scale}px`;
-            shooter.style.top = `${gy + targetY * TILE_SIZE * scale}px`;
-            setTimeout(resolve, 400);
+            shooter.style.transition = `all ${duration}s cubic-bezier(0.16, 1, 0.3, 1)`;
+            shooter.style.left = `${endXpx}px`;
+            shooter.style.top = `${endYpx}px`;
+            setTimeout(resolve, duration * 1000);
         }, 10);
     });
 
@@ -391,6 +461,11 @@ async function placeAndCheck(x, y, char) {
         const coordsToClear = new Set();
         if (h.isValid) h.coordLists.forEach(list => list.forEach(c => coordsToClear.add(c)));
         if (v.isValid) v.coordLists.forEach(list => list.forEach(c => coordsToClear.add(c)));
+
+        // くっついた瞬間に一回ピカッと光る
+        coordsToClear.forEach(c => cellDOMs[c].classList.add('success-flash'));
+        await new Promise(r => setTimeout(r, 400));
+        coordsToClear.forEach(c => cellDOMs[c].classList.remove('success-flash'));
 
         // カウントダウン開始
         coordsToClear.forEach(c => cellDOMs[c].classList.add('exploding'));
@@ -457,12 +532,8 @@ function spawnObstacle() {
     state.grid[`${target.x},${target.y}`] = '■'; // お邪魔ブロック
     const cell = cellDOMs[`${target.x},${target.y}`];
     cell.textContent = '■';
-    cell.classList.add('occupied', 'obstacle', 'spawning');
-    
-    setTimeout(() => {
-        cell.classList.remove('spawning');
-        refreshHighlights();
-    }, 600);
+    cell.classList.add('occupied', 'obstacle');
+    refreshHighlights();
 }
 
 function screenShake() {
@@ -535,12 +606,8 @@ function spawnRandomTile() {
     state.grid[`${target.x},${target.y}`] = char;
     const cell = cellDOMs[`${target.x},${target.y}`];
     cell.textContent = char;
-    cell.classList.add('occupied', 'spawning');
-    
-    setTimeout(() => {
-        cell.classList.remove('spawning');
-        refreshHighlights();
-    }, 600);
+    cell.classList.add('occupied');
+    refreshHighlights();
 }
 
 function validateLine(x, y, isH) {
