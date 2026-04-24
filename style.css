@@ -509,36 +509,46 @@ button#settings-btn {
 
 .meaning-box {
     position: absolute;
-    left: 10%;
-    top: 50%;
-    transform: translateY(-50%) translateX(-30px);
-    width: 280px;
-    background: rgba(255, 255, 255, 0.95);
-    border-left: 8px solid #f28d35;
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.4);
-    font-size: 22px;
-    line-height: 1.6;
-    color: #333;
+    left: 40px;
+    bottom: 40px;
+    width: auto;
+    max-width: 500px;
+    max-height: 500px;
+    background: none;
+    border: none;
+    padding: 0;
+    box-shadow: none;
+    color: white;
+    font-size: 40px;
+    font-weight: 900;
+    line-height: 1.5;
+    text-shadow: 0 0 15px #f28d35, 0 0 30px #d97325;
     opacity: 0;
     pointer-events: none;
     z-index: 1001;
-    transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+    
+    /* 縦書き設定 */
+    writing-mode: vertical-rl;
+    -webkit-writing-mode: vertical-rl;
+    text-orientation: upright;
+    -webkit-text-orientation: upright;
 }
 
-.meaning-box.show {
-    opacity: 1;
-    transform: translateY(-50%) translateX(0);
+/* アニメーション適用（JS側で追加される） */
+.meaning-box.animate {
+    animation: wordReveal 1.5s ease-out forwards;
 }
 
 .meaning-label {
-    display: block;
-    font-size: 14px;
-    color: #b85b17;
+    display: inline-block;
+    font-size: 20px;
+    color: #ffdcae;
     font-weight: bold;
-    margin-bottom: 5px;
-    border-bottom: 1px solid #f28d35;
+    margin-left: 15px;
+    border-left: 2px solid rgba(255, 255, 255, 0.5);
+    padding-left: 8px;
+    line-height: 1;
+    text-shadow: 0 0 10px #b85b17;
 }
 
 ruby {

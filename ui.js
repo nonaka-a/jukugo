@@ -607,7 +607,7 @@ function displayAndSpeakWords(words, onComplete) {
                     if (animationStarted) return;
                     animationStarted = true;
                     wordEl.style.animation = 'wordReveal 1.5s ease-out forwards';
-                    if (meaningEl) meaningEl.classList.add('show');
+                    if (meaningEl) meaningEl.classList.add('animate');
                 };
                 
                 utterance.onstart = startAnim;
@@ -620,7 +620,7 @@ function displayAndSpeakWords(words, onComplete) {
                 window.speechSynthesis.speak(utterance);
             } else {
                 wordEl.style.animation = 'wordReveal 1.5s ease-out forwards';
-                if (meaningEl) meaningEl.classList.add('show');
+                if (meaningEl) meaningEl.classList.add('animate');
             }
             
             setTimeout(() => {
