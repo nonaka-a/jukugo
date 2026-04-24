@@ -373,17 +373,22 @@ function createParticles(x, y) {
 
         let px = centerX, py = centerY;
         let opacity = 1;
-        let scale = 1 + Math.random() * 0.5;
+        let scaleVal = 1 + Math.random() * 0.5;
+        let lastTime = performance.now();
 
-        const animate = () => {
-            px += vx;
-            py += vy;
-            opacity -= 0.02;
-            scale -= 0.01;
+        const animate = (currentTime) => {
+            const dt = (currentTime - lastTime) / 16.666; // 60fpsを基準(1.0)とした経過時間
+            lastTime = currentTime;
+
+            px += vx * dt;
+            py += vy * dt;
+            opacity -= 0.02 * dt;
+            scaleVal -= 0.01 * dt;
+            
             p.style.left = px + 'px';
             p.style.top = py + 'px';
             p.style.opacity = opacity;
-            p.style.transform = `scale(${scale})`;
+            p.style.transform = `scale(${scaleVal})`;
 
             if (opacity > 0) {
                 requestAnimationFrame(animate);
