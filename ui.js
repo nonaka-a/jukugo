@@ -555,7 +555,16 @@ function displayAndSpeakWords(words, onComplete) {
             const wordEl = document.createElement('div');
             wordEl.className = 'huge-word';
             
-            const reading = typeof dictionaryData !== 'undefined' ? dictionaryData[word] : null;
+            const entry = typeof dictionaryData !== 'undefined' ? dictionaryData[word] : null;
+            let reading, meaning;
+            if (entry && typeof entry === 'object') {
+                reading = entry.reading;
+                meaning = entry.meaning;
+            } else {
+                reading = entry;
+                meaning = null;
+            }
+
             if (reading) {
                 wordEl.innerHTML = `<ruby>${word}<rt>${reading}</rt></ruby>`;
             } else {
@@ -563,8 +572,16 @@ function displayAndSpeakWords(words, onComplete) {
             }
             
             wordEl.style.opacity = '0';
-            
             overlay.appendChild(wordEl);
+
+            // 意味ボックスの作成
+            let meaningEl = null;
+            if (meaning) {
+                meaningEl = document.createElement('div');
+                meaningEl.className = 'meaning-box';
+                meaningEl.innerHTML = `<span class="meaning-label">【意味】</span>${meaning}`;
+                overlay.appendChild(meaningEl);
+            }
             
             if (state.isSoundOn !== false && window.speechSynthesis) {
                 const utterance = new SpeechSynthesisUtterance(reading || word);
@@ -590,10 +607,10 @@ function displayAndSpeakWords(words, onComplete) {
                     if (animationStarted) return;
                     animationStarted = true;
                     wordEl.style.animation = 'wordReveal 1.5s ease-out forwards';
+                    if (meaningEl) meaningEl.classList.add('show');
                 };
                 
                 utterance.onstart = startAnim;
-                // iPad等でonstartが発火しない場合のセーフティネット
                 setTimeout(startAnim, 300);
                 
                 utterance.onend = () => {
@@ -603,10 +620,12 @@ function displayAndSpeakWords(words, onComplete) {
                 window.speechSynthesis.speak(utterance);
             } else {
                 wordEl.style.animation = 'wordReveal 1.5s ease-out forwards';
+                if (meaningEl) meaningEl.classList.add('show');
             }
             
             setTimeout(() => {
                 wordEl.remove();
+                if (meaningEl) meaningEl.remove();
             }, 2000);
         }, delay);
         delay += 1500; 

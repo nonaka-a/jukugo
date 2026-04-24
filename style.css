@@ -507,6 +507,40 @@ button#settings-btn {
     letter-spacing: 10px;
 }
 
+.meaning-box {
+    position: absolute;
+    left: 10%;
+    top: 50%;
+    transform: translateY(-50%) translateX(-30px);
+    width: 280px;
+    background: rgba(255, 255, 255, 0.95);
+    border-left: 8px solid #f28d35;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+    font-size: 22px;
+    line-height: 1.6;
+    color: #333;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 1001;
+    transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.meaning-box.show {
+    opacity: 1;
+    transform: translateY(-50%) translateX(0);
+}
+
+.meaning-label {
+    display: block;
+    font-size: 14px;
+    color: #b85b17;
+    font-weight: bold;
+    margin-bottom: 5px;
+    border-bottom: 1px solid #f28d35;
+}
+
 ruby {
     ruby-position: over;
 }
