@@ -269,11 +269,12 @@ async function placeAndCheck(x, y, char) {
     
     if (h.isValid || v.isValid) {
         const coordsToClear = new Set();
-        if (h.isValid) h.coordLists.forEach(list => list.forEach(c => coordsToClear.add(c)));
-        if (v.isValid) v.coordLists.forEach(list => list.forEach(c => coordsToClear.add(c)));
+        const foundWords = [];
+        if (h.isValid) { h.coordLists.forEach(list => list.forEach(c => coordsToClear.add(c))); foundWords.push(...h.words); }
+        if (v.isValid) { v.coordLists.forEach(list => list.forEach(c => coordsToClear.add(c))); foundWords.push(...v.words); }
 
         coordsToClear.forEach(c => cellDOMs[c].classList.add('success-flash'));
-        await new Promise(r => setTimeout(r, 400));
+        await new Promise(r => setTimeout(r, 200));
         coordsToClear.forEach(c => cellDOMs[c].classList.remove('success-flash'));
 
         coordsToClear.forEach(c => cellDOMs[c].classList.add('exploding'));
@@ -281,10 +282,14 @@ async function placeAndCheck(x, y, char) {
         for (let i = 3; i > 0; i--) {
             if (i === 2) coordsToClear.forEach(c => cellDOMs[c].classList.add('fast'));
             if (i === 1) coordsToClear.forEach(c => cellDOMs[c].classList.add('faster'));
-            await new Promise(r => setTimeout(r, 1000));
+            await new Promise(r => setTimeout(r, 500));
         }
 
         screenShake();
+        if (state.isSoundOn) {
+            seFirework.currentTime = 0;
+            seFirework.play().catch(e => console.log("SE再生エラー:", e));
+        }
         
         coordsToClear.forEach(c => {
             const [cx, cy] = c.split(',').map(Number);
@@ -298,7 +303,13 @@ async function placeAndCheck(x, y, char) {
         });
 
         refreshHighlights();
-        checkStageClear();
+        
+        setTimeout(() => {
+            const uniqueWords = [...new Set(foundWords)];
+            displayAndSpeakWords(uniqueWords, () => {
+                checkStageClear();
+            });
+        }, 200);
     }
 }
 
@@ -346,26 +357,33 @@ function createParticles(x, y) {
     const centerX = gx + x * TILE_SIZE + TILE_SIZE / 2;
     const centerY = gy + y * TILE_SIZE + TILE_SIZE / 2;
 
-    for (let i = 0; i < 8; i++) {
+    const colors = ['#f28d35', '#fdcb6e', '#d63031', '#ffffff'];
+
+    for (let i = 0; i < 25; i++) {
         const p = document.createElement('div');
         p.className = 'particle';
+        p.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        p.style.boxShadow = `0 0 10px ${p.style.backgroundColor}`;
         gameWindow.appendChild(p);
 
         const angle = Math.random() * Math.PI * 2;
-        const speed = 2 + Math.random() * 4;
+        const speed = 4 + Math.random() * 8;
         const vx = Math.cos(angle) * speed;
         const vy = Math.sin(angle) * speed;
 
         let px = centerX, py = centerY;
         let opacity = 1;
+        let scale = 1 + Math.random() * 0.5;
 
         const animate = () => {
             px += vx;
             py += vy;
             opacity -= 0.02;
+            scale -= 0.01;
             p.style.left = px + 'px';
             p.style.top = py + 'px';
             p.style.opacity = opacity;
+            p.style.transform = `scale(${scale})`;
 
             if (opacity > 0) {
                 requestAnimationFrame(animate);
@@ -521,4 +539,97 @@ function placeTile(x, y, char) {
     const cell = cellDOMs[`${x},${y}`];
     cell.textContent = char;
     cell.classList.add('occupied');
+}
+
+function displayAndSpeakWords(words, onComplete) {
+    let overlay = document.getElementById('word-overlay-container');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'word-overlay-container';
+        gameWindow.appendChild(overlay);
+    }
+    
+    let delay = 0;
+    words.forEach((word, index) => {
+        setTimeout(() => {
+            const wordEl = document.createElement('div');
+            wordEl.className = 'huge-word';
+            
+            const reading = typeof dictionaryData !== 'undefined' ? dictionaryData[word] : null;
+            if (reading) {
+                wordEl.innerHTML = `<ruby>${word}<rt>${reading}</rt></ruby>`;
+            } else {
+                wordEl.textContent = word;
+            }
+            
+            wordEl.style.opacity = '0';
+            
+            overlay.appendChild(wordEl);
+            
+            if (state.isSoundOn !== false && window.speechSynthesis) {
+                const utterance = new SpeechSynthesisUtterance(reading || word);
+                utterance.lang = 'ja-JP';
+                utterance.volume = 1.0;
+                
+                const voices = window.speechSynthesis.getVoices();
+                const jpVoices = voices.filter(v => v.lang.includes('ja'));
+                const maleVoice = jpVoices.find(v => v.name.includes('Otoya') || v.name.includes('Keita') || v.name.includes('Ichiro'));
+                
+                if (maleVoice) {
+                    utterance.voice = maleVoice;
+                    utterance.pitch = 1.0;
+                    utterance.rate = 0.85;
+                } else {
+                    if (jpVoices.length > 0) utterance.voice = jpVoices[0];
+                    utterance.pitch = 0.5;
+                    utterance.rate = 0.85;
+                }
+                
+                let animationStarted = false;
+                const startAnim = () => {
+                    if (animationStarted) return;
+                    animationStarted = true;
+                    wordEl.style.animation = 'wordReveal 1.5s ease-out forwards';
+                };
+                
+                utterance.onstart = startAnim;
+                // iPad等でonstartが発火しない場合のセーフティネット
+                setTimeout(startAnim, 300);
+                
+                utterance.onend = () => {
+                    // ダッキング終了処理を削除
+                };
+                
+                window.speechSynthesis.speak(utterance);
+            } else {
+                wordEl.style.animation = 'wordReveal 1.5s ease-out forwards';
+            }
+            
+            setTimeout(() => {
+                wordEl.remove();
+            }, 2000);
+        }, delay);
+        delay += 1500; 
+    });
+    
+    setTimeout(() => {
+        if (onComplete) onComplete();
+    }, delay);
+}
+
+function showStageClearModal() {
+    const overlay = document.getElementById('stage-clear-overlay');
+    if (overlay) overlay.style.display = 'flex';
+}
+
+function nextStage() {
+    const overlay = document.getElementById('stage-clear-overlay');
+    if (overlay) overlay.style.display = 'none';
+    loadStage(state.currentStage + 1);
+}
+
+function backToTitleFromClear() {
+    const overlay = document.getElementById('stage-clear-overlay');
+    if (overlay) overlay.style.display = 'none';
+    backToTitle();
 }

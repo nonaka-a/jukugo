@@ -20,7 +20,6 @@
         <div class="difficulty-selection">
             <button class="diff-btn easy" onclick="startGame('easy')">かんたん</button>
             <button class="diff-btn normal" onclick="startGame('normal')">ふつう</button>
-            <button class="diff-btn hard" onclick="startGame('hard')">むずかしい</button>
         </div>
     </div>
 
@@ -69,6 +68,16 @@
                 <hr>
                 <button class="menu-btn" onclick="backToTitle()">たいとるに戻る</button>
                 <button id="close-settings-btn" onclick="toggleSettings()">とじる</button>
+            </div>
+        </div>
+        <!-- Stage Clear Modal -->
+        <div id="stage-clear-overlay" style="display:none;">
+            <div id="stage-clear-modal">
+                <h2 id="clear-title">すてーじ<br>くりあ！</h2>
+                <div class="modal-buttons">
+                    <button class="clear-btn next" onclick="nextStage()">つぎへ</button>
+                    <button class="clear-btn title" onclick="backToTitleFromClear()">たいとるへ</button>
+                </div>
             </div>
         </div>
     </div>

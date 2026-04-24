@@ -23,12 +23,16 @@ const state = {
     isSoundOn: true,
     currentStage: 0,
     enemies: {},
-    difficulty: 'normal'
+    difficulty: 'normal',
+    bgmIndex: 0
 };
 
 // --- BGM・システム制御 ---
-const bgm = new Audio('BGM.mp3');
+const BGM_LIST = ['assets/BGM.mp3', 'assets/BGM2.mp3', 'assets/BGM3.mp3'];
+const bgm = new Audio();
 bgm.loop = true;
+bgm.volume = 0.4;
+const seFirework = new Audio('assets/firework.mp3');
 let isBgmPlaying = false;
 let bgmInteracted = false;
 let spawnInterval = null;

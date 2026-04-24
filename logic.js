@@ -74,7 +74,7 @@ function validateLine(x, y, isH) {
     i = 1;
     while (isH ? state.grid[`${x+i},${y}`] : state.grid[`${x},${y+i}`]) { maxD = i; i++; }
     
-    let isValid = false, coordLists = [];
+    let isValid = false, coordLists = [], words = [];
     for (let len = 2; len <= 4; len++) {
         for (let offset = -len + 1; offset <= 0; offset++) {
             const s = offset, e = offset + len - 1;
@@ -88,11 +88,12 @@ function validateLine(x, y, isH) {
                 if (dictionary.has(word)) { 
                     isValid = true; 
                     coordLists.push(currentCoords);
+                    words.push(word);
                 }
             }
         }
     }
-    return { isValid, coordLists };
+    return { isValid, coordLists, words };
 }
 
 function getLandingCell(startX, startY, dir) {
@@ -158,8 +159,7 @@ function checkStageClear() {
     const remainingEnemies = Object.keys(state.enemies).length;
     if (remainingEnemies === 0) {
         setTimeout(() => {
-            alert("ステージクリア！次のレベルへ進みます。");
-            loadStage(state.currentStage + 1);
+            showStageClearModal();
         }, 500);
     }
 }

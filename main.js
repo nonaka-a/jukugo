@@ -67,11 +67,21 @@ function loadStage(index) {
     updateStatsUI();
 }
 
+function updateBGM() {
+    bgm.src = BGM_LIST[state.bgmIndex];
+    state.bgmIndex = (state.bgmIndex + 1) % BGM_LIST.length;
+}
+
 function startGame(difficulty) {
     state.difficulty = difficulty;
     document.getElementById('title-screen').style.display = 'none';
     document.getElementById('stats-container').style.display = 'flex';
     
+    updateBGM(); // 追加
+    if (state.isSoundOn) {
+        bgm.play().catch(e => console.log("BGM再生エラー:", e));
+    }
+
     loadStage(0);
     state.score = 0;
     setupDeck();
@@ -106,6 +116,22 @@ function init() {
     window.addEventListener('click', () => {
         if (!bgmInteracted) {
             bgmInteracted = true;
+            
+            // iOS/iPadOSの音声再生制限を解除するためのダミー再生
+            if (window.speechSynthesis) {
+                const dummy = new SpeechSynthesisUtterance("");
+                window.speechSynthesis.speak(dummy);
+            }
+
+            // SEの再生制限解除
+            seFirework.play().then(() => {
+                seFirework.pause();
+                seFirework.currentTime = 0;
+            }).catch(e => console.log("SE Unlock Failed", e));
+            
+            if (!bgm.src && BGM_LIST.length > 0) {
+                bgm.src = BGM_LIST[state.bgmIndex];
+            }
             bgm.play().then(() => {
                 isBgmPlaying = true;
             }).catch(e => console.log("BGM Blocked", e));

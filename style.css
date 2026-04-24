@@ -262,6 +262,71 @@ button#settings-btn {
     margin-top: 10px;
 }
 
+/* Stage Clear Modal */
+#stage-clear-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+#stage-clear-modal {
+    width: 400px;
+    background-color: #eac88b;
+    border: 8px solid #b85b17;
+    border-radius: 30px;
+    padding: 40px 20px;
+    box-shadow: 0 0 50px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+    animation: modalPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+#clear-title {
+    font-size: 48px;
+    margin: 0;
+    color: #f28d35;
+    text-shadow: 3px 3px 0 #b85b17;
+    letter-spacing: 5px;
+    text-align: center;
+    line-height: 1.2;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 20px;
+    width: 100%;
+    justify-content: center;
+}
+
+.clear-btn {
+    padding: 15px 30px;
+    font-size: 20px;
+    min-width: 150px;
+}
+
+.clear-btn.next {
+    filter: hue-rotate(150deg);
+}
+
+.clear-btn.title {
+    background-color: #636e72;
+    border-color: #2d3436;
+}
+
+@keyframes modalPop {
+    from { transform: scale(0.5); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
 #status-message {
     height: 20px;
     color: var(--danger-color);
@@ -336,7 +401,7 @@ button#settings-btn {
 
 .cell.enemy {
     background: none !important;
-    background-image: url('toge.png') !important;
+    background-image: url('assets/toge.png') !important;
     background-size: 90% !important;
     background-position: center !important;
     background-repeat: no-repeat !important;
@@ -405,12 +470,61 @@ button#settings-btn {
 
 .particle {
     position: absolute;
-    width: 8px;
-    height: 8px;
+    width: 10px;
+    height: 10px;
     background-color: var(--accent-color);
     border-radius: 50%;
     pointer-events: none;
     z-index: 100;
+}
+
+/* Jukugo Word Overlay */
+#word-overlay-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 200;
+}
+
+.huge-word {
+    font-size: 280px;
+    font-weight: 900;
+    color: white;
+    text-shadow: 0 0 30px #f28d35, 0 0 60px #d97325, 0 0 90px #b85b17;
+    opacity: 0;
+    transform: scale(0.5);
+    position: absolute;
+    writing-mode: vertical-rl;
+    -webkit-writing-mode: vertical-rl;
+    text-orientation: upright;
+    -webkit-text-orientation: upright;
+    letter-spacing: 10px;
+}
+
+ruby {
+    ruby-position: over;
+}
+
+rt {
+    font-size: 80px;
+    font-weight: 900;
+    color: white;
+    text-shadow: 0 0 20px #f28d35, 0 0 40px #d97325;
+    letter-spacing: normal;
+    text-orientation: upright;
+}
+
+@keyframes wordReveal {
+    0% { transform: scale(0.8); opacity: 0; filter: blur(10px); }
+    15% { transform: scale(1); opacity: 1; filter: blur(0px); }
+    85% { transform: scale(1.1); opacity: 1; filter: blur(0px); }
+    100% { transform: scale(1.2); opacity: 0; filter: blur(10px); }
 }
 
 /* Status Highlighting */
