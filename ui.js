@@ -541,6 +541,34 @@ function placeTile(x, y, char) {
     cell.classList.add('occupied');
 }
 
+function toggleHistory() {
+    const overlay = document.getElementById('history-overlay');
+    const isOpening = overlay.style.display !== 'flex';
+    overlay.style.display = isOpening ? 'flex' : 'none';
+    if (isOpening) updateHistoryUI();
+}
+
+function updateHistoryUI() {
+    const list = document.getElementById('history-list');
+    list.innerHTML = '';
+    
+    if (state.history.length === 0) {
+        list.innerHTML = '<div style="text-align:center; color:#999; margin-top:20px;">まだ熟語を作っていません</div>';
+        return;
+    }
+
+    state.history.slice().reverse().forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'history-item';
+        div.innerHTML = `
+            <div class="history-word">${item.word}</div>
+            <div class="history-reading">${item.reading || ''}</div>
+            <div class="history-meaning">${item.meaning || ''}</div>
+        `;
+        list.appendChild(div);
+    });
+}
+
 function displayAndSpeakWords(words, onComplete) {
     let overlay = document.getElementById('word-overlay-container');
     if (!overlay) {
@@ -563,6 +591,11 @@ function displayAndSpeakWords(words, onComplete) {
             } else {
                 reading = entry;
                 meaning = null;
+            }
+
+            // 履歴に追加
+            if (!state.history.some(h => h.word === word)) {
+                state.history.push({ word, reading, meaning });
             }
 
             if (reading) {

@@ -24,7 +24,8 @@ const state = {
     currentStage: 0,
     enemies: {},
     difficulty: 'normal',
-    bgmIndex: 0
+    bgmIndex: 0,
+    history: []
 };
 
 // --- BGM・システム制御 ---
