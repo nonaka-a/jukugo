@@ -1941,6 +1941,8 @@ const dictionaryData = {
     "黄金": { reading: "おうごん", meaning: "金（きん）。また、金のように価値があり、輝いているもの。" },
     "花火": { reading: "はなび", meaning: "火薬を燃やして、光や音、色を楽しむもの。夜空に打ち上げるものなどがある。" },
     "爆発": { reading: "ばくはつ", meaning: "たまっていたエネルギーが急に外へ出て、大きな音や衝撃が起こること。" },
+    "花札": { reading: "はなふだ", meaning: "日本の伝統的なかるたの一種。四季折々の花が描かれた48枚の札を使う遊び。" },
+    "火花": { reading: "ひばな", meaning: "火が散って飛び出す小さな光。また、激しくぶつかり合うことのたとえ。" },
 };
 
 const dictionary = new Set(Object.keys(dictionaryData));
