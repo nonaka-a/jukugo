@@ -1939,6 +1939,8 @@ const dictionaryData = {
     "高速": { reading: "こうそく", meaning: "速度が非常に速いこと。" },
     "黄信号": { reading: "こうしんごう", meaning: "信号機の黄色のあかり。注意して止まるべき合図。" },
     "黄金": { reading: "おうごん", meaning: "金（きん）。また、金のように価値があり、輝いているもの。" },
+    "花火": { reading: "はなび", meaning: "火薬を燃やして、光や音、色を楽しむもの。夜空に打ち上げるものなどがある。" },
+    "爆発": { reading: "ばくはつ", meaning: "たまっていたエネルギーが急に外へ出て、大きな音や衝撃が起こること。" },
 };
 
 const dictionary = new Set(Object.keys(dictionaryData));

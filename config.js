@@ -8,7 +8,7 @@ const STAGES = [
     { enemyCount: 12, obstacles: [{x: 4, y: 4}, {x: 5, y: 4}, {x: 4, y: 5}, {x: 5, y: 5}] }
 ];
 
-const hubKanji = "用的力学不内生物地人動中定行合通化一自作意大理対外会成出事体電目国日分野気法実名面性入文和度最路感".split("");
+const hubKanji = "用的力学不内生物地人動中定行合通化一自作意大理対外会成出事体電目国日分野気法実名面性入文和度最路感花火爆発".split("");
 
 // --- 状態管理 ---
 const state = {
