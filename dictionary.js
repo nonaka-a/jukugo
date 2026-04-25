@@ -1943,6 +1943,8 @@ const dictionaryData = {
     "爆発": { reading: "ばくはつ", meaning: "たまっていたエネルギーが急に外へ出て、大きな音や衝撃が起こること。" },
     "花札": { reading: "はなふだ", meaning: "日本の伝統的なかるたの一種。四季折々の花が描かれた48枚の札を使う遊び。" },
     "火花": { reading: "ひばな", meaning: "火が散って飛び出す小さな光。また、激しくぶつかり合うことのたとえ。" },
+    "十字": { reading: "じゅうじ", meaning: "縦の線と横の線が真ん中で交わった形。漢字の「十」の字のような形。" },
+    "対角": { reading: "たいかく", meaning: "四角形などで、向かい合った角のこと。また、それらを結ぶ方向。" },
 };
 
 const dictionary = new Set(Object.keys(dictionaryData));
