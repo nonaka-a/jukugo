@@ -244,12 +244,35 @@ function applyPowerUp(word) {
     if (word === "花火") {
         state.powerUps.explosionRange = 2;
     } else if (word === "爆発") {
-        // 全エネミーを倒す
-        Object.keys(state.enemies).forEach(key => {
-            const [ex, ey] = key.split(',').map(Number);
-            killEnemy(ex, ey);
+        // 全マスを赤くハイライト（予告演出）
+        Object.keys(cellDOMs).forEach(key => {
+            cellDOMs[key].classList.add('power-range-highlight');
         });
-        checkStageClear();
+        
+        // 少し遅らせて一斉爆発
+        setTimeout(() => {
+            screenShake();
+            if (state.isSoundOn) {
+                seFirework.currentTime = 0;
+                seFirework.play().catch(e => {});
+            }
+            
+            Object.keys(cellDOMs).forEach(key => {
+                const cell = cellDOMs[key];
+                if (state.grid[key]) {
+                    const [gx, gy] = key.split(',').map(Number);
+                    createParticles(gx, gy);
+                    delete state.grid[key];
+                }
+                if (cell) {
+                    cell.textContent = '';
+                    cell.className = 'cell'; // 全ての装飾クラスをリセット
+                }
+            });
+            
+            state.enemies = {};
+            checkStageClear();
+        }, 800);
     } else if (word === "十字") {
         state.powerUps.isCross = true;
     } else if (word === "対角") {
