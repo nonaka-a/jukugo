@@ -19,7 +19,7 @@ function popNewHandChar() {
 }
 
 function fillHand() {
-    while (state.playerHand.length < 10) {
+    while (state.playerHand.length < 8) {
         state.playerHand.push(popNewHandChar());
     }
 }

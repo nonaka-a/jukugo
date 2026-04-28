@@ -1,11 +1,12 @@
 // --- 定数 ---
-const GRID_SIZE = 10;
+const GRID_SIZE = 8;
 const TILE_SIZE = 60;
+const GAME_SIZE = 630; // 追加：ゲームウィンドウの縦横サイズ（px）
 
 const STAGES = [
     { enemyCount: 4, obstacles: [] },
-    { enemyCount: 8, obstacles: [{x: 4, y: 3}, {x: 5, y: 3}, {x: 4, y: 6}, {x: 5, y: 6}] },
-    { enemyCount: 12, obstacles: [{x: 4, y: 4}, {x: 5, y: 4}, {x: 4, y: 5}, {x: 5, y: 5}] }
+    { enemyCount: 8, obstacles: [{x: 3, y: 2}, {x: 4, y: 2}, {x: 3, y: 5}, {x: 4, y: 5}] },
+    { enemyCount: 12, obstacles: [{x: 3, y: 3}, {x: 4, y: 3}, {x: 3, y: 4}, {x: 4, y: 4}] }
 ];
 
 const hubKanji = "用的力学不内生物地人動中定行合通化一自作意大理対外会成出事体電目国日分野気法実名面性入文和度最路感花火爆発札十字角".split("");

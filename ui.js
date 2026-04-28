@@ -324,8 +324,9 @@ function updateLauncherPosition(clientX, clientY) {
     const x = (clientX - rect.left) / scale;
     const y = (clientY - rect.top) / scale;
     
-    const GAME_W = 750;
-    const GAME_H = 750;
+    // GAME_SIZEを使用
+    const GAME_W = GAME_SIZE;
+    const GAME_H = GAME_SIZE;
     const gx = (GAME_W - GRID_SIZE * TILE_SIZE) / 2;
     const gy = (GAME_H - GRID_SIZE * TILE_SIZE) / 2;
 
@@ -463,8 +464,9 @@ async function shoot(startX, startY, dir, char) {
     shooter.textContent = char;
     gameWindow.appendChild(shooter);
 
-    const GAME_W = 750;
-    const GAME_H = 750;
+    // GAME_SIZEを使用
+    const GAME_W = GAME_SIZE;
+    const GAME_H = GAME_SIZE;
     const gx = (GAME_W - GRID_SIZE * TILE_SIZE) / 2;
     const gy = (GAME_H - GRID_SIZE * TILE_SIZE) / 2;
 
@@ -625,8 +627,9 @@ function screenShake() {
 }
 
 function createParticles(x, y) {
-    const GAME_W = 750;
-    const GAME_H = 750;
+    // GAME_SIZEを使用
+    const GAME_W = GAME_SIZE;
+    const GAME_H = GAME_SIZE;
     const gx = (GAME_W - GRID_SIZE * TILE_SIZE) / 2;
     const gy = (GAME_H - GRID_SIZE * TILE_SIZE) / 2;
     
@@ -786,8 +789,9 @@ function refreshHighlights() {
 }
 
 function resetView() {
-    const GAME_W = 750;
-    const GAME_H = 1000; // 手札エリアを含めた全体の高さ目安
+    // GAME_SIZEを使用
+    const GAME_W = GAME_SIZE;
+    const GAME_H = 880; // 手札エリアを含めた全体の高さ目安
     const STATS_H = 60; 
     const PADDING = 20;
 
@@ -810,7 +814,7 @@ function resetView() {
     mainArea.style.transform = 'none'; 
 
     const translateX = (GAME_W - (GRID_SIZE * TILE_SIZE)) / 2;
-    const translateY = (750 - (GRID_SIZE * TILE_SIZE)) / 2; 
+    const translateY = (GAME_SIZE - (GRID_SIZE * TILE_SIZE)) / 2; // GAME_SIZEに変更
     gridElement.style.left = `${translateX}px`;
     gridElement.style.top = `${translateY}px`;
 }
