@@ -38,6 +38,223 @@ function updateStatsUI() {
     const enemyEl = document.getElementById('enemy-val');
     if (stageEl) stageEl.textContent = state.currentStage + 1;
     if (enemyEl) enemyEl.textContent = Object.keys(state.enemies).length;
+    updateLampsUI();
+}
+
+function initLampsUI() {
+    const container = document.getElementById('lamp-container');
+    if (!container) return;
+    container.innerHTML = '';
+    for (let i = 0; i < 5; i++) {
+        const lamp = document.createElement('div');
+        lamp.className = 'lamp';
+        container.appendChild(lamp);
+    }
+}
+
+function updateLampsUI() {
+    const container = document.getElementById('lamp-container');
+    if (!container) return;
+    const lamps = container.querySelectorAll('.lamp');
+    lamps.forEach((lamp, i) => {
+        lamp.classList.remove('on', 'power-on');
+        if (i < state.lampCount) {
+            if (state.isPowerUpActive) {
+                lamp.classList.add('power-on');
+            } else {
+                lamp.classList.add('on');
+            }
+        }
+    });
+
+    if (state.lampCount >= 5 && !state.isRouletteActive && !state.isPowerUpActive) {
+        setTimeout(startRoulette, 2500); // 熟語をしっかり見せるために時間を延ばす
+    }
+
+    // パワーアップラベルの更新
+    const pLabel = document.getElementById('powerup-label');
+    if (pLabel) {
+        let text = "";
+        if (state.powerUps.explosionRange > 1) text += "【花火】";
+        if (state.powerUps.isCross) text += "【十字】";
+        if (state.powerUps.isDiagonal) text += "【対角】";
+        pLabel.textContent = text;
+    }
+}
+
+// Roulette Logic
+const ROULETTE_DATA = {
+    upper: ["花", "爆", "十", "対", "残", "失"],
+    lower: ["火", "発", "字", "角", "念", "敗"]
+};
+
+let rouletteState = {
+    step: 0, 
+    upper: { pos: 0, speed: 3, active: false, stopping: false, targetPos: 0, strip: null, data: ROULETTE_DATA.upper },
+    lower: { pos: 0, speed: 3, active: false, stopping: false, targetPos: 0, strip: null, data: ROULETTE_DATA.lower },
+    animId: null
+};
+
+function startRoulette() {
+    state.isRouletteActive = true;
+    rouletteState.step = 0;
+    
+    const overlay = document.getElementById('roulette-overlay');
+    overlay.style.display = 'flex';
+    overlay.onclick = handleRouletteClick;
+
+    initStrip('upper', document.getElementById('strip-upper'));
+    initStrip('lower', document.getElementById('strip-lower'));
+
+    document.getElementById('slot-upper').classList.remove('stopped');
+    document.getElementById('slot-lower').classList.remove('stopped');
+
+    if (rouletteState.animId) cancelAnimationFrame(rouletteState.animId);
+    rouletteState.animId = requestAnimationFrame(updateRoulette);
+}
+
+function initStrip(id, el) {
+    const data = rouletteState[id].data;
+    el.innerHTML = '';
+    const repeatCount = 20; 
+    for (let i = 0; i < repeatCount; i++) {
+        data.forEach(char => {
+            const span = document.createElement('div');
+            span.className = 'slot-char';
+            span.textContent = char;
+            el.appendChild(span);
+        });
+    }
+    rouletteState[id].strip = el;
+    rouletteState[id].active = true;
+    rouletteState[id].stopping = false;
+    rouletteState[id].speed = 3 + Math.random() * 2;
+    // 帯の中央付近から開始し、左右に十分な余裕を持たせる
+    rouletteState[id].pos = -(data.length * 100 * 10);
+}
+
+function updateRoulette() {
+    if (!state.isRouletteActive) return;
+
+    ['upper', 'lower'].forEach(id => {
+        const s = rouletteState[id];
+        const dataWidth = s.data.length * 100;
+        
+        if (s.active) {
+            s.pos += s.speed;
+            // 右に行き過ぎたら左にワープさせる
+            if (s.pos > -500) {
+                s.pos -= dataWidth;
+            }
+        } else if (s.stopping) {
+            s.pos += s.speed;
+            if (s.pos >= s.targetPos) {
+                s.pos = s.targetPos;
+                s.stopping = false;
+            }
+        }
+        if (s.strip) {
+            s.strip.style.transform = `translateX(${s.pos}px)`;
+        }
+    });
+
+    rouletteState.animId = requestAnimationFrame(updateRoulette);
+}
+
+function handleRouletteClick() {
+    if (rouletteState.step === 0) {
+        stopSlot('upper');
+        rouletteState.step = 1;
+    } else if (rouletteState.step === 1) {
+        stopSlot('lower');
+        rouletteState.step = 2;
+        setTimeout(finishRoulette, 500);
+    }
+}
+
+function stopSlot(id) {
+    const s = rouletteState[id];
+    s.active = false;
+    s.stopping = true;
+    
+    const charWidth = 100;
+    const centerOffset = 120; // 170 - 50
+    
+    // 現在のposから、次にcenterOffsetに一致するposを計算
+    // k = (centerOffset - pos) / charWidth
+    // Math.roundを使用することで、最も近い文字（手前の文字を含む）にスナップさせます
+    let currentK = (centerOffset - s.pos) / charWidth;
+    let targetK = Math.round(currentK); 
+    
+    s.targetPos = centerOffset - targetK * charWidth;
+    
+    // ターゲットが現在の位置より後ろ（左）になってしまった場合は、
+    // 最低限現在の速度分は進ませて次の文字にする
+    if (s.targetPos < s.pos + s.speed) {
+        targetK -= 1;
+        s.targetPos = centerOffset - targetK * charWidth;
+    }
+    
+    const dataLen = s.data.length;
+    let dataIdx = targetK % dataLen;
+    if (dataIdx < 0) dataIdx += dataLen;
+    
+    rouletteState[id + 'Idx'] = dataIdx;
+    document.getElementById(`slot-${id}`).classList.add('stopped');
+}
+
+function finishRoulette() {
+    // 完全に止まるまで待つ
+    if (rouletteState.upper.stopping || rouletteState.lower.stopping) {
+        setTimeout(finishRoulette, 100);
+        return;
+    }
+    const word = ROULETTE_DATA.upper[rouletteState.upperIdx] + ROULETTE_DATA.lower[rouletteState.lowerIdx];
+    const overlay = document.getElementById('roulette-overlay');
+    overlay.style.display = 'none';
+    overlay.onclick = null;
+    
+    const validWords = ["花火", "爆発", "十字", "対角"];
+    if (validWords.includes(word)) {
+        displayAndSpeakWords([word], () => {
+            applyPowerUp(word);
+            // 「爆発」は即時発動なのでランプを消費しない
+            if (word === "爆発") {
+                state.lampCount = 0;
+                state.isPowerUpActive = false;
+            } else {
+                state.lampCount = 5; // 赤ランプ5個からスタート
+                state.isPowerUpActive = true;
+            }
+            state.isRouletteActive = false;
+            updateStatsUI();
+        });
+    } else {
+        const displayWord = (word === "残念" || word === "失敗") ? word : "残念";
+        displayAndSpeakWords([displayWord], () => {
+            state.lampCount = 0;
+            state.isPowerUpActive = false;
+            state.isRouletteActive = false;
+            updateStatsUI();
+        });
+    }
+}
+
+function applyPowerUp(word) {
+    if (word === "花火") {
+        state.powerUps.explosionRange = 2;
+    } else if (word === "爆発") {
+        // 全エネミーを倒す
+        Object.keys(state.enemies).forEach(key => {
+            const [ex, ey] = key.split(',').map(Number);
+            killEnemy(ex, ey);
+        });
+        checkStageClear();
+    } else if (word === "十字") {
+        state.powerUps.isCross = true;
+    } else if (word === "対角") {
+        state.powerUps.isDiagonal = true;
+    }
 }
 
 function initGridDOM() {
@@ -273,8 +490,29 @@ async function placeAndCheck(x, y, char) {
         if (h.isValid) { h.coordLists.forEach(list => list.forEach(c => coordsToClear.add(c))); foundWords.push(...h.words); }
         if (v.isValid) { v.coordLists.forEach(list => list.forEach(c => coordsToClear.add(c))); foundWords.push(...v.words); }
 
+        // 爆発予告（パワーアップ適用時などの全範囲を赤く光らせる）
+        const allExplosionCoords = new Set();
+        const coordsArray = Array.from(coordsToClear);
+        coordsArray.forEach((c, idx) => {
+            const [cx, cy] = c.split(',').map(Number);
+            // 範囲爆発は全員分追加
+            getExplosionCoords(cx, cy).forEach(ec => allExplosionCoords.add(ec));
+            // ライン爆発（十字・対角）は最初の1文字分だけ追加して重複を防ぐ
+            if (idx === 0) {
+                getPowerUpLines(cx, cy).forEach(ec => allExplosionCoords.add(ec));
+            }
+        });
+
+        allExplosionCoords.forEach(c => {
+            if (cellDOMs[c]) cellDOMs[c].classList.add('power-range-highlight');
+        });
+
         coordsToClear.forEach(c => cellDOMs[c].classList.add('success-flash'));
-        await new Promise(r => setTimeout(r, 200));
+        await new Promise(r => setTimeout(r, 600)); // 少し長めに予告を見せる
+        
+        allExplosionCoords.forEach(c => {
+            if (cellDOMs[c]) cellDOMs[c].classList.remove('power-range-highlight');
+        });
         coordsToClear.forEach(c => cellDOMs[c].classList.remove('success-flash'));
 
         coordsToClear.forEach(c => cellDOMs[c].classList.add('exploding'));
@@ -291,10 +529,11 @@ async function placeAndCheck(x, y, char) {
             seFirework.play().catch(e => console.log("SE再生エラー:", e));
         }
         
-        coordsToClear.forEach(c => {
+        coordsArray.forEach((c, idx) => {
             const [cx, cy] = c.split(',').map(Number);
             createParticles(cx, cy);
-            damageNearbyEnemies(cx, cy);
+            // ダメージ処理も同様に、ライン爆発は1回だけにする
+            damageNearbyEnemies(cx, cy, idx > 0);
 
             delete state.grid[c];
             const cell = cellDOMs[c];
@@ -303,6 +542,20 @@ async function placeAndCheck(x, y, char) {
         });
 
         refreshHighlights();
+        
+        // 熟語完成時のランプ処理
+        if (state.isPowerUpActive) {
+            // パワーアップ中はランプを減らす（カウントダウン）
+            state.lampCount = Math.max(0, state.lampCount - foundWords.length);
+            if (state.lampCount <= 0) {
+                state.isPowerUpActive = false;
+                state.powerUps = { explosionRange: 1, isCross: false, isDiagonal: false };
+            }
+        } else {
+            // 通常時はランプを増やす（チャージ）
+            state.lampCount = Math.min(5, state.lampCount + foundWords.length);
+        }
+        updateLampsUI();
         
         setTimeout(() => {
             const uniqueWords = [...new Set(foundWords)];

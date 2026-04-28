@@ -17,6 +17,9 @@ function loadStage(index) {
     state.currentStage = index;
     state.grid = {};
     state.enemies = {};
+    state.lampCount = 0;
+    state.powerUps = { explosionRange: 1, isCross: false, isDiagonal: false };
+    state.isPowerUpActive = false;
     
     Object.keys(cellDOMs).forEach(key => {
         const cell = cellDOMs[key];
@@ -105,6 +108,7 @@ function init() {
 
     setupDeck();
     initGridDOM();
+    initLampsUI();
     
     resetView();
     fillHand();

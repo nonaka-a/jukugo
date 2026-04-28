@@ -25,7 +25,15 @@ const state = {
     enemies: {},
     difficulty: 'normal',
     bgmIndex: 0,
-    history: []
+    history: [],
+    lampCount: 0,
+    powerUps: {
+        explosionRange: 1,
+        isCross: false,
+        isDiagonal: false
+    },
+    isRouletteActive: false,
+    isPowerUpActive: false
 };
 
 // --- BGM・システム制御 ---

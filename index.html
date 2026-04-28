@@ -25,6 +25,8 @@
 
     <div id="stats-container" style="display:none;">
         <div>ステージ: <span id="stage-val">1</span></div>
+        <div id="lamp-container" class="lamp-container"></div>
+        <div id="powerup-label" style="color: #d63031; font-weight: 900; font-size: 1.2em; margin-left: 10px;"></div>
         <div>のこり敵: <span id="enemy-val">0</span></div>
     </div>
     
@@ -78,6 +80,22 @@
                 <h2>作った熟語</h2>
                 <div id="history-list"></div>
                 <button class="menu-btn" onclick="toggleHistory()">とじる</button>
+            </div>
+        </div>
+
+        <!-- Roulette Overlay -->
+        <div id="roulette-overlay" style="display:none;">
+            <div id="roulette-container">
+                <h2>ぱわーあっぷるーれっと！</h2>
+                <div class="slots">
+                    <div id="slot-upper" class="slot">
+                        <div class="slot-strip" id="strip-upper"></div>
+                    </div>
+                    <div id="slot-lower" class="slot">
+                        <div class="slot-strip" id="strip-lower"></div>
+                    </div>
+                </div>
+                <div class="roulette-guide">画面をクリックして止めて！</div>
             </div>
         </div>
 

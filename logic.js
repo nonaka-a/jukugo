@@ -111,38 +111,84 @@ function getLandingCell(startX, startY, dir) {
     }
 }
 
-function damageNearbyEnemies(x, y) {
-    for (let dy = -1; dy <= 1; dy++) {
-        for (let dx = -1; dx <= 1; dx++) {
-            if (dx === 0 && dy === 0) continue;
-            const ex = x + dx, ey = y + dy;
-            const key = `${ex},${ey}`;
-            
-            if (!state.grid[key]) continue;
+function getExplosionCoords(x, y) {
+    const coords = new Set();
+    const range = state.powerUps.explosionRange;
 
-            if (state.grid[key] === 'ENEMY' && state.enemies[key]) {
-                state.enemies[key].hp -= 1;
-                if (state.enemies[key].hp <= 0) {
-                    killEnemy(ex, ey);
-                } else {
+    // 基本範囲（花火パワーアップで2に拡張）
+    for (let dy = -range; dy <= range; dy++) {
+        for (let dx = -range; dx <= range; dx++) {
+            if (dx === 0 && dy === 0) continue;
+            coords.add(`${x + dx},${y + dy}`);
+        }
+    }
+    return Array.from(coords).filter(key => {
+        const [ex, ey] = key.split(',').map(Number);
+        return ex >= 0 && ex < GRID_SIZE && ey >= 0 && ey < GRID_SIZE;
+    });
+}
+
+function getPowerUpLines(x, y) {
+    const coords = new Set();
+    // 十字パワーアップ
+    if (state.powerUps.isCross) {
+        for (let i = 0; i < GRID_SIZE; i++) {
+            if (i !== x) coords.add(`${i},${y}`);
+            if (i !== y) coords.add(`${x},${i}`);
+        }
+    }
+    // 対角パワーアップ
+    if (state.powerUps.isDiagonal) {
+        for (let i = -GRID_SIZE; i <= GRID_SIZE; i++) {
+            if (i === 0) continue;
+            coords.add(`${x + i},${y + i}`);
+            coords.add(`${x + i},${y - i}`);
+        }
+    }
+    return Array.from(coords).filter(key => {
+        const [ex, ey] = key.split(',').map(Number);
+        return ex >= 0 && ex < GRID_SIZE && ey >= 0 && ey < GRID_SIZE;
+    });
+}
+
+function damageNearbyEnemies(x, y, skipLines = false) {
+    const coords = getExplosionCoords(x, y);
+    if (!skipLines) {
+        coords.push(...getPowerUpLines(x, y));
+    }
+    
+    // 重複除去
+    const uniqueCoords = Array.from(new Set(coords));
+
+    uniqueCoords.forEach(key => {
+        if (!state.grid[key]) return;
+
+        if (state.grid[key] === 'ENEMY' && state.enemies[key]) {
+            state.enemies[key].hp -= 1;
+            if (state.enemies[key].hp <= 0) {
+                const [ex, ey] = key.split(',').map(Number);
+                killEnemy(ex, ey);
+            } else {
+                if (cellDOMs[key]) {
                     cellDOMs[key].style.filter = 'brightness(2) contrast(2)';
                     setTimeout(() => {
                         if (cellDOMs[key]) cellDOMs[key].style.filter = '';
                     }, 200);
                 }
-            } else {
-                const isObstacle = state.grid[key] === 'OBSTACLE';
-                delete state.grid[key];
-                const cell = cellDOMs[key];
-                if (cell) {
-                    cell.textContent = '';
-                    cell.classList.remove('occupied', 'obstacle', 'exploding', 'fast', 'faster');
-                }
-                createParticles(ex, ey);
-                if (!isObstacle) state.score++;
             }
+        } else {
+            const isObstacle = state.grid[key] === 'OBSTACLE';
+            delete state.grid[key];
+            const cell = cellDOMs[key];
+            if (cell) {
+                cell.textContent = '';
+                cell.classList.remove('occupied', 'obstacle', 'exploding', 'fast', 'faster');
+            }
+            const [ex, ey] = key.split(',').map(Number);
+            createParticles(ex, ey);
+            if (!isObstacle && state.grid[key] !== 'ENEMY') state.score++;
         }
-    }
+    });
 }
 
 function killEnemy(x, y) {
