@@ -19,6 +19,12 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    /* 全体背景 BG.jpg の適用 */
+    background-image: url('assets/BG.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
     background-color: var(--bg-color);
     color: var(--text-color);
     margin: 0;
@@ -48,7 +54,6 @@ h1 {
     overflow: hidden;
 }
 
-/* 追加：サイズ管理用の親コンテナ */
 #main-area-container {
     display: flex;
     justify-content: center;
@@ -78,7 +83,6 @@ h1 {
     font-size: 1.1em;
 }
 
-/* ランプのスタイル */
 .lamp-container {
     display: flex;
     gap: 8px;
@@ -172,7 +176,6 @@ button#history-btn {
     border-bottom-color: #483d8b;
 }
 
-/* History Modal */
 #history-overlay {
     position: fixed;
     top: 0;
@@ -257,7 +260,6 @@ button#history-btn {
     background-color: #2d3436;
 }
 
-/* Title Screen */
 #title-screen {
     position: fixed;
     top: 0;
@@ -317,7 +319,6 @@ button#history-btn {
     transform: scale(1.05);
 }
 
-/* Settings Modal */
 #settings-overlay {
     position: fixed;
     top: 0;
@@ -370,7 +371,6 @@ button#history-btn {
     margin-top: 10px;
 }
 
-/* Stage Clear Modal */
 #stage-clear-overlay {
     position: fixed;
     top: 0;
@@ -415,12 +415,6 @@ button#history-btn {
     justify-content: center;
 }
 
-.clear-btn {
-    padding: 15px 30px;
-    font-size: 20px;
-    min-width: 150px;
-}
-
 .clear-btn.next {
     filter: hue-rotate(150deg);
 }
@@ -449,10 +443,13 @@ button#history-btn {
 #game-window {
     width: 630px;
     height: 630px;
-    border: 4px solid var(--panel-bg);
+    border: none; /* 枠線を削除 */
     border-radius: 15px;
     position: relative;
-    background-color: #eac88b;
+    background-image: url('assets/banmen.png');
+    background-size: cover;
+    background-position: center;
+    background-color: transparent; /* ベージュを透明に変更！ */
     transform-origin: top left;
 }
 
@@ -469,8 +466,6 @@ button#history-btn {
     box-shadow: 0 0 20px rgba(0,0,0,0.1);
 }
 
-
-
 .cell {
     width: 60px;
     height: 60px;
@@ -481,31 +476,43 @@ button#history-btn {
     align-items: center;
     font-size: 32px;
     font-weight: bold;
-    /* 色の変更を滑らかにする（フェードアウト用） */
     transition: background-color 0.6s ease-out, border-color 0.6s ease-out, box-shadow 0.6s ease-out;
 }
 
 /* =========================================
    5. Game States & Elements
    ========================================= */
-.cell.occupied {
-    background-color: #f28d35;
-    border-style: solid;
-    border-width: 6px;
-    border-top-color: #fdb863;
-    border-left-color: #f49f47;
-    border-right-color: #d97325;
-    border-bottom-color: #b85b17;
-    border-radius: 10px;
+.cell.occupied, .hand-tile, #shooting-tile, #launcher {
+    background-image: url('assets/Block.png') !important;
+    background-size: 100% 100% !important;
+    background-color: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
     color: white;
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+    /* 漢字の枠線（#587736）を追加 */
+    text-shadow: 
+        -2px -2px 0 #587736,  
+         2px -2px 0 #587736,
+        -2px  2px 0 #587736,
+         2px  2px 0 #587736;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 32px;
+    font-weight: bold;
+}
+
+.cell.occupied {
     animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    /* 配置時はパッと出すためにtransitionを無効化 */
     transition: none;
 }
 
 .cell.obstacle {
+    background-image: none !important;
     background-color: #bdc3c7 !important;
+    border: 6px solid !important;
     border-top-color: #e9ecef !important;
     border-left-color: #dee2e6 !important;
     border-right-color: #868e96 !important;
@@ -522,7 +529,6 @@ button#history-btn {
     background-position: center !important;
     background-repeat: no-repeat !important;
     border: none !important;
-    /* 出現時のpopIn(0.5s)の後に、息づかい(enemyBreathe)を無限ループさせる */
     animation: 
         popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards,
         enemyBreathe 0.4s ease-in-out infinite alternate 0.5s;
@@ -534,30 +540,30 @@ button#history-btn {
     100% { transform: scale(1.08); }
 }
 
-/* Launcher and Guide styles */
 #launcher {
     position: absolute;
     width: 60px;
     height: 60px;
     box-sizing: border-box;
-    background-color: #f28d35;
-    border-style: solid;
-    border-width: 6px;
-    border-top-color: #fdb863;
-    border-left-color: #f49f47;
-    border-right-color: #d97325;
-    border-bottom-color: #b85b17;
-    border-radius: 10px;
-    color: white;
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+    /* 背景色を強制的に透明、枠線も強制的に削除 */
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    background-image: url('assets/Block.png') !important;
+    background-size: 100% 100% !important;
+    z-index: 20;
+    pointer-events: none;
     display: flex;
     justify-content: center;
     align-items: center;
+    color: white;
     font-size: 32px;
     font-weight: bold;
-    z-index: 20;
-    pointer-events: none;
-    box-shadow: 0 0 15px rgba(242, 141, 53, 0.5);
+    text-shadow: 
+        -1px -1px 0 #587736,  
+         1px -1px 0 #587736,
+        -1px  1px 0 #587736,
+         1px  1px 0 #587736;
 }
 
 #guide-line {
@@ -573,21 +579,6 @@ button#history-btn {
     width: 60px;
     height: 60px;
     box-sizing: border-box;
-    background-color: #f28d35;
-    border-style: solid;
-    border-width: 6px;
-    border-top-color: #fdb863;
-    border-left-color: #f49f47;
-    border-right-color: #d97325;
-    border-bottom-color: #b85b17;
-    border-radius: 10px;
-    color: white;
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 32px;
-    font-weight: bold;
     z-index: 25;
     transition: transform 0.1s linear;
 }
@@ -602,7 +593,6 @@ button#history-btn {
     z-index: 100;
 }
 
-/* Jukugo Word Overlay */
 #word-overlay-container {
     position: absolute;
     top: 0;
@@ -644,32 +634,29 @@ button#history-btn {
     padding: 0;
     box-shadow: none;
     color: white;
-    font-size: 24px; /* 40px から 24px に縮小 */
+    font-size: 24px;
     font-weight: 900;
     line-height: 1.5;
     text-shadow: 0 0 15px #f28d35, 0 0 30px #d97325;
     opacity: 0;
     pointer-events: none;
     z-index: 1001;
-    
-    /* 縦書き設定 */
     writing-mode: vertical-rl;
     -webkit-writing-mode: vertical-rl;
     text-orientation: upright;
     -webkit-text-orientation: upright;
 }
 
-/* アニメーション適用（JS側で追加される） */
 .meaning-box.animate {
     animation: wordReveal 1.5s ease-out forwards;
 }
 
 .meaning-label {
     display: inline-block;
-    font-size: 16px; /* 20px から 16px に縮小 */
+    font-size: 16px;
     color: #ffdcae;
     font-weight: bold;
-    margin-left: 10px; /* 余白も少し詰める */
+    margin-left: 10px;
     border-left: 2px solid rgba(255, 255, 255, 0.5);
     padding-left: 6px;
     line-height: 1;
@@ -696,7 +683,6 @@ rt {
     100% { transform: scale(1.2); opacity: 0; filter: blur(10px); }
 }
 
-/* Status Highlighting */
 .cell.hint-highlight {
     animation: blink 0.8s infinite;
     z-index: 5;
@@ -723,7 +709,6 @@ rt {
     background-color: rgba(214, 48, 49, 0.15) !important;
     z-index: 50;
     box-shadow: 0 0 10px rgba(214, 48, 49, 0.2);
-    /* 出現時はパッと出す */
     transition: none;
 }
 
@@ -742,19 +727,6 @@ rt {
     animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
 }
 
-/* Optional Area Ownership */
-.cell.player-owner {
-    border-color: var(--primary-color) !important;
-    background-color: rgba(108, 92, 231, 0.1);
-    box-shadow: inset 0 0 8px rgba(108, 92, 231, 0.2);
-}
-
-.cell.cpu-owner {
-    border-color: var(--danger-color) !important;
-    background-color: rgba(214, 48, 49, 0.1);
-    box-shadow: inset 0 0 8px rgba(214, 48, 49, 0.2);
-}
-
 /* =========================================
    6. Player Hand Area
    ========================================= */
@@ -765,47 +737,28 @@ rt {
     border-radius: 20px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     display: flex;
-    flex-direction: column;  /* 1段目：手札、2段目：ボタン */
+    flex-direction: column;
     align-items: center;
     gap: 20px;
-    /* スケール管理されるため、親の幅（630px）に固定 */
     width: 630px;
     box-sizing: border-box;
 }
 
 .hand-container {
     display: flex;
-    flex-direction: row;     /* 必ず横に並べる */
+    flex-direction: row;
     flex-wrap: nowrap;
     justify-content: center;
     align-items: center;
     width: 100%;
-    gap: 10px;               /* ブロック間の隙間を固定 */
+    gap: 10px;
 }
 
 .hand-tile {
-    /* ステージ側のサイズ（60px）と完全に一致 */
     width: 60px;
     height: 60px;
-    flex: 0 0 60px;          /* 勝手に縮まないように固定 */
-    
+    flex: 0 0 60px;
     box-sizing: border-box;
-    background-color: #f28d35;
-    border-style: solid;
-    border-width: 6px;
-    border-top-color: #fdb863;
-    border-left-color: #f49f47;
-    border-right-color: #d97325;
-    border-bottom-color: #b85b17;
-    border-radius: 10px;
-    color: white;
-    text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    
-    font-size: 32px;
-    font-weight: bold;
     cursor: pointer;
     transition: transform 0.2s, filter 0.2s, width 0.6s, opacity 0.6s;
 }
@@ -823,12 +776,12 @@ rt {
 }
 
 .hand-tile.selected {
-    transform: translateY(-15px); /* 選択時に上に浮かせる */
-    box-shadow: 0 10px 25px rgba(242, 141, 53, 0.6);
+    transform: translateY(-15px);
+    filter: drop-shadow(0 10px 10px rgba(0,0,0,0.3));
 }
 
 .shuffle-btn {
-    width: 300px;            /* ボタンも固定幅で押しやすく */
+    width: 300px;
     height: 60px;
     font-size: 24px;
 }
@@ -957,7 +910,6 @@ rt {
     transition: transform 0.2s, opacity 0.2s;
 }
 
-/* 中央に来た文字を強調するためのガイド（擬似要素） */
 .slot::before {
     content: '';
     position: absolute;

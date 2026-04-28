@@ -324,7 +324,6 @@ function updateLauncherPosition(clientX, clientY) {
     const x = (clientX - rect.left) / scale;
     const y = (clientY - rect.top) / scale;
     
-    // GAME_SIZEを使用
     const GAME_W = GAME_SIZE;
     const GAME_H = GAME_SIZE;
     const gx = (GAME_W - GRID_SIZE * TILE_SIZE) / 2;
@@ -350,6 +349,13 @@ function updateLauncherPosition(clientX, clientY) {
     if (dir && edgeX >= 0 && edgeX < GRID_SIZE && edgeY >= 0 && edgeY < GRID_SIZE) {
         const char = state.playerHand[state.selectedHandIndex] || '';
         state.launcher = { x: edgeX, y: edgeY, dir, char: char };
+        
+        // --- 強制リセット処理を追加 ---
+        launcherElement.style.backgroundColor = 'transparent';
+        launcherElement.style.border = 'none';
+        launcherElement.style.boxShadow = 'none';
+        // ---------------------------
+        
         updateLauncherUI(gx, gy);
     } else {
         launcherElement.style.display = 'none';
@@ -360,6 +366,7 @@ function updateLauncherPosition(clientX, clientY) {
 function updateLauncherUI(gx, gy) {
     launcherElement.style.display = 'flex';
     launcherElement.textContent = state.launcher.char;
+    launcherElement.style.backgroundColor = 'transparent'; // 追加：背景を透明にする
     
     const lX = gx + state.launcher.x * TILE_SIZE;
     const lY = gy + state.launcher.y * TILE_SIZE;
