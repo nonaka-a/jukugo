@@ -897,7 +897,13 @@ rt {
     align-items: center;
     font-size: 60px;
     font-weight: 900;
-    color: #2d3436;
+    color: white;
+    /* 漢字の枠線（パズルタイルと統一） */
+    text-shadow: 
+        -2px -2px 0 #4d1b18,    
+         2px -2px 0 #4d1b18,  
+        -2px  2px 0 #4d1b18,  
+         2px  2px 0 #4d1b18;
     transition: transform 0.2s, opacity 0.2s;
 }
 
