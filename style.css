@@ -482,20 +482,21 @@ button#history-btn {
 /* =========================================
    5. Game States & Elements
    ========================================= */
+
+/* ブロック共通：形状、枠線、フォント設定 */
 .cell.occupied, .hand-tile, #shooting-tile, #launcher {
-    background-image: url('assets/Block.png') !important;
     background-size: 100% 100% !important;
     background-color: transparent !important;
     border: none !important;
     border-radius: 0 !important;
     box-shadow: none !important;
     color: white;
-    /* 漢字の枠線（#587736）を追加 */
+    /* 漢字の枠線（太めの一致） */
     text-shadow: 
-        -2px -2px 0 #587736,  
-         2px -2px 0 #587736,
-        -2px  2px 0 #587736,
-         2px  2px 0 #587736;
+        -2px -2px 0 #4d1b18,    
+         2px -2px 0 #4d1b18,  
+        -2px  2px 0 #4d1b18,  
+         2px  2px 0 #4d1b18;
 
     display: flex;
     justify-content: center;
@@ -504,22 +505,29 @@ button#history-btn {
     font-weight: bold;
 }
 
+/* デフォルト：Block.png（通常の漢字） */
+.cell.occupied, .hand-tile, #shooting-tile, #launcher {
+    background-image: url('assets/Block.png') !important;
+}
+
+/* 特別な漢字：Y_Block.png（ルーレット対象文字） */
+.cell.occupied.y-block, .hand-tile.y-block, #shooting-tile.y-block, #launcher.y-block {
+    background-image: url('assets/Y_Block.png') !important;
+}
+
+/* おじゃまブロック：J_Block.png */
+.cell.occupied.obstacle {
+    background-image: url('assets/J_Block.png') !important;
+    background-size: 100% 100% !important;
+    background-color: transparent !important;
+    border: none !important;
+    color: transparent !important; /* 文字を表示しない */
+    text-shadow: none !important;
+}
+
 .cell.occupied {
     animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     transition: none;
-}
-
-.cell.obstacle {
-    background-image: none !important;
-    background-color: #bdc3c7 !important;
-    border: 6px solid !important;
-    border-top-color: #e9ecef !important;
-    border-left-color: #dee2e6 !important;
-    border-right-color: #868e96 !important;
-    border-bottom-color: #495057 !important;
-    color: transparent !important;
-    text-shadow: none !important;
-    animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .cell.enemy {
@@ -545,25 +553,8 @@ button#history-btn {
     width: 60px;
     height: 60px;
     box-sizing: border-box;
-    /* 背景色を強制的に透明、枠線も強制的に削除 */
-    background-color: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    background-image: url('assets/Block.png') !important;
-    background-size: 100% 100% !important;
     z-index: 20;
     pointer-events: none;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: white;
-    font-size: 32px;
-    font-weight: bold;
-    text-shadow: 
-        -1px -1px 0 #587736,  
-         1px -1px 0 #587736,
-        -1px  1px 0 #587736,
-         1px  1px 0 #587736;
 }
 
 #guide-line {

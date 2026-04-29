@@ -121,6 +121,12 @@ function initStrip(id, el) {
         data.forEach(char => {
             const span = document.createElement('div');
             span.className = 'slot-char';
+            // Y_Blockの判定とスタイルの付与
+            if (["花", "火", "爆", "発", "十", "字", "対", "角"].includes(char)) {
+                span.classList.add('hand-tile', 'y-block'); 
+            } else {
+                span.classList.add('hand-tile');
+            }
             span.textContent = char;
             el.appendChild(span);
         });
@@ -366,8 +372,15 @@ function updateLauncherPosition(clientX, clientY) {
 function updateLauncherUI(gx, gy) {
     launcherElement.style.display = 'flex';
     launcherElement.textContent = state.launcher.char;
-    launcherElement.style.backgroundColor = 'transparent'; // 追加：背景を透明にする
     
+    // 特別な漢字の判定
+    const specialKanji = ["花", "火", "爆", "発", "十", "字", "対", "角"];
+    if (specialKanji.includes(state.launcher.char)) {
+        launcherElement.classList.add('y-block');
+    } else {
+        launcherElement.classList.remove('y-block');
+    }
+
     const lX = gx + state.launcher.x * TILE_SIZE;
     const lY = gy + state.launcher.y * TILE_SIZE;
     
@@ -469,6 +482,10 @@ async function shoot(startX, startY, dir, char) {
     const shooter = document.createElement('div');
     shooter.id = 'shooting-tile';
     shooter.textContent = char;
+    // Y_Blockの判定を追加
+    if (["花", "火", "爆", "発", "十", "字", "対", "角"].includes(char)) {
+        shooter.classList.add('y-block');
+    }
     gameWindow.appendChild(shooter);
 
     // GAME_SIZEを使用
@@ -512,6 +529,12 @@ async function placeAndCheck(x, y, char) {
     const cell = cellDOMs[`${x},${y}`];
     cell.textContent = char;
     cell.classList.add('occupied');
+    // Y_Blockの判定を追加
+    if (["花", "火", "爆", "発", "十", "字", "対", "角"].includes(char)) {
+        cell.classList.add('y-block');
+    } else {
+        cell.classList.remove('y-block');
+    }
 
     const h = validateLine(x, y, true);
     const v = validateLine(x, y, false);
@@ -710,6 +733,12 @@ function spawnRandomTile() {
     const cell = cellDOMs[`${target.x},${target.y}`];
     cell.textContent = char;
     cell.classList.add('occupied');
+    // Y_Blockの判定を追加
+    if (["花", "火", "爆", "発", "十", "字", "対", "角"].includes(char)) {
+        cell.classList.add('y-block');
+    } else {
+        cell.classList.remove('y-block');
+    }
     refreshHighlights();
 }
 
@@ -730,6 +759,10 @@ function renderHand() {
         const tile = document.createElement('div');
         tile.className = 'hand-tile';
         if (state.selectedHandIndex === index) tile.classList.add('selected');
+        // Y_Blockの判定を追加
+        if (["花", "火", "爆", "発", "十", "字", "対", "角"].includes(char)) {
+            tile.classList.add('y-block');
+        }
         tile.textContent = char;
         tile.onclick = () => {
             state.selectedHandIndex = index;
@@ -831,6 +864,12 @@ function placeTile(x, y, char) {
     const cell = cellDOMs[`${x},${y}`];
     cell.textContent = char;
     cell.classList.add('occupied');
+    // Y_Blockの判定を追加
+    if (["花", "火", "爆", "発", "十", "字", "対", "角"].includes(char)) {
+        cell.classList.add('y-block');
+    } else {
+        cell.classList.remove('y-block');
+    }
 }
 
 function toggleHistory() {
