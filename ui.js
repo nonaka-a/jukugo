@@ -857,6 +857,39 @@ function resetView() {
     const translateY = (GAME_SIZE - (GRID_SIZE * TILE_SIZE)) / 2; // GAME_SIZEに変更
     gridElement.style.left = `${translateX}px`;
     gridElement.style.top = `${translateY}px`;
+
+    // --- 修正：手札エリア全体をアスペクト比を維持したまま幅いっぱいに拡大し、タイルの大きさを補正する ---
+    const appContainer = document.getElementById('app-container');
+    const soloHandArea = document.getElementById('solo-hand-area');
+    if (appContainer && soloHandArea) {
+        const appWidth = appContainer.getBoundingClientRect().width;
+        const targetLogicalWidth = (appWidth / scale) + 2; 
+
+        soloHandArea.style.width = `${GAME_W}px`;
+        const handScale = targetLogicalWidth / GAME_W;
+
+        soloHandArea.style.transform = `scale(${handScale})`;
+        soloHandArea.style.transformOrigin = 'top center';
+        
+        const rectHeight = soloHandArea.offsetHeight || 180;
+        const extraHeight = rectHeight * (handScale - 1);
+        
+        soloHandArea.style.margin = '20px 0 0 0';
+        soloHandArea.style.marginBottom = `${extraHeight}px`;
+        soloHandArea.style.alignSelf = 'center';
+        soloHandArea.style.position = 'static';
+
+        // --- 追加：手札の漢字ブロックの大きさをステージと同じに見えるよう補正 ---
+        const tiles = soloHandArea.querySelectorAll('.hand-tile');
+        const inverseScale = 1 / handScale; // 拡大分を打ち消す倍率
+        tiles.forEach(tile => {
+            // スケールを適用。transformで小さくすることで見た目の大きさを合わせる
+            tile.style.transform = `scale(${inverseScale})`;
+            // 選択中のアニメーション(translateY)と競合しないよう、selectedクラスがある場合の処理はrenderHandに任せるか、
+            // ここではtransformOriginをcenterにしてサイズだけを整える
+            tile.style.transformOrigin = 'center center';
+        });
+    }
 }
 
 function placeTile(x, y, char) {

@@ -17,21 +17,33 @@
 body {
     font-family: 'Helvetica Neue', Arial, sans-serif;
     display: flex;
-    flex-direction: column;
+    justify-content: center;
     align-items: center;
-    /* 全体背景 BG.jpg の適用 */
-    background-image: url('assets/BG.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-color: var(--bg-color);
+    background-color: #000;
     color: var(--text-color);
     margin: 0;
-    padding: 5px;
+    padding: 0;
     overflow: hidden;
     width: 100vw;
     height: 100dvh;
+    box-sizing: border-box;
+}
+
+#app-container {
+    aspect-ratio: 3 / 4;
+    width: 100%;
+    max-width: calc(100dvh * 3 / 4);
+    height: 100%;
+    background-image: url('assets/BG.jpg');
+    padding: 0;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* 戻す：基本は中央揃え */
     box-sizing: border-box;
 }
 
@@ -51,7 +63,7 @@ h1 {
     justify-content: center;
     flex: 1;
     width: 100%;
-    overflow: hidden;
+    overflow: visible; /* hiddenからvisibleへ */
 }
 
 #main-area-container {
@@ -59,12 +71,14 @@ h1 {
     justify-content: center;
     align-items: flex-start;
     overflow: visible;
+    width: 100%; /* 横幅いっぱいに */
 }
 
 #main-area {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: center; /* 戻す：基本は中央揃え */
+    width: 100%;
 }
 
 #stats-container {
@@ -177,7 +191,7 @@ button#history-btn {
 }
 
 #history-overlay {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
@@ -261,7 +275,7 @@ button#history-btn {
 }
 
 #title-screen {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
@@ -320,7 +334,7 @@ button#history-btn {
 }
 
 #settings-overlay {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
@@ -372,7 +386,7 @@ button#history-btn {
 }
 
 #stage-clear-overlay {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
@@ -723,15 +737,18 @@ rt {
    ========================================= */
 #solo-hand-area {
     margin-top: 20px;
-    background: var(--panel-bg);
+    background-image: url('assets/tehuda.png');
+    background-size: 100% 100%;
+    background-color: transparent;
     padding: 20px;
-    border-radius: 20px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 20px;
-    width: 630px;
+    /* 修正：幅はJSで制御するため、余計な設定を削除 */
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
     box-sizing: border-box;
 }
 
@@ -739,19 +756,19 @@ rt {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
-    justify-content: center;
+    justify-content: center; /* 中央に寄せる */
     align-items: center;
     width: 100%;
-    gap: 10px;
+    gap: 2px; /* 間隔をギュッと詰める（お好みで0〜5px程度に調整してください） */
 }
 
 .hand-tile {
     width: 60px;
     height: 60px;
-    flex: 0 0 60px;
+    flex: 0 0 60px; /* 幅を60pxで固定して縮ませない */
     box-sizing: border-box;
     cursor: pointer;
-    transition: transform 0.2s, filter 0.2s, width 0.6s, opacity 0.6s;
+    transition: transform 0.2s, filter 0.2s, width 0.6s, opacity 0.6s, margin-top 0.2s;
 }
 
 .hand-tile.removing, .hand-tile.adding {
@@ -767,14 +784,29 @@ rt {
 }
 
 .hand-tile.selected {
-    transform: translateY(-15px);
+    /* transformを上書きせず、marginやfilterで浮き上がりを表現する */
+    margin-top: -15px;
     filter: drop-shadow(0 10px 10px rgba(0,0,0,0.3));
 }
-
 .shuffle-btn {
     width: 300px;
     height: 60px;
     font-size: 24px;
+    background-image: url('assets/S_Block.png');
+    background-size: 100% 100%;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    color: white;
+    text-shadow: 
+        -2px -2px 0 #4d1b18,    
+         2px -2px 0 #4d1b18,  
+        -2px  2px 0 #4d1b18,  
+         2px  2px 0 #4d1b18 !important;
+}
+
+.shuffle-btn:active {
+    border-width: 0 !important;
 }
 
 /* =========================================
@@ -828,7 +860,7 @@ rt {
 
 /* Roulette Styles */
 #roulette-overlay {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     width: 100%;
