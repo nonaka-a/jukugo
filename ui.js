@@ -37,7 +37,8 @@ function updateStatsUI() {
     const stageEl = document.getElementById('stage-val');
     const enemyEl = document.getElementById('enemy-val');
     if (stageEl) stageEl.textContent = state.currentStage + 1;
-    if (enemyEl) enemyEl.textContent = Object.keys(state.enemies).length;
+    const uniqueEnemies = new Set(Object.values(state.enemies));
+    if (enemyEl) enemyEl.textContent = uniqueEnemies.size;
     updateLampsUI();
 }
 
@@ -559,7 +560,10 @@ async function placeAndCheck(x, y, char) {
         });
 
         allExplosionCoords.forEach(c => {
-            if (cellDOMs[c]) cellDOMs[c].classList.add('power-range-highlight');
+            // 敵マスにハイライトを当てるとSafari等でCSSアニメーションがリセットされる不具合があるため除外
+            if (cellDOMs[c] && state.grid[c] !== 'ENEMY') {
+                cellDOMs[c].classList.add('power-range-highlight');
+            }
         });
 
         coordsToClear.forEach(c => cellDOMs[c].classList.add('success-flash'));
@@ -742,6 +746,34 @@ function spawnRandomTile() {
         cell.classList.add('y-block');
     } else {
         cell.classList.remove('y-block');
+    }
+    refreshHighlights();
+}
+
+function spawnBossCounterObstacles(count, type) {
+    for (let i = 0; i < count; i++) {
+        const emptyCells = [];
+        for (let y = 0; y < GRID_SIZE; y++) {
+            for (let x = 0; x < GRID_SIZE; x++) {
+                if (!state.grid[`${x},${y}`]) emptyCells.push({x, y});
+            }
+        }
+        if (emptyCells.length === 0) break;
+        
+        const target = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+        const key = `${target.x},${target.y}`;
+        const cell = cellDOMs[key];
+        if (!cell) continue;
+
+        state.grid[key] = (type === 'J2') ? 'OBSTACLE_J2' : 'OBSTACLE';
+        cell.textContent = '■';
+        cell.classList.add('occupied');
+        cell.classList.add(type === 'J2' ? 'obstacle-j2' : 'obstacle');
+        
+        // 出現アニメーション
+        cell.style.animation = 'none';
+        void cell.offsetWidth;
+        cell.style.animation = 'popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
     }
     refreshHighlights();
 }

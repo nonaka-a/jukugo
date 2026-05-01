@@ -182,10 +182,21 @@ function damageNearbyEnemies(x, y, skipLines = false) {
                 if (enemy.type === 'boss') {
                     const rootCell = cellDOMs[enemy.rootKey];
                     if (rootCell) {
-                        rootCell.classList.remove('boss-hit-flash');
-                        void rootCell.offsetWidth; // 強制リフロー
-                        rootCell.classList.add('boss-hit-flash');
-                        setTimeout(() => { if (rootCell) rootCell.classList.remove('boss-hit-flash'); }, 300);
+                        // クラスの付け替えはアニメーションをリセットしてしまうため、filterのみを操作する
+                        rootCell.style.transition = 'filter 0.1s ease-out';
+                        rootCell.style.filter = 'brightness(3) contrast(1.5)';
+                        setTimeout(() => { 
+                            if (rootCell) rootCell.style.filter = 'brightness(1) contrast(1)';
+                        }, 300);
+                    }
+                    
+                    // カウンター攻撃：おじゃまブロック配置
+                    if (typeof spawnBossCounterObstacles === 'function') {
+                        if (enemy.asset === 'toge_dai') {
+                            spawnBossCounterObstacles(2, 'J1');
+                        } else if (enemy.asset === 'toge_toku') {
+                            spawnBossCounterObstacles(2, 'J2');
+                        }
                     }
                 } else if (cellDOMs[key]) {
                     cellDOMs[key].style.filter = 'brightness(2) contrast(2)';
@@ -196,7 +207,7 @@ function damageNearbyEnemies(x, y, skipLines = false) {
             }
         } else {
             const isHardObstacle = state.grid[key] === 'OBSTACLE_HARD';
-            const isObstacle = state.grid[key] === 'OBSTACLE' || state.grid[key] === '■';
+            const isObstacle = state.grid[key] === 'OBSTACLE' || state.grid[key] === 'OBSTACLE_J2' || state.grid[key] === '■';
 
             if (isHardObstacle) {
                 // 硬い障害物は通常障害物に変化

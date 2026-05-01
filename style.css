@@ -23,6 +23,7 @@ body {
     color: var(--text-color);
     margin: 0;
     padding: 0;
+    touch-action: manipulation;
     overflow: hidden;
     width: 100vw;
     height: 100dvh;
@@ -633,13 +634,21 @@ button#settings-btn:active, button#history-btn:active {
     background-image: url('assets/Y_Block.png') !important;
 }
 
-/* おじゃまブロック：J_Block.png */
+/* おじゃまブロック：J_Block.png / J_Block2.png */
 .cell.occupied.obstacle {
     background-image: url('assets/J_Block.png') !important;
     background-size: 100% 100% !important;
     background-color: transparent !important;
     border: none !important;
     color: transparent !important; /* 文字を表示しない */
+    text-shadow: none !important;
+}
+.cell.occupied.obstacle-j2 {
+    background-image: url('assets/J_Block2.png') !important;
+    background-size: 100% 100% !important;
+    background-color: transparent !important;
+    border: none !important;
+    color: transparent !important;
     text-shadow: none !important;
 }
 
@@ -691,15 +700,16 @@ button#settings-btn:active, button#history-btn:active {
 .cell.boss-dai-root::after {
     content: "";
     position: absolute;
-    top: 5%;
-    left: 5%;
-    width: 190%; /* 2マス分強 */
-    height: 190%;
+    top: 0;
+    left: 0;
+    width: 200%; /* 2マス分ぴったり */
+    height: 200%;
     background-image: url('assets/toge_dai.png');
-    background-size: contain;
+    background-size: 95%; /* 内側に少し余白 */
     background-position: center;
     background-repeat: no-repeat;
     pointer-events: none;
+    transform-origin: center center;
     animation: bossBreathe 1s ease-in-out infinite alternate;
 }
 
@@ -710,31 +720,22 @@ button#settings-btn:active, button#history-btn:active {
 .cell.boss-toku-root::after {
     content: "";
     position: absolute;
-    top: 5%;
-    left: 5%;
-    width: 290%; /* 3マス分強 */
-    height: 290%;
+    top: 0;
+    left: 0;
+    width: 300%; /* 3マス分ぴったり */
+    height: 300%;
     background-image: url('assets/toge_toku.png');
-    background-size: contain;
+    background-size: 95%;
     background-position: center;
     background-repeat: no-repeat;
     pointer-events: none;
+    transform-origin: center center;
     animation: bossBreathe 1.2s ease-in-out infinite alternate;
 }
 
 @keyframes bossBreathe {
-    0% { transform: scale(1); }
-    100% { transform: scale(1.04); }
-}
-
-/* ボスのダメージ演出 */
-.boss-hit-flash::after {
-    animation: bossHitFlash 0.3s ease-out !important;
-}
-
-@keyframes bossHitFlash {
-    0% { filter: brightness(5) contrast(2); transform: scale(1.1); }
-    100% { filter: brightness(1) contrast(1); transform: scale(1); }
+    0% { transform: scale(1) translateZ(0); }
+    100% { transform: scale(1.04) translateZ(0); }
 }
 
 .cell.boss-part {

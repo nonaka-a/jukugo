@@ -11,9 +11,17 @@ const STAGES = [
     { enemyCount: 2, obstacles: [], bosses: [{x: 3, y: 3, size: 2, hp: 6, asset: 'toge_dai'}] }, // STAGE 5 BOSS (HP:6)
     { enemyCount: 10, obstacles: [{x: 2, y: 2, hp: 2}, {x: 5, y: 5, hp: 2}], movingEnemies: 4 }, // STAGE 6
     { enemyCount: 12, obstacles: [{x: 1, y: 1, hp: 2}, {x: 6, y: 1, hp: 2}, {x: 1, y: 6, hp: 2}, {x: 6, y: 6, hp: 2}], movingEnemies: 6 }, // STAGE 7
-    { enemyCount: 4, obstacles: [], bosses: [{x: 1, y: 1, size: 2, hp: 6, asset: 'toge_dai'}, {x: 5, y: 5, size: 2, hp: 6, asset: 'toge_dai'}], movingEnemies: 2 }, // STAGE 8
+    { enemyCount: 8, obstacles: [], bosses: [{x: 1, y: 1, size: 2, hp: 6, asset: 'toge_dai'}, {x: 5, y: 5, size: 2, hp: 6, asset: 'toge_dai'}], movingEnemies: 2 }, // STAGE 8
     { enemyCount: 15, obstacles: [{x: 3, y: 0, hp: 2}, {x: 4, y: 0, hp: 2}, {x: 3, y: 7, hp: 2}, {x: 4, y: 7, hp: 2}], movingEnemies: 10 }, // STAGE 9
-    { enemyCount: 2, obstacles: [], bosses: [{x: 2, y: 2, size: 3, hp: 12, asset: 'toge_toku'}], movingEnemies: 2 } // STAGE 10 FINAL BOSS (HP:12)
+    { enemyCount: 4, obstacles: [
+        {x: 0, y: 7, type: 'j2'}, {x: 7, y: 0, type: 'j2'}, 
+        {x: 3, y: 0, type: 'j2'}, {x: 4, y: 0, type: 'j2'},
+        {x: 3, y: 7, type: 'j2'}, {x: 4, y: 7, type: 'j2'}
+    ], bosses: [
+        {x: 2, y: 2, size: 3, hp: 12, asset: 'toge_toku'},
+        {x: 0, y: 0, size: 2, hp: 6, asset: 'toge_dai'},
+        {x: 6, y: 6, size: 2, hp: 6, asset: 'toge_dai'}
+    ], movingEnemies: 4 } // STAGE 10 FINAL BOSS (HP:12 + HP:6x2)
 ];
 
 const hubKanji = "用的力学不内生物地人動中定行合通化一自作意大理対外会成出事体電目国日分野気法実名面性入文和度最路感花火爆発札十字角".split("");

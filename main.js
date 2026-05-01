@@ -49,11 +49,17 @@ function loadStage(index) {
         stage.obstacles.forEach(o => {
             const key = `${o.x},${o.y}`;
             const hp = o.hp || 1;
-            state.grid[key] = (hp > 1) ? 'OBSTACLE_HARD' : 'OBSTACLE';
             const cell = cellDOMs[key];
+            if (!cell) return;
+
+            if (o.type === 'j2') {
+                state.grid[key] = 'OBSTACLE_J2';
+                cell.classList.add('occupied', 'obstacle-j2');
+            } else {
+                state.grid[key] = (hp > 1) ? 'OBSTACLE_HARD' : 'OBSTACLE';
+                cell.classList.add('occupied', hp > 1 ? 'obstacle-hard' : 'obstacle');
+            }
             cell.textContent = '■';
-            cell.classList.add('occupied');
-            cell.classList.add(hp > 1 ? 'obstacle-hard' : 'obstacle');
         });
     }
 
