@@ -79,7 +79,7 @@ function loadStage(index) {
         if (!state.grid[key]) {
             state.grid[key] = 'ENEMY';
             const isMoving = enemiesPlaced >= normalCount;
-            state.enemies[key] = { hp: isMoving ? 2 : 1, type: isMoving ? 'moving' : 'normal' };
+            state.enemies[key] = { hp: 1, type: isMoving ? 'moving' : 'normal' };
             const cell = cellDOMs[key];
             cell.classList.add(isMoving ? 'enemy-i' : 'enemy');
             enemiesPlaced++;
@@ -104,8 +104,8 @@ function loadStage(index) {
         });
     }
 
-    if (movingCount > 0) {
-        state.moveInterval = setInterval(moveMovingEnemies, 20000);
+    if (stage.movingEnemies > 0) {
+        state.moveInterval = setInterval(moveMovingEnemies, 10000);
     }
     
     const initialCount = 8;
