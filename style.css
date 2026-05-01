@@ -5,7 +5,7 @@
     --primary-color: #6c5ce7;
     --secondary-color: #a29bfe;
     --bg-color: #f0f3f7;
-    --panel-bg: #ffffff;
+    --panel-bg: #fdfaf0;
     --text-color: #2d3436;
     --accent-color: #fdcb6e;
     --danger-color: #d63031;
@@ -179,15 +179,39 @@ button#settings-btn, button#history-btn {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 30px;
+    font-size: 32px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    position: absolute;
+    top: 10px;
+    z-index: 100;
+}
+
+button#settings-btn {
+    right: 10px;
+    background-image: url('assets/Block.png');
+}
+
+button#settings-btn img {
+    width: 35px;
+    height: 35px;
 }
 
 button#history-btn {
-    background-color: #6c5ce7;
-    border-top-color: #a29bfe;
-    border-left-color: #8375e9;
-    border-right-color: #5b4dbd;
-    border-bottom-color: #483d8b;
+    left: 10px;
+    background-image: url('assets/Y_Block.png');
+    color: #4e342e;
+    text-shadow: 1px 1px 0 rgba(255,255,255,0.7);
+    padding-bottom: 4px;
+}
+
+button#settings-btn:active, button#history-btn:active {
+    transform: scale(0.95);
+    background-color: transparent;
 }
 
 #history-overlay {
@@ -208,20 +232,32 @@ button#history-btn {
     max-width: 500px;
     height: 70%;
     background-color: #fdfaf0;
-    border: 6px solid #b85b17;
-    border-radius: 20px;
-    padding: 20px;
+    background-image: 
+        linear-gradient(rgba(253, 250, 240, 0.55), rgba(253, 250, 240, 0.55)),
+        url('assets/BG.jpg'),
+        radial-gradient(#eac88b 0.6px, transparent 0.6px);
+    background-size: cover, cover, 15px 15px;
+    background-position: center;
+    border: 8px solid #b85b17;
+    outline: 4px solid #eac88b;
+    outline-offset: -12px;
+    border-radius: 10px;
+    padding: 30px;
     display: flex;
     flex-direction: column;
     color: #4e342e;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+    position: relative;
 }
 
 #history-modal h2 {
     text-align: center;
     margin-top: 0;
     color: #b85b17;
-    border-bottom: 2px solid #eac88b;
-    padding-bottom: 10px;
+    border-bottom: 3px double #eac88b;
+    padding-bottom: 15px;
+    font-size: 32px;
+    text-shadow: 1px 1px 0px #fff;
 }
 
 #history-list {
@@ -237,14 +273,16 @@ button#history-btn {
     background: white;
     padding: 15px;
     border-radius: 10px;
-    border-left: 5px solid #f28d35;
+    border-left: 8px solid #f28d35;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    background-image: linear-gradient(to right, #fff, #fdfaf0);
 }
 
 .history-word {
     font-size: 24px;
     font-weight: bold;
     margin-bottom: 5px;
+    color: #b85b17;
 }
 
 .history-reading {
@@ -260,18 +298,31 @@ button#history-btn {
 
 .menu-btn {
     width: 100%;
-    padding: 12px;
+    padding: 15px;
     margin-top: 10px;
     border: none;
-    border-radius: 8px;
-    background-color: #636e72;
+    border-radius: 12px;
+    background-color: #f28d35;
+    border-top: 4px solid #fdb863;
+    border-left: 4px solid #f49f47;
+    border-right: 4px solid #d97325;
+    border-bottom: 4px solid #b85b17;
     color: white;
     font-weight: bold;
+    font-size: 18px;
     cursor: pointer;
+    box-shadow: 0 4px 0 rgba(0,0,0,0.2);
+    transition: all 0.1s;
 }
 
 .menu-btn:hover {
-    background-color: #2d3436;
+    filter: brightness(1.1);
+    transform: translateY(-2px);
+}
+
+.menu-btn:active {
+    transform: translateY(2px);
+    box-shadow: none;
 }
 
 #title-screen {
@@ -347,12 +398,20 @@ button#history-btn {
 }
 
 #settings-modal {
-    width: 300px;
-    background-color: #eac88b;
-    border: 6px solid #b85b17;
-    border-radius: 20px;
-    padding: 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    width: 320px;
+    background-color: #fdfaf0;
+    background-image: 
+        linear-gradient(rgba(253, 250, 240, 0.55), rgba(253, 250, 240, 0.55)),
+        url('assets/BG.jpg'),
+        radial-gradient(#eac88b 0.6px, transparent 0.6px);
+    background-size: cover, cover, 15px 15px;
+    background-position: center;
+    border: 8px solid #b85b17;
+    outline: 4px solid #eac88b;
+    outline-offset: -12px;
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -362,7 +421,10 @@ button#history-btn {
 #settings-modal h2 {
     margin: 0;
     text-align: center;
-    font-size: 24px;
+    font-size: 28px;
+    color: #b85b17;
+    border-bottom: 2px solid #eac88b;
+    padding-bottom: 10px;
 }
 
 .setting-item {
@@ -399,12 +461,20 @@ button#history-btn {
 }
 
 #stage-clear-modal {
-    width: 400px;
-    background-color: #eac88b;
-    border: 8px solid #b85b17;
-    border-radius: 30px;
-    padding: 40px 20px;
-    box-shadow: 0 0 50px rgba(0,0,0,0.5);
+    width: 420px;
+    background-color: #fdfaf0;
+    background-image: 
+        linear-gradient(rgba(253, 250, 240, 0.55), rgba(253, 250, 240, 0.55)),
+        url('assets/BG.jpg'),
+        radial-gradient(#eac88b 0.6px, transparent 0.6px);
+    background-size: cover, cover, 15px 15px;
+    background-position: center;
+    border: 12px solid #b85b17;
+    outline: 6px solid #eac88b;
+    outline-offset: -18px;
+    border-radius: 15px;
+    padding: 40px 30px;
+    box-shadow: 0 0 60px rgba(0,0,0,0.6);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -413,29 +483,62 @@ button#history-btn {
 }
 
 #clear-title {
-    font-size: 48px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    font-size: 48px; /* 全ステージクリア用 */
     margin: 0;
     color: #f28d35;
-    text-shadow: 3px 3px 0 #b85b17;
-    letter-spacing: 5px;
+    text-shadow: 2px 2px 0 #b85b17;
+    letter-spacing: 4px;
     text-align: center;
-    line-height: 1.2;
+    line-height: 1.3;
+    font-weight: 900;
 }
 
 .modal-buttons {
     display: flex;
-    gap: 20px;
+    flex-direction: column;
+    gap: 15px;
     width: 100%;
     justify-content: center;
 }
 
+.clear-btn {
+    width: 100%;
+    padding: 20px;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    background-color: #f28d35;
+    border-style: solid;
+    border-width: 6px;
+    border-top-color: #fdb863;
+    border-left-color: #f49f47;
+    border-right-color: #d97325;
+    border-bottom-color: #b85b17;
+    border-radius: 15px;
+    color: white;
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+    transition: all 0.2s;
+}
+
 .clear-btn.next {
-    filter: hue-rotate(150deg);
+    filter: hue-rotate(0deg); /* 統一感のため色変更を解除 */
+    background-color: #f28d35;
 }
 
 .clear-btn.title {
     background-color: #636e72;
-    border-color: #2d3436;
+    border-top-color: #b2bec3;
+    border-left-color: #636e72;
+    border-right-color: #2d3436;
+    border-bottom-color: #000;
+}
+
+.clear-btn:hover {
+    filter: brightness(1.2);
+    transform: scale(1.05);
 }
 
 @keyframes modalPop {

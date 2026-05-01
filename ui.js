@@ -1046,7 +1046,7 @@ function showStageClearModal() {
         if (titleEl) titleEl.innerHTML = '🎉 全ステージ<br>クリア！ 🎉';
         if (nextBtn) nextBtn.style.display = 'none';
     } else {
-        if (titleEl) titleEl.innerHTML = 'すてーじ<br>くりあ！';
+        if (titleEl) titleEl.innerHTML = '<img src="assets/Stage_Clear.png" alt="すてーじくりあ！" style="width: 100%; max-width: 320px; filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));">';
         if (nextBtn) nextBtn.style.display = 'inline-block';
     }
     

@@ -18,6 +18,20 @@ function loadStage(index) {
     state.grid = {};
     state.enemies = {};
     
+    // 背景・盤面の切り替え
+    const bgNum = (index % 3) + 1;
+    const bgName = bgNum === 1 ? 'BG.jpg' : `BG${bgNum}.jpg`;
+    const banmenName = bgNum === 1 ? 'banmen.png' : `banmen${bgNum}.png`;
+    
+    const appContainer = document.getElementById('app-container');
+    if (appContainer) {
+        appContainer.style.backgroundImage = `url('assets/${bgName}')`;
+    }
+    const gameWindow = document.getElementById('game-window');
+    if (gameWindow) {
+        gameWindow.style.backgroundImage = `url('assets/${banmenName}')`;
+    }
+    
     if (state.moveInterval) {
         clearInterval(state.moveInterval);
         state.moveInterval = null;
