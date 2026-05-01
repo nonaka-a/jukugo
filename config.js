@@ -1,7 +1,7 @@
 // --- 定数 ---
 const GRID_SIZE = 8;
 const TILE_SIZE = 60;
-const GAME_SIZE = 630; // 追加：ゲームウィンドウの縦横サイズ（px）
+const GAME_SIZE = 630;
 
 const STAGES = [
     { enemyCount: 3, obstacles: [] }, // STAGE 1
@@ -25,6 +25,18 @@ const STAGES = [
 
 const hubKanji = "用的力学不内生物地人動中定行合通化一自作意大理対外会成出事体電目国日分野気法実名面性入文和度最路感花火爆発札十字角".split("");
 
+const COLLECTION_DATA = [
+    { name: "時間", words: ["現在", "将来", "未来", "以前", "以後"] },
+    { name: "政治", words: ["政治", "政府", "政党", "国家", "主権"] },
+    { name: "仕事", words: ["作業", "労働", "事務", "任務", "勤務"] },
+    { name: "理科", words: ["植物", "大気", "地球", "惑星", "衛星"] },
+    { name: "勝負", words: ["成功", "失敗", "勝利", "優勝", "成果"] },
+    { name: "捜査", words: ["捜査", "犯人", "犯行", "証言", "被告"] },
+    { name: "天気", words: ["天気", "気象", "予報", "暴風", "気温"] },
+    { name: "病院", words: ["病院", "入院", "退院", "手術", "看護"] },
+    { name: "料理", words: ["食事", "料理", "調理", "夕食", "和食"] }
+];
+
 // --- 状態管理 ---
 const state = {
     grid: {},
@@ -41,6 +53,8 @@ const state = {
     difficulty: 'normal',
     bgmIndex: 0,
     history: [],
+    collection: [], // 獲得済み熟語
+    newlyCompletedGroups: [], // 演出待ちのコンプリートグループ
     lampCount: 0,
     powerUps: {
         explosionRange: 1,
@@ -66,5 +80,5 @@ let spawnInterval = null;
 let scale = 1.0;
 const cellDOMs = {};
 
-// --- DOM要素の参照 (main.jsのinitで代入されます) ---
+// --- DOM要素の参照 ---
 let gridElement, gameWindow, playerHandElement, launcherElement, guideLineElement;

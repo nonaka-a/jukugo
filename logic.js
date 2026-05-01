@@ -1,3 +1,50 @@
+function loadCollection() {
+    try {
+        const saved = localStorage.getItem('jukugo_firework_collection');
+        if (saved) {
+            const data = JSON.parse(saved);
+            state.collection = data.collection || [];
+        }
+    } catch (e) {
+        console.error("Save load failed", e);
+    }
+}
+
+function saveCollection() {
+    try {
+        localStorage.setItem('jukugo_firework_collection', JSON.stringify({
+            collection: state.collection
+        }));
+    } catch (e) {
+        console.error("Save failed", e);
+    }
+}
+
+function checkCollection(word) {
+    let saved = false;
+    COLLECTION_DATA.forEach(group => {
+        if (group.words.includes(word)) {
+            // 元々コンプリートしていたか
+            const wasCompleted = group.words.every(w => state.collection.includes(w));
+            
+            if (!state.collection.includes(word)) {
+                state.collection.push(word);
+                saved = true;
+            }
+            
+            // 獲得後のコンプリート状態
+            const isCompleted = group.words.every(w => state.collection.includes(w));
+            
+            if (!wasCompleted && isCompleted) {
+                if (!state.newlyCompletedGroups.includes(group.name)) {
+                    state.newlyCompletedGroups.push(group.name);
+                }
+            }
+        }
+    });
+    if (saved) saveCollection();
+}
+
 function setupDeck() {
     state.deck = [...uniqueKanjiList];
     for (let i = state.deck.length - 1; i > 0; i--) {
@@ -115,7 +162,6 @@ function getExplosionCoords(x, y) {
     const coords = new Set();
     const range = state.powerUps.explosionRange;
 
-    // 基本範囲（花火パワーアップで2に拡張）
     for (let dy = -range; dy <= range; dy++) {
         for (let dx = -range; dx <= range; dx++) {
             if (dx === 0 && dy === 0) continue;
@@ -130,14 +176,12 @@ function getExplosionCoords(x, y) {
 
 function getPowerUpLines(x, y) {
     const coords = new Set();
-    // 十字パワーアップ
     if (state.powerUps.isCross) {
         for (let i = 0; i < GRID_SIZE; i++) {
             if (i !== x) coords.add(`${i},${y}`);
             if (i !== y) coords.add(`${x},${i}`);
         }
     }
-    // 対角パワーアップ
     if (state.powerUps.isDiagonal) {
         for (let i = -GRID_SIZE; i <= GRID_SIZE; i++) {
             if (i === 0) continue;
@@ -157,9 +201,7 @@ function damageNearbyEnemies(x, y, skipLines = false) {
         coords.push(...getPowerUpLines(x, y));
     }
     
-    // 重複除去
     const uniqueCoords = Array.from(new Set(coords));
-
     const damagedBosses = new Set();
 
     uniqueCoords.forEach(key => {
@@ -178,25 +220,18 @@ function damageNearbyEnemies(x, y, skipLines = false) {
                 const [ex, ey] = key.split(',').map(Number);
                 killEnemy(ex, ey);
             } else {
-                // ダメージ演出（ボスの場合はボス画像全体を光らせる）
                 if (enemy.type === 'boss') {
                     const rootCell = cellDOMs[enemy.rootKey];
                     if (rootCell) {
-                        // クラスの付け替えはアニメーションをリセットしてしまうため、filterのみを操作する
                         rootCell.style.transition = 'filter 0.1s ease-out';
                         rootCell.style.filter = 'brightness(3) contrast(1.5)';
                         setTimeout(() => { 
                             if (rootCell) rootCell.style.filter = 'brightness(1) contrast(1)';
                         }, 300);
                     }
-                    
-                    // カウンター攻撃：おじゃまブロック配置
                     if (typeof spawnBossCounterObstacles === 'function') {
-                        if (enemy.asset === 'toge_dai') {
-                            spawnBossCounterObstacles(2, 'J1');
-                        } else if (enemy.asset === 'toge_toku') {
-                            spawnBossCounterObstacles(2, 'J2');
-                        }
+                        if (enemy.asset === 'toge_dai') spawnBossCounterObstacles(2, 'J1');
+                        else if (enemy.asset === 'toge_toku') spawnBossCounterObstacles(2, 'J2');
                     }
                 } else if (cellDOMs[key]) {
                     cellDOMs[key].style.filter = 'brightness(2) contrast(2)';
@@ -210,7 +245,6 @@ function damageNearbyEnemies(x, y, skipLines = false) {
             const isObstacle = state.grid[key] === 'OBSTACLE' || state.grid[key] === 'OBSTACLE_J2' || state.grid[key] === '■';
 
             if (isHardObstacle) {
-                // 硬い障害物は通常障害物に変化
                 state.grid[key] = 'OBSTACLE';
                 const cell = cellDOMs[key];
                 if (cell) {
@@ -218,7 +252,6 @@ function damageNearbyEnemies(x, y, skipLines = false) {
                     cell.classList.add('obstacle');
                 }
             } else {
-                // 通常ブロックまたは通常障害物は削除
                 const isRealObstacle = isObstacle;
                 delete state.grid[key];
                 const cell = cellDOMs[key];
@@ -239,7 +272,6 @@ function killEnemy(x, y) {
     const enemy = state.enemies[key];
     
     if (enemy && enemy.type === 'boss') {
-        // すでに撃破処理中ならスキップ（多重処理防止）
         if (enemy.isDying) return;
         enemy.isDying = true;
 
@@ -261,7 +293,7 @@ function killEnemy(x, y) {
                 }
             }
         }
-        state.score += 50; // ボス撃破スコア
+        state.score += 50;
     } else if (enemy) {
         createParticles(x, y);
         delete state.grid[key];
@@ -295,10 +327,7 @@ function checkStageClear() {
 function moveMovingEnemies() {
     if (state.isShooting || state.isRouletteActive) return;
 
-    // 現在の移動する敵のキーを取得
     const movingKeys = Object.keys(state.enemies).filter(key => state.enemies[key].type === 'moving');
-    
-    // 移動先を予約するためのセット（同じマスに重ならないように）
     const reserved = new Set();
 
     movingKeys.forEach(key => {
@@ -329,7 +358,6 @@ function moveMovingEnemies() {
             if (oldCell) oldCell.classList.remove('enemy-i');
             if (newCell) {
                 newCell.classList.add('enemy-i');
-                // アニメーションの再トリガー
                 newCell.style.animation = 'none';
                 void newCell.offsetWidth;
                 newCell.style.animation = '';
@@ -340,10 +368,8 @@ function moveMovingEnemies() {
 }
 
 function explodeAllEnemies() {
-    // 敵のリストをコピーしてからループ（killEnemy内で削除されるため）
     const keys = Object.keys(state.enemies);
     keys.forEach(key => {
-        // まだリストに残っているか確認（ボスなどで一括削除されている可能性があるため）
         if (state.enemies[key]) {
             const [x, y] = key.split(',').map(Number);
             killEnemy(x, y);

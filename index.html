@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>熟語花火</title>
     <link rel="stylesheet" href="style.css">
-    <!-- 分割したJSファイルを順に読み込む -->
     <script src="dictionary.js"></script>
     <script src="config.js"></script>
     <script src="logic.js"></script>
@@ -21,6 +20,7 @@
         <div class="difficulty-selection">
             <button class="diff-btn easy" onclick="startGame('easy')">かんたん</button>
             <button class="diff-btn normal" onclick="startGame('normal')">ふつう</button>
+            <button class="menu-btn" style="margin-top:20px; background-color: #e84393; border-top-color: #fd79a8; border-left-color: #e84393; border-right-color: #b71540; border-bottom-color: #b71540;" onclick="toggleCollection()">👑 これくしょん 👑</button>
         </div>
     </div>
 
@@ -32,7 +32,7 @@
     </div>
     
     <div id="game-layout">
-    <div id="main-area-container"> <!-- 追加：サイズ管理用の親 -->
+    <div id="main-area-container">
         <div id="main-area">
             <div id="game-window">
                 <div id="grid-container"></div>
@@ -48,7 +48,7 @@
             </div>
         </div>
     </div>
-</div>
+    </div>
 
         <!-- Settings Modal -->
         <div id="settings-overlay" onclick="if(event.target === this) toggleSettings()">
@@ -80,7 +80,18 @@
             <div id="history-modal">
                 <h2>作った熟語</h2>
                 <div id="history-list"></div>
+                <button class="menu-btn" style="background-color:#0984e3; border-color:#00a8ff #0097e6 #00a8ff #0097e6; margin-bottom: 10px;" onclick="toggleCollection()">これくしょんを見る</button>
                 <button class="menu-btn" onclick="toggleHistory()">とじる</button>
+            </div>
+        </div>
+
+        <!-- Collection Modal -->
+        <div id="collection-overlay" onclick="if(event.target === this) toggleCollection()">
+            <div id="history-modal">
+                <h2>これくしょん</h2>
+                <div id="collection-list"></div>
+                <div id="collection-detail"></div>
+                <button class="menu-btn" onclick="toggleCollection()">とじる</button>
             </div>
         </div>
 

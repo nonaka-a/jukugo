@@ -44,7 +44,7 @@ body {
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    align-items: center; /* 戻す：基本は中央揃え */
+    align-items: center; 
     box-sizing: border-box;
 }
 
@@ -64,7 +64,7 @@ h1 {
     justify-content: center;
     flex: 1;
     width: 100%;
-    overflow: visible; /* hiddenからvisibleへ */
+    overflow: visible; 
 }
 
 #main-area-container {
@@ -72,13 +72,13 @@ h1 {
     justify-content: center;
     align-items: flex-start;
     overflow: visible;
-    width: 100%; /* 横幅いっぱいに */
+    width: 100%; 
 }
 
 #main-area {
     display: flex;
     flex-direction: column;
-    align-items: center; /* 戻す：基本は中央揃え */
+    align-items: center; 
     width: 100%;
 }
 
@@ -215,7 +215,7 @@ button#settings-btn:active, button#history-btn:active {
     background-color: transparent;
 }
 
-#history-overlay {
+#history-overlay, #collection-overlay {
     position: absolute;
     top: 0;
     left: 0;
@@ -261,13 +261,10 @@ button#settings-btn:active, button#history-btn:active {
     text-shadow: 1px 1px 0px #fff;
 }
 
-#history-list {
+#history-list, #collection-list {
     flex: 1;
     overflow-y: auto;
     padding: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
 }
 
 .history-item {
@@ -277,6 +274,7 @@ button#settings-btn:active, button#history-btn:active {
     border-left: 8px solid #f28d35;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     background-image: linear-gradient(to right, #fff, #fdfaf0);
+    margin-bottom: 15px;
 }
 
 .history-word {
@@ -296,6 +294,115 @@ button#settings-btn:active, button#history-btn:active {
     font-size: 16px;
     line-height: 1.4;
 }
+
+/* =========================================
+   これくしょん画面用スタイル
+   ========================================= */
+.collection-group {
+    background: white;
+    border: 2px solid #eac88b;
+    border-radius: 8px;
+    padding: 10px;
+    position: relative;
+    overflow: visible; /* スタンプを見せるため */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+}
+.collection-group.completed {
+    background: #fff8e1;
+    border-color: #f28d35;
+}
+.collection-title {
+    font-weight: bold;
+    color: #b85b17;
+    margin-bottom: 8px;
+    font-size: 18px;
+}
+.collection-words {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+}
+.collection-word {
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+    transition: all 0.2s;
+    font-size: 18px;
+    min-width: 40px;
+    text-align: center;
+}
+.collection-word.acquired {
+    background: #f28d35;
+    color: white;
+    cursor: pointer;
+    box-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+}
+.collection-word.acquired:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+}
+.collection-word.unacquired {
+    background: #e2e2e2;
+    color: #7f8c8d;
+    opacity: 0.3; /* 半透明 */
+}
+
+.complete-stamp {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%) rotate(-15deg);
+    color: #d63031;
+    border: 4px solid #d63031;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 26px;
+    font-weight: bold;
+    opacity: 0.8;
+    z-index: 10;
+    background-color: rgba(255, 255, 255, 0.8);
+}
+
+.stamp-animate {
+    animation: stampDrop 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes stampDrop {
+    0% { transform: translateY(-50%) rotate(0deg) scale(10); opacity: 0; filter: blur(5px); }
+    30% { transform: translateY(-50%) rotate(10deg) scale(1.5); opacity: 1; filter: blur(0px); }
+    100% { transform: translateY(-50%) rotate(-15deg) scale(1); opacity: 0.8; }
+}
+
+.newly-completed {
+    animation: flashGroup 1.5s ease-out forwards;
+}
+@keyframes flashGroup {
+    0% { background: #ffffff; box-shadow: 0 0 20px #f28d35; }
+    20% { background: #ffdcae; box-shadow: 0 0 50px #d63031; transform: scale(1.02); }
+    100% { background: #fff8e1; box-shadow: none; transform: scale(1); }
+}
+
+#collection-detail {
+    margin: 10px 0;
+    padding: 15px;
+    background: #fff;
+    border-left: 5px solid #d63031;
+    border-radius: 5px;
+    display: none;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.col-detail-word { font-size: 20px; font-weight: bold; color: #d63031; }
+.col-detail-reading { font-size: 14px; color: #666; margin-left: 10px; }
+.col-detail-meaning { font-size: 14px; margin-top: 8px; line-height: 1.4; }
+.pop { animation: popIn 0.3s ease-out; }
 
 .menu-btn {
     width: 100%;
@@ -487,7 +594,7 @@ button#settings-btn:active, button#history-btn:active {
     width: 100%;
     display: flex;
     justify-content: center;
-    font-size: 48px; /* 全ステージクリア用 */
+    font-size: 48px;
     margin: 0;
     color: #f28d35;
     text-shadow: 2px 2px 0 #b85b17;
@@ -525,7 +632,7 @@ button#settings-btn:active, button#history-btn:active {
 }
 
 .clear-btn.next {
-    filter: hue-rotate(0deg); /* 統一感のため色変更を解除 */
+    filter: hue-rotate(0deg); 
     background-color: #f28d35;
 }
 
@@ -561,13 +668,13 @@ button#settings-btn:active, button#history-btn:active {
 #game-window {
     width: 630px;
     height: 630px;
-    border: none; /* 枠線を削除 */
+    border: none; 
     border-radius: 15px;
     position: relative;
     background-image: url('assets/banmen.png');
     background-size: cover;
     background-position: center;
-    background-color: transparent; /* ベージュを透明に変更！ */
+    background-color: transparent; 
     transform-origin: top left;
 }
 
@@ -602,7 +709,6 @@ button#settings-btn:active, button#history-btn:active {
    5. Game States & Elements
    ========================================= */
 
-/* ブロック共通：形状、枠線、フォント設定 */
 .cell.occupied, .hand-tile, #shooting-tile, #launcher {
     background-size: 100% 100% !important;
     background-color: transparent !important;
@@ -610,7 +716,6 @@ button#settings-btn:active, button#history-btn:active {
     border-radius: 0 !important;
     box-shadow: none !important;
     color: white;
-    /* 漢字の枠線（太めの一致） */
     text-shadow: 
         -2px -2px 0 #4d1b18,    
          2px -2px 0 #4d1b18,  
@@ -624,23 +729,20 @@ button#settings-btn:active, button#history-btn:active {
     font-weight: bold;
 }
 
-/* デフォルト：Block.png（通常の漢字） */
 .cell.occupied, .hand-tile, #shooting-tile, #launcher {
     background-image: url('assets/Block.png') !important;
 }
 
-/* 特別な漢字：Y_Block.png（ルーレット対象文字） */
 .cell.occupied.y-block, .hand-tile.y-block, #shooting-tile.y-block, #launcher.y-block {
     background-image: url('assets/Y_Block.png') !important;
 }
 
-/* おじゃまブロック：J_Block.png / J_Block2.png */
 .cell.occupied.obstacle {
     background-image: url('assets/J_Block.png') !important;
     background-size: 100% 100% !important;
     background-color: transparent !important;
     border: none !important;
-    color: transparent !important; /* 文字を表示しない */
+    color: transparent !important; 
     text-shadow: none !important;
 }
 .cell.occupied.obstacle-j2 {
@@ -652,7 +754,6 @@ button#settings-btn:active, button#history-btn:active {
     text-shadow: none !important;
 }
 
-/* 硬いおじゃまブロック：J_Block2.png */
 .cell.occupied.obstacle-hard {
     background-image: url('assets/J_Block2.png') !important;
     background-size: 100% 100% !important;
@@ -693,7 +794,6 @@ button#settings-btn:active, button#history-btn:active {
     z-index: 5;
 }
 
-/* 大型ボス：toge_dai (2x2) */
 .cell.boss-dai-root {
     z-index: 10;
 }
@@ -702,10 +802,10 @@ button#settings-btn:active, button#history-btn:active {
     position: absolute;
     top: 0;
     left: 0;
-    width: 200%; /* 2マス分ぴったり */
+    width: 200%; 
     height: 200%;
     background-image: url('assets/toge_dai.png');
-    background-size: 95%; /* 内側に少し余白 */
+    background-size: 95%; 
     background-position: center;
     background-repeat: no-repeat;
     pointer-events: none;
@@ -715,7 +815,6 @@ button#settings-btn:active, button#history-btn:active {
     animation: bossBreathe 1s ease-in-out infinite alternate;
 }
 
-/* 特大ボス：toge_toku (3x3) */
 .cell.boss-toku-root {
     z-index: 10;
 }
@@ -724,7 +823,7 @@ button#settings-btn:active, button#history-btn:active {
     position: absolute;
     top: 0;
     left: 0;
-    width: 300%; /* 3マス分ぴったり */
+    width: 300%; 
     height: 300%;
     background-image: url('assets/toge_toku.png');
     background-size: 95%;
@@ -935,7 +1034,6 @@ rt {
     flex-direction: column;
     align-items: center;
     gap: 20px;
-    /* 修正：幅はJSで制御するため、余計な設定を削除 */
     width: 100%;
     margin-left: 0;
     margin-right: 0;
@@ -946,16 +1044,16 @@ rt {
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
-    justify-content: center; /* 中央に寄せる */
+    justify-content: center; 
     align-items: center;
     width: 100%;
-    gap: 2px; /* 間隔をギュッと詰める（お好みで0〜5px程度に調整してください） */
+    gap: 2px; 
 }
 
 .hand-tile {
     width: 60px;
     height: 60px;
-    flex: 0 0 60px; /* 幅を60pxで固定して縮ませない */
+    flex: 0 0 60px; 
     box-sizing: border-box;
     cursor: pointer;
     transition: transform 0.2s, filter 0.2s, width 0.6s, opacity 0.6s, margin-top 0.2s;
@@ -974,7 +1072,6 @@ rt {
 }
 
 .hand-tile.selected {
-    /* transformを上書きせず、marginやfilterで浮き上がりを表現する */
     margin-top: -15px;
     filter: drop-shadow(0 10px 10px rgba(0,0,0,0.3));
 }
@@ -1120,7 +1217,6 @@ rt {
     font-size: 60px;
     font-weight: 900;
     color: white;
-    /* 漢字の枠線（パズルタイルと統一） */
     text-shadow: 
         -2px -2px 0 #4d1b18,    
          2px -2px 0 #4d1b18,  
@@ -1167,7 +1263,7 @@ rt {
 #debug-skip-btn {
     position: absolute;
     bottom: 5px;
-    right: 80px; /* 位置をずらす */
+    right: 80px; 
     padding: 2px 8px;
     font-size: 10px;
     opacity: 0.3;
@@ -1188,7 +1284,7 @@ rt {
     font-size: 10px;
     opacity: 0.3;
     z-index: 9999;
-    background: rgba(214, 48, 49, 0.5); /* 赤っぽく */
+    background: rgba(214, 48, 49, 0.5); 
     color: #fff;
     border: 1px solid #fff;
     border-radius: 4px;

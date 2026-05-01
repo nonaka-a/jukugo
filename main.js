@@ -18,7 +18,6 @@ function loadStage(index) {
     state.grid = {};
     state.enemies = {};
     
-    // 背景・盤面の切り替え
     const bgNum = (index % 3) + 1;
     const bgName = bgNum === 1 ? 'BG.jpg' : `BG${bgNum}.jpg`;
     const banmenName = bgNum === 1 ? 'banmen.png' : `banmen${bgNum}.png`;
@@ -72,7 +71,6 @@ function loadStage(index) {
     const maxAttempts = 1000;
     while (enemiesPlaced < totalEnemies && attempts < maxAttempts) {
         attempts++;
-        // 出現範囲をグリッド全体（0〜GRID_SIZE-1）に拡大
         const rx = Math.floor(Math.random() * GRID_SIZE);
         const ry = Math.floor(Math.random() * GRID_SIZE);
         const key = `${rx},${ry}`;
@@ -130,7 +128,6 @@ function updateBGM() {
     state.bgmIndex = (state.bgmIndex + 1) % BGM_LIST.length;
 }
 
-// BGM終了時に次の曲を再生
 bgm.addEventListener('ended', () => {
     updateBGM();
     if (state.isSoundOn) {
@@ -143,12 +140,11 @@ function startGame(difficulty) {
     document.getElementById('title-screen').style.display = 'none';
     document.getElementById('stats-container').style.display = 'flex';
     
-    updateBGM(); // 追加
+    updateBGM(); 
     if (state.isSoundOn) {
         bgm.play().catch(e => console.log("BGM再生エラー:", e));
     }
 
-    // パワーアップ状態の初期化（新規ゲーム開始時のみ）
     state.lampCount = 0;
     state.powerUps = { explosionRange: 1, isCross: false, isDiagonal: false };
     state.isPowerUpActive = false;
@@ -174,7 +170,6 @@ function backToTitle() {
         spawnInterval = null;
     }
 
-    // 設定画面が開いていれば閉じる
     const settingsOverlay = document.getElementById('settings-overlay');
     if (settingsOverlay && settingsOverlay.style.display === 'flex') {
         toggleSettings();
@@ -188,6 +183,7 @@ function init() {
     launcherElement = document.getElementById('launcher');
     guideLineElement = document.getElementById('guide-line');
 
+    loadCollection(); // セーブデータの読み込み
     setupDeck();
     initGridDOM();
     initLampsUI();
@@ -203,13 +199,11 @@ function init() {
         if (!bgmInteracted) {
             bgmInteracted = true;
             
-            // iOS/iPadOSの音声再生制限を解除するためのダミー再生
             if (window.speechSynthesis) {
                 const dummy = new SpeechSynthesisUtterance("");
                 window.speechSynthesis.speak(dummy);
             }
 
-            // SEの再生制限解除
             seFirework.play().then(() => {
                 seFirework.pause();
                 seFirework.currentTime = 0;

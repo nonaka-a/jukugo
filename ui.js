@@ -69,10 +69,9 @@ function updateLampsUI() {
     });
 
     if (state.lampCount >= 5 && !state.isRouletteActive && !state.isPowerUpActive) {
-        setTimeout(startRoulette, 2500); // 熟語をしっかり見せるために時間を延ばす
+        setTimeout(startRoulette, 2500);
     }
 
-    // パワーアップラベルの更新
     const pLabel = document.getElementById('powerup-label');
     if (pLabel) {
         let text = "";
@@ -122,7 +121,6 @@ function initStrip(id, el) {
         data.forEach(char => {
             const span = document.createElement('div');
             span.className = 'slot-char';
-            // Y_Blockの判定とスタイルの付与
             if (["花", "火", "爆", "発", "十", "字", "対", "角"].includes(char)) {
                 span.classList.add('hand-tile', 'y-block'); 
             } else {
@@ -136,7 +134,6 @@ function initStrip(id, el) {
     rouletteState[id].active = true;
     rouletteState[id].stopping = false;
     rouletteState[id].speed = 3 + Math.random() * 2;
-    // 帯の中央付近から開始し、左右に十分な余裕を持たせる
     rouletteState[id].pos = -(data.length * 100 * 10);
 }
 
@@ -149,7 +146,6 @@ function updateRoulette() {
         
         if (s.active) {
             s.pos += s.speed;
-            // 右に行き過ぎたら左にワープさせる
             if (s.pos > -500) {
                 s.pos -= dataWidth;
             }
@@ -185,18 +181,13 @@ function stopSlot(id) {
     s.stopping = true;
     
     const charWidth = 100;
-    const centerOffset = 120; // 170 - 50
+    const centerOffset = 120;
     
-    // 現在のposから、次にcenterOffsetに一致するposを計算
-    // k = (centerOffset - pos) / charWidth
-    // Math.roundを使用することで、最も近い文字（手前の文字を含む）にスナップさせます
     let currentK = (centerOffset - s.pos) / charWidth;
     let targetK = Math.round(currentK); 
     
     s.targetPos = centerOffset - targetK * charWidth;
     
-    // ターゲットが現在の位置より後ろ（左）になってしまった場合は、
-    // 最低限現在の速度分は進ませて次の文字にする
     if (s.targetPos < s.pos + s.speed) {
         targetK -= 1;
         s.targetPos = centerOffset - targetK * charWidth;
@@ -211,7 +202,6 @@ function stopSlot(id) {
 }
 
 function finishRoulette() {
-    // 完全に止まるまで待つ
     if (rouletteState.upper.stopping || rouletteState.lower.stopping) {
         setTimeout(finishRoulette, 100);
         return;
@@ -225,12 +215,11 @@ function finishRoulette() {
     if (validWords.includes(word)) {
         displayAndSpeakWords([word], () => {
             applyPowerUp(word);
-            // 「爆発」は即時発動なのでランプを消費しない
             if (word === "爆発") {
                 state.lampCount = 0;
                 state.isPowerUpActive = false;
             } else {
-                state.lampCount = 5; // 赤ランプ5個からスタート
+                state.lampCount = 5;
                 state.isPowerUpActive = true;
             }
             state.isRouletteActive = false;
@@ -251,12 +240,10 @@ function applyPowerUp(word) {
     if (word === "花火") {
         state.powerUps.explosionRange = 2;
     } else if (word === "爆発") {
-        // 全マスを赤くハイライト（予告演出）
         Object.keys(cellDOMs).forEach(key => {
             cellDOMs[key].classList.add('power-range-highlight');
         });
         
-        // 少し遅らせて一斉爆発
         setTimeout(() => {
             screenShake();
             if (state.isSoundOn) {
@@ -273,7 +260,7 @@ function applyPowerUp(word) {
                 }
                 if (cell) {
                     cell.textContent = '';
-                    cell.className = 'cell'; // 全ての装飾クラスをリセット
+                    cell.className = 'cell';
                 }
             });
             
@@ -357,11 +344,9 @@ function updateLauncherPosition(clientX, clientY) {
         const char = state.playerHand[state.selectedHandIndex] || '';
         state.launcher = { x: edgeX, y: edgeY, dir, char: char };
         
-        // --- 強制リセット処理を追加 ---
         launcherElement.style.backgroundColor = 'transparent';
         launcherElement.style.border = 'none';
         launcherElement.style.boxShadow = 'none';
-        // ---------------------------
         
         updateLauncherUI(gx, gy);
     } else {
@@ -374,7 +359,6 @@ function updateLauncherUI(gx, gy) {
     launcherElement.style.display = 'flex';
     launcherElement.textContent = state.launcher.char;
     
-    // 特別な漢字の判定
     const specialKanji = ["花", "火", "爆", "発", "十", "字", "対", "角"];
     if (specialKanji.includes(state.launcher.char)) {
         launcherElement.classList.add('y-block');
@@ -483,13 +467,11 @@ async function shoot(startX, startY, dir, char) {
     const shooter = document.createElement('div');
     shooter.id = 'shooting-tile';
     shooter.textContent = char;
-    // Y_Blockの判定を追加
     if (["花", "火", "爆", "発", "十", "字", "対", "角"].includes(char)) {
         shooter.classList.add('y-block');
     }
     gameWindow.appendChild(shooter);
 
-    // GAME_SIZEを使用
     const GAME_W = GAME_SIZE;
     const GAME_H = GAME_SIZE;
     const gx = (GAME_W - GRID_SIZE * TILE_SIZE) / 2;
@@ -530,7 +512,6 @@ async function placeAndCheck(x, y, char) {
     const cell = cellDOMs[`${x},${y}`];
     cell.textContent = char;
     cell.classList.add('occupied');
-    // Y_Blockの判定を追加
     if (["花", "火", "爆", "発", "十", "字", "対", "角"].includes(char)) {
         cell.classList.add('y-block');
     } else {
@@ -546,14 +527,11 @@ async function placeAndCheck(x, y, char) {
         if (h.isValid) { h.coordLists.forEach(list => list.forEach(c => coordsToClear.add(c))); foundWords.push(...h.words); }
         if (v.isValid) { v.coordLists.forEach(list => list.forEach(c => coordsToClear.add(c))); foundWords.push(...v.words); }
 
-        // 爆発予告（パワーアップ適用時などの全範囲を赤く光らせる）
         const allExplosionCoords = new Set();
         const coordsArray = Array.from(coordsToClear);
         coordsArray.forEach((c, idx) => {
             const [cx, cy] = c.split(',').map(Number);
-            // 範囲爆発は全員分追加
             getExplosionCoords(cx, cy).forEach(ec => allExplosionCoords.add(ec));
-            // ライン爆発（十字・対角）は最初の1文字分だけ追加して重複を防ぐ
             if (idx === 0) {
                 getPowerUpLines(cx, cy).forEach(ec => allExplosionCoords.add(ec));
             }
@@ -566,7 +544,7 @@ async function placeAndCheck(x, y, char) {
         });
 
         coordsToClear.forEach(c => cellDOMs[c].classList.add('success-flash'));
-        await new Promise(r => setTimeout(r, 600)); // 少し長めに予告を見せる
+        await new Promise(r => setTimeout(r, 600)); 
         
         allExplosionCoords.forEach(c => {
             if (cellDOMs[c]) cellDOMs[c].classList.remove('power-range-highlight');
@@ -590,7 +568,6 @@ async function placeAndCheck(x, y, char) {
         coordsArray.forEach((c, idx) => {
             const [cx, cy] = c.split(',').map(Number);
             createParticles(cx, cy);
-            // ダメージ処理も同様に、ライン爆発は1回だけにする
             damageNearbyEnemies(cx, cy, idx > 0);
 
             delete state.grid[c];
@@ -601,22 +578,22 @@ async function placeAndCheck(x, y, char) {
 
         refreshHighlights();
         
-        // 熟語完成時のランプ処理
         if (state.isPowerUpActive) {
-            // パワーアップ中はランプを減らす（カウントダウン）
             state.lampCount = Math.max(0, state.lampCount - foundWords.length);
             if (state.lampCount <= 0) {
                 state.isPowerUpActive = false;
                 state.powerUps = { explosionRange: 1, isCross: false, isDiagonal: false };
             }
         } else {
-            // 通常時はランプを増やす（チャージ）
             state.lampCount = Math.min(5, state.lampCount + foundWords.length);
         }
         updateLampsUI();
         
         setTimeout(() => {
             const uniqueWords = [...new Set(foundWords)];
+            
+            uniqueWords.forEach(word => checkCollection(word));
+            
             displayAndSpeakWords(uniqueWords, () => {
                 checkStageClear();
             });
@@ -654,7 +631,7 @@ function spawnObstacle() {
 function screenShake() {
     const mainArea = document.getElementById('main-area');
     mainArea.classList.remove('shake');
-    void mainArea.offsetWidth; // 強制リフロー
+    void mainArea.offsetWidth;
     mainArea.classList.add('shake');
     setTimeout(() => mainArea.classList.remove('shake'), 500);
 }
@@ -662,9 +639,8 @@ function screenShake() {
 function createParticles(x, y) {
     const key = `${x},${y}`;
     const cell = cellDOMs[key];
-    if (!cell) return; // 安全対策: マスが見つからない場合はスキップ
+    if (!cell) return;
     
-    // GAME_SIZEを使用
     const GAME_W = GAME_SIZE;
     const GAME_H = GAME_SIZE;
     const gx = (GAME_W - GRID_SIZE * TILE_SIZE) / 2;
@@ -693,7 +669,7 @@ function createParticles(x, y) {
         let lastTime = performance.now();
 
         const animate = (currentTime) => {
-            const dt = (currentTime - lastTime) / 16.666; // 60fpsを基準(1.0)とした経過時間
+            const dt = (currentTime - lastTime) / 16.666;
             lastTime = currentTime;
 
             px += vx * dt;
@@ -740,7 +716,6 @@ function spawnRandomTile() {
     const cell = cellDOMs[`${target.x},${target.y}`];
     cell.textContent = char;
     cell.classList.add('occupied');
-    // Y_Blockの判定を追加
     if (["花", "火", "爆", "発", "十", "字", "対", "角"].includes(char)) {
         cell.classList.add('y-block');
     } else {
@@ -769,7 +744,6 @@ function spawnBossCounterObstacles(count, type) {
         cell.classList.add('occupied');
         cell.classList.add(type === 'J2' ? 'obstacle-j2' : 'obstacle');
         
-        // 出現アニメーション
         cell.style.animation = 'none';
         void cell.offsetWidth;
         cell.style.animation = 'popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
@@ -794,7 +768,6 @@ function renderHand() {
         const tile = document.createElement('div');
         tile.className = 'hand-tile';
         if (state.selectedHandIndex === index) tile.classList.add('selected');
-        // Y_Blockの判定を追加
         if (["花", "火", "爆", "発", "十", "字", "対", "角"].includes(char)) {
             tile.classList.add('y-block');
         }
@@ -864,9 +837,8 @@ function refreshHighlights() {
 }
 
 function resetView() {
-    // GAME_SIZEを使用
     const GAME_W = GAME_SIZE;
-    const GAME_H = 880; // 手札エリアを含めた全体の高さ目安
+    const GAME_H = 880; 
     const STATS_H = 60; 
     const PADDING = 20;
 
@@ -877,23 +849,20 @@ function resetView() {
     const scaleByH = availableH / GAME_H;
     scale = Math.min(scaleByW, scaleByH, 1.0); 
 
-    // containerでサイズを固定する
     const container = document.getElementById('main-area-container');
     container.style.width = `${GAME_W}px`;
     container.style.height = `${GAME_H}px`;
     container.style.transform = `scale(${scale})`;
     container.style.transformOrigin = 'top center';
     
-    // アニメーション中のスケール上書きを防ぐため、ここでのtransform設定を整理
     const mainArea = document.getElementById('main-area');
     mainArea.style.transform = 'none'; 
 
     const translateX = (GAME_W - (GRID_SIZE * TILE_SIZE)) / 2;
-    const translateY = (GAME_SIZE - (GRID_SIZE * TILE_SIZE)) / 2; // GAME_SIZEに変更
+    const translateY = (GAME_SIZE - (GRID_SIZE * TILE_SIZE)) / 2;
     gridElement.style.left = `${translateX}px`;
     gridElement.style.top = `${translateY}px`;
 
-    // --- 修正：手札エリア全体をアスペクト比を維持したまま幅いっぱいに拡大し、タイルの大きさを補正する ---
     const appContainer = document.getElementById('app-container');
     const soloHandArea = document.getElementById('solo-hand-area');
     if (appContainer && soloHandArea) {
@@ -914,14 +883,10 @@ function resetView() {
         soloHandArea.style.alignSelf = 'center';
         soloHandArea.style.position = 'static';
 
-        // --- 追加：手札の漢字ブロックの大きさをステージと同じに見えるよう補正 ---
         const tiles = soloHandArea.querySelectorAll('.hand-tile');
-        const inverseScale = 1 / handScale; // 拡大分を打ち消す倍率
+        const inverseScale = 1 / handScale; 
         tiles.forEach(tile => {
-            // スケールを適用。transformで小さくすることで見た目の大きさを合わせる
             tile.style.transform = `scale(${inverseScale})`;
-            // 選択中のアニメーション(translateY)と競合しないよう、selectedクラスがある場合の処理はrenderHandに任せるか、
-            // ここではtransformOriginをcenterにしてサイズだけを整える
             tile.style.transformOrigin = 'center center';
         });
     }
@@ -932,7 +897,6 @@ function placeTile(x, y, char) {
     const cell = cellDOMs[`${x},${y}`];
     cell.textContent = char;
     cell.classList.add('occupied');
-    // Y_Blockの判定を追加
     if (["花", "火", "爆", "発", "十", "字", "対", "角"].includes(char)) {
         cell.classList.add('y-block');
     } else {
@@ -943,6 +907,9 @@ function placeTile(x, y, char) {
 function toggleHistory() {
     const overlay = document.getElementById('history-overlay');
     const isOpening = overlay.style.display !== 'flex';
+    
+    document.getElementById('collection-overlay').style.display = 'none'; 
+    
     overlay.style.display = isOpening ? 'flex' : 'none';
     if (isOpening) updateHistoryUI();
 }
@@ -966,6 +933,99 @@ function updateHistoryUI() {
         `;
         list.appendChild(div);
     });
+}
+
+function toggleCollection() {
+    const overlay = document.getElementById('collection-overlay');
+    const isOpening = overlay.style.display !== 'flex';
+    
+    document.getElementById('history-overlay').style.display = 'none'; 
+
+    overlay.style.display = isOpening ? 'flex' : 'none';
+    if (isOpening) {
+        document.getElementById('collection-detail').style.display = 'none';
+        updateCollectionUI();
+        
+        if (state.newlyCompletedGroups.length > 0 && state.isSoundOn) {
+            seFirework.currentTime = 0;
+            seFirework.play().catch(()=>{});
+        }
+    } else {
+        state.newlyCompletedGroups = [];
+        saveCollection();
+    }
+}
+
+function updateCollectionUI() {
+    const list = document.getElementById('collection-list');
+    list.innerHTML = '';
+    
+    COLLECTION_DATA.forEach(group => {
+        const groupHasAny = group.words.some(w => state.collection.includes(w));
+        const groupIsCompleted = group.words.every(w => state.collection.includes(w));
+        
+        const groupDiv = document.createElement('div');
+        groupDiv.className = 'collection-group';
+        
+        const isNewlyCompleted = state.newlyCompletedGroups.includes(group.name);
+        if (groupIsCompleted && !isNewlyCompleted) {
+            groupDiv.classList.add('completed');
+        }
+
+        const titleDiv = document.createElement('div');
+        titleDiv.className = 'collection-title';
+        titleDiv.textContent = groupIsCompleted ? `【${group.name}】` : '【？？？】';
+        groupDiv.appendChild(titleDiv);
+
+        const wordsDiv = document.createElement('div');
+        wordsDiv.className = 'collection-words';
+        
+        group.words.forEach(word => {
+            const wordSpan = document.createElement('span');
+            const isAcquired = state.collection.includes(word);
+            
+            wordSpan.className = 'collection-word ' + (isAcquired ? 'acquired' : 'unacquired');
+            // 修正箇所：未獲得でも文字をセットする
+            wordSpan.textContent = word;
+            
+            if (isAcquired) {
+                wordSpan.onclick = () => showCollectionDetail(word);
+            }
+            
+            wordsDiv.appendChild(wordSpan);
+        });
+        
+        groupDiv.appendChild(wordsDiv);
+        
+        if (groupIsCompleted || isNewlyCompleted) {
+            const stamp = document.createElement('div');
+            stamp.className = 'complete-stamp';
+            stamp.textContent = '済';
+            if (isNewlyCompleted) {
+                stamp.classList.add('stamp-animate');
+                groupDiv.classList.add('newly-completed');
+            }
+            groupDiv.appendChild(stamp);
+        }
+
+        list.appendChild(groupDiv);
+    });
+}
+
+function showCollectionDetail(word) {
+    const entry = typeof dictionaryData !== 'undefined' ? dictionaryData[word] : null;
+    if (!entry) return;
+    
+    const detailBox = document.getElementById('collection-detail');
+    detailBox.innerHTML = `
+        <div class="col-detail-word">${word} <span class="col-detail-reading">(${entry.reading})</span></div>
+        <div class="col-detail-meaning">${entry.meaning}</div>
+    `;
+    detailBox.style.display = 'block';
+    
+    detailBox.classList.remove('pop');
+    void detailBox.offsetWidth;
+    detailBox.classList.add('pop');
 }
 
 function displayAndSpeakWords(words, onComplete) {
@@ -992,7 +1052,6 @@ function displayAndSpeakWords(words, onComplete) {
                 meaning = null;
             }
 
-            // 履歴に追加
             if (!state.history.some(h => h.word === word)) {
                 state.history.push({ word, reading, meaning });
             }
@@ -1006,7 +1065,6 @@ function displayAndSpeakWords(words, onComplete) {
             wordEl.style.opacity = '0';
             overlay.appendChild(wordEl);
 
-            // 意味ボックスの作成
             let meaningEl = null;
             if (meaning) {
                 meaningEl = document.createElement('div');
@@ -1045,9 +1103,7 @@ function displayAndSpeakWords(words, onComplete) {
                 utterance.onstart = startAnim;
                 setTimeout(startAnim, 300);
                 
-                utterance.onend = () => {
-                    // ダッキング終了処理を削除
-                };
+                utterance.onend = () => {};
                 
                 window.speechSynthesis.speak(utterance);
             } else {
