@@ -709,7 +709,9 @@ button#settings-btn:active, button#history-btn:active {
     background-position: center;
     background-repeat: no-repeat;
     pointer-events: none;
-    transform-origin: center center;
+    transform-origin: 50% 50% !important;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
     animation: bossBreathe 1s ease-in-out infinite alternate;
 }
 
@@ -729,7 +731,9 @@ button#settings-btn:active, button#history-btn:active {
     background-position: center;
     background-repeat: no-repeat;
     pointer-events: none;
-    transform-origin: center center;
+    transform-origin: 50% 50% !important;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
     animation: bossBreathe 1.2s ease-in-out infinite alternate;
 }
 
@@ -900,9 +904,7 @@ rt {
 .cell.power-range-highlight {
     border: 2px solid rgba(214, 48, 49, 0.5) !important;
     background-color: rgba(214, 48, 49, 0.15) !important;
-    z-index: 50;
     box-shadow: 0 0 10px rgba(214, 48, 49, 0.2);
-    transition: none;
 }
 
 .cell.exploding {

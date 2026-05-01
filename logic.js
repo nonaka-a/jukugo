@@ -224,7 +224,7 @@ function damageNearbyEnemies(x, y, skipLines = false) {
                 const cell = cellDOMs[key];
                 if (cell) {
                     cell.textContent = '';
-                    cell.classList.remove('occupied', 'obstacle', 'obstacle-hard', 'exploding', 'fast', 'faster');
+                    cell.classList.remove('occupied', 'obstacle', 'obstacle-hard', 'exploding', 'fast', 'faster', 'obstacle-j2');
                 }
                 const [ex, ey] = key.split(',').map(Number);
                 createParticles(ex, ey);
@@ -256,7 +256,7 @@ function killEnemy(x, y) {
                     delete state.enemies[k];
                     const cell = cellDOMs[k];
                     if (cell) {
-                        cell.classList.remove('enemy', 'enemy-i', 'occupied', 'boss-dai-root', 'boss-toku-root', 'boss-part', 'boss-hit-flash');
+                        cell.classList.remove('enemy', 'enemy-i', 'occupied', 'boss-dai-root', 'boss-toku-root', 'boss-part', 'boss-hit-flash', 'obstacle-j2');
                     }
                 }
             }

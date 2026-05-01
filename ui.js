@@ -560,8 +560,7 @@ async function placeAndCheck(x, y, char) {
         });
 
         allExplosionCoords.forEach(c => {
-            // 敵マスにハイライトを当てるとSafari等でCSSアニメーションがリセットされる不具合があるため除外
-            if (cellDOMs[c] && state.grid[c] !== 'ENEMY') {
+            if (cellDOMs[c]) {
                 cellDOMs[c].classList.add('power-range-highlight');
             }
         });
@@ -597,7 +596,7 @@ async function placeAndCheck(x, y, char) {
             delete state.grid[c];
             const cell = cellDOMs[c];
             cell.textContent = '';
-            cell.classList.remove('occupied', 'exploding', 'fast', 'faster', 'success-flash');
+            cell.classList.remove('occupied', 'exploding', 'fast', 'faster', 'success-flash', 'obstacle-j2');
         });
 
         refreshHighlights();
