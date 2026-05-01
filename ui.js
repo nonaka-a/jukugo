@@ -123,6 +123,8 @@ function initStrip(id, el) {
             span.className = 'slot-char';
             if (["花", "火", "爆", "発", "十", "字", "対", "角"].includes(char)) {
                 span.classList.add('hand-tile', 'y-block'); 
+            } else if (COLLECTION_KANJI.has(char)) {
+                span.classList.add('hand-tile', 'g-block');
             } else {
                 span.classList.add('hand-tile');
             }
@@ -365,6 +367,11 @@ function updateLauncherUI(gx, gy) {
     } else {
         launcherElement.classList.remove('y-block');
     }
+    if (COLLECTION_KANJI.has(state.launcher.char)) {
+        launcherElement.classList.add('g-block');
+    } else {
+        launcherElement.classList.remove('g-block');
+    }
 
     const lX = gx + state.launcher.x * TILE_SIZE;
     const lY = gy + state.launcher.y * TILE_SIZE;
@@ -411,6 +418,12 @@ async function handleGameClick() {
     const newTile = document.createElement('div');
     newTile.className = 'hand-tile adding';
     newTile.textContent = newChar;
+    if (["花", "火", "爆", "発", "十", "字", "対", "角"].includes(newChar)) {
+        newTile.classList.add('y-block');
+    }
+    if (COLLECTION_KANJI.has(newChar)) {
+        newTile.classList.add('g-block');
+    }
     newTile.onclick = () => {
         state.selectedHandIndex = state.playerHand.indexOf(newChar);
         updateHandSelection();
@@ -470,6 +483,9 @@ async function shoot(startX, startY, dir, char) {
     if (["花", "火", "爆", "発", "十", "字", "対", "角"].includes(char)) {
         shooter.classList.add('y-block');
     }
+    if (COLLECTION_KANJI.has(char)) {
+        shooter.classList.add('g-block');
+    }
     gameWindow.appendChild(shooter);
 
     const GAME_W = GAME_SIZE;
@@ -516,6 +532,11 @@ async function placeAndCheck(x, y, char) {
         cell.classList.add('y-block');
     } else {
         cell.classList.remove('y-block');
+    }
+    if (COLLECTION_KANJI.has(char)) {
+        cell.classList.add('g-block');
+    } else {
+        cell.classList.remove('g-block');
     }
 
     const h = validateLine(x, y, true);
@@ -721,6 +742,11 @@ function spawnRandomTile() {
     } else {
         cell.classList.remove('y-block');
     }
+    if (COLLECTION_KANJI.has(char)) {
+        cell.classList.add('g-block');
+    } else {
+        cell.classList.remove('g-block');
+    }
     refreshHighlights();
 }
 
@@ -770,6 +796,9 @@ function renderHand() {
         if (state.selectedHandIndex === index) tile.classList.add('selected');
         if (["花", "火", "爆", "発", "十", "字", "対", "角"].includes(char)) {
             tile.classList.add('y-block');
+        }
+        if (COLLECTION_KANJI.has(char)) {
+            tile.classList.add('g-block');
         }
         tile.textContent = char;
         tile.onclick = () => {
@@ -901,6 +930,11 @@ function placeTile(x, y, char) {
         cell.classList.add('y-block');
     } else {
         cell.classList.remove('y-block');
+    }
+    if (COLLECTION_KANJI.has(char)) {
+        cell.classList.add('g-block');
+    } else {
+        cell.classList.remove('g-block');
     }
 }
 

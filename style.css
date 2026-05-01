@@ -300,7 +300,7 @@ button#settings-btn:active, button#history-btn:active {
    ========================================= */
 .collection-group {
     background: white;
-    border: 2px solid #eac88b;
+    border: 2px solid #d1e0b8;
     border-radius: 8px;
     padding: 10px;
     position: relative;
@@ -311,12 +311,12 @@ button#settings-btn:active, button#history-btn:active {
     flex-direction: column;
 }
 .collection-group.completed {
-    background: #fff8e1;
-    border-color: #f28d35;
+    background: #f8fbf2;
+    border-color: #8ab04c;
 }
 .collection-title {
     font-weight: bold;
-    color: #b85b17;
+    color: #6d8c3b;
     margin-bottom: 8px;
     font-size: 18px;
 }
@@ -336,7 +336,7 @@ button#settings-btn:active, button#history-btn:active {
     text-align: center;
 }
 .collection-word.acquired {
-    background: #f28d35;
+    background: #8ab04c;
     color: white;
     cursor: pointer;
     box-shadow: 1px 1px 3px rgba(0,0,0,0.2);
@@ -394,15 +394,42 @@ button#settings-btn:active, button#history-btn:active {
     margin: 10px 0;
     padding: 15px;
     background: #fff;
-    border-left: 5px solid #d63031;
+    border-left: 5px solid #8ab04c;
     border-radius: 5px;
     display: none;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
-.col-detail-word { font-size: 20px; font-weight: bold; color: #d63031; }
+.col-detail-word { font-size: 20px; font-weight: bold; color: #8ab04c; }
 .col-detail-reading { font-size: 14px; color: #666; margin-left: 10px; }
 .col-detail-meaning { font-size: 14px; margin-top: 8px; line-height: 1.4; }
 .pop { animation: popIn 0.3s ease-out; }
+
+/* コレクション画面を緑ベースにする上書き設定 */
+#collection-overlay #history-modal {
+    background-color: #f8fbf2;
+    background-image: 
+        linear-gradient(rgba(248, 251, 242, 0.55), rgba(248, 251, 242, 0.55)),
+        url('assets/BG2.jpg'),
+        radial-gradient(#d1e0b8 0.6px, transparent 0.6px);
+    border: 8px solid #8ab04c;
+    outline: 4px solid #d1e0b8;
+}
+
+#collection-overlay #history-modal h2 {
+    color: #8ab04c;
+    border-bottom: 3px double #d1e0b8;
+    text-shadow: 1px 1px 0px #fff;
+    margin-bottom: 10px;
+}
+
+.collection-description {
+    text-align: center;
+    font-size: 18px;
+    color: #6d8c3b;
+    margin-bottom: 15px;
+    line-height: 1.4;
+    font-weight: bold;
+}
 
 .menu-btn {
     width: 100%;
@@ -731,6 +758,10 @@ button#settings-btn:active, button#history-btn:active {
 
 .cell.occupied, .hand-tile, #shooting-tile, #launcher {
     background-image: url('assets/Block.png') !important;
+}
+
+.cell.occupied.g-block, .hand-tile.g-block, #shooting-tile.g-block, #launcher.g-block {
+    background-image: url('assets/G_Block.png') !important;
 }
 
 .cell.occupied.y-block, .hand-tile.y-block, #shooting-tile.y-block, #launcher.y-block {

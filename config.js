@@ -37,6 +37,11 @@ const COLLECTION_DATA = [
     { name: "料理", words: ["食事", "料理", "調理", "夕食", "和食"] }
 ];
 
+// コレクションに含まれる全漢字をSetとして保持（高速判定用）
+const COLLECTION_KANJI = new Set(
+    COLLECTION_DATA.flatMap(group => group.words.flatMap(word => word.split("")))
+);
+
 // --- 状態管理 ---
 const state = {
     grid: {},
