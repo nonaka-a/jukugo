@@ -657,6 +657,10 @@ function screenShake() {
 }
 
 function createParticles(x, y) {
+    const key = `${x},${y}`;
+    const cell = cellDOMs[key];
+    if (!cell) return; // 安全対策: マスが見つからない場合はスキップ
+    
     // GAME_SIZEを使用
     const GAME_W = GAME_SIZE;
     const GAME_H = GAME_SIZE;
@@ -1035,13 +1039,29 @@ function displayAndSpeakWords(words, onComplete) {
 
 function showStageClearModal() {
     const overlay = document.getElementById('stage-clear-overlay');
+    const titleEl = document.getElementById('clear-title');
+    const nextBtn = overlay.querySelector('.clear-btn.next');
+    
+    if (state.currentStage + 1 >= STAGES.length) {
+        if (titleEl) titleEl.innerHTML = '🎉 全ステージ<br>クリア！ 🎉';
+        if (nextBtn) nextBtn.style.display = 'none';
+    } else {
+        if (titleEl) titleEl.innerHTML = 'すてーじ<br>くりあ！';
+        if (nextBtn) nextBtn.style.display = 'inline-block';
+    }
+    
     if (overlay) overlay.style.display = 'flex';
 }
 
 function nextStage() {
     const overlay = document.getElementById('stage-clear-overlay');
     if (overlay) overlay.style.display = 'none';
-    loadStage(state.currentStage + 1);
+    
+    if (state.currentStage + 1 < STAGES.length) {
+        loadStage(state.currentStage + 1);
+    } else {
+        backToTitle();
+    }
 }
 
 function backToTitleFromClear() {

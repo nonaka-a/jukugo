@@ -25,7 +25,7 @@
     </div>
 
     <div id="stats-container" style="display:none;">
-        <div>ステージ: <span id="stage-val">1</span></div>
+        <div>すてーじ: <span id="stage-val">1</span></div>
         <div id="lamp-container" class="lamp-container"></div>
         <div id="powerup-label" style="color: #d63031; font-weight: 900; font-size: 1.2em; margin-left: 10px;"></div>
         <div>のこり敵: <span id="enemy-val">0</span></div>
@@ -110,7 +110,11 @@
                 </div>
             </div>
         </div>
+        
+        <!-- Debug Button -->
+        <button id="debug-skip-btn" onclick="loadStage(4)">Skip to S5</button>
+        <button id="debug-explode-btn" onclick="explodeAllEnemies()">Explode All</button>
     </div>
-
+    
 </body>
 </html>

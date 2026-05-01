@@ -17,10 +17,12 @@ function loadStage(index) {
     state.currentStage = index;
     state.grid = {};
     state.enemies = {};
-    state.lampCount = 0;
-    state.powerUps = { explosionRange: 1, isCross: false, isDiagonal: false };
-    state.isPowerUpActive = false;
     
+    if (state.moveInterval) {
+        clearInterval(state.moveInterval);
+        state.moveInterval = null;
+    }
+
     Object.keys(cellDOMs).forEach(key => {
         const cell = cellDOMs[key];
         cell.textContent = '';
@@ -32,25 +34,58 @@ function loadStage(index) {
     if (stage.obstacles) {
         stage.obstacles.forEach(o => {
             const key = `${o.x},${o.y}`;
-            state.grid[key] = 'OBSTACLE';
+            const hp = o.hp || 1;
+            state.grid[key] = (hp > 1) ? 'OBSTACLE_HARD' : 'OBSTACLE';
             const cell = cellDOMs[key];
             cell.textContent = '■';
-            cell.classList.add('occupied', 'obstacle');
+            cell.classList.add('occupied');
+            cell.classList.add(hp > 1 ? 'obstacle-hard' : 'obstacle');
         });
     }
 
     let enemiesPlaced = 0;
-    while (enemiesPlaced < stage.enemyCount) {
-        const rx = 2 + Math.floor(Math.random() * (GRID_SIZE - 4));
-        const ry = 2 + Math.floor(Math.random() * (GRID_SIZE - 4));
+    const normalCount = stage.enemyCount || 0;
+    const movingCount = stage.movingEnemies || 0;
+    const totalEnemies = normalCount + movingCount;
+
+    let attempts = 0;
+    const maxAttempts = 1000;
+    while (enemiesPlaced < totalEnemies && attempts < maxAttempts) {
+        attempts++;
+        // 出現範囲をグリッド全体（0〜GRID_SIZE-1）に拡大
+        const rx = Math.floor(Math.random() * GRID_SIZE);
+        const ry = Math.floor(Math.random() * GRID_SIZE);
         const key = `${rx},${ry}`;
         if (!state.grid[key]) {
             state.grid[key] = 'ENEMY';
-            state.enemies[key] = { hp: 1 };
+            const isMoving = enemiesPlaced >= normalCount;
+            state.enemies[key] = { hp: isMoving ? 2 : 1, type: isMoving ? 'moving' : 'normal' };
             const cell = cellDOMs[key];
-            cell.classList.add('enemy');
+            cell.classList.add(isMoving ? 'enemy-i' : 'enemy');
             enemiesPlaced++;
         }
+    }
+
+    if (stage.bosses) {
+        stage.bosses.forEach(b => {
+            const bossData = { hp: b.hp, type: 'boss', size: b.size, asset: b.asset, rootKey: `${b.x},${b.y}` };
+            for (let dy = 0; dy < b.size; dy++) {
+                for (let dx = 0; dx < b.size; dx++) {
+                    const key = `${b.x + dx},${b.y + dy}`;
+                    state.grid[key] = 'ENEMY';
+                    state.enemies[key] = bossData;
+                    const cell = cellDOMs[key];
+                    if (dx === 0 && dy === 0) {
+                        cell.classList.add(b.size === 2 ? 'boss-dai-root' : 'boss-toku-root');
+                    }
+                    cell.classList.add('boss-part');
+                }
+            }
+        });
+    }
+
+    if (movingCount > 0) {
+        state.moveInterval = setInterval(moveMovingEnemies, 20000);
     }
     
     const initialCount = 8;
@@ -75,6 +110,14 @@ function updateBGM() {
     state.bgmIndex = (state.bgmIndex + 1) % BGM_LIST.length;
 }
 
+// BGM終了時に次の曲を再生
+bgm.addEventListener('ended', () => {
+    updateBGM();
+    if (state.isSoundOn) {
+        bgm.play().catch(e => console.log("BGM auto-next error:", e));
+    }
+});
+
 function startGame(difficulty) {
     state.difficulty = difficulty;
     document.getElementById('title-screen').style.display = 'none';
@@ -84,6 +127,11 @@ function startGame(difficulty) {
     if (state.isSoundOn) {
         bgm.play().catch(e => console.log("BGM再生エラー:", e));
     }
+
+    // パワーアップ状態の初期化（新規ゲーム開始時のみ）
+    state.lampCount = 0;
+    state.powerUps = { explosionRange: 1, isCross: false, isDiagonal: false };
+    state.isPowerUpActive = false;
 
     loadStage(0);
     state.score = 0;
@@ -96,7 +144,21 @@ function startGame(difficulty) {
 function backToTitle() {
     document.getElementById('title-screen').style.display = 'flex';
     document.getElementById('stats-container').style.display = 'none';
-    toggleSettings();
+    
+    if (state.moveInterval) {
+        clearInterval(state.moveInterval);
+        state.moveInterval = null;
+    }
+    if (spawnInterval) {
+        clearInterval(spawnInterval);
+        spawnInterval = null;
+    }
+
+    // 設定画面が開いていれば閉じる
+    const settingsOverlay = document.getElementById('settings-overlay');
+    if (settingsOverlay && settingsOverlay.style.display === 'flex') {
+        toggleSettings();
+    }
 }
 
 function init() {

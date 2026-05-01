@@ -490,6 +490,7 @@ button#history-btn {
     align-items: center;
     font-size: 32px;
     font-weight: bold;
+    position: relative;
     transition: background-color 0.6s ease-out, border-color 0.6s ease-out, box-shadow 0.6s ease-out;
 }
 
@@ -539,6 +540,16 @@ button#history-btn {
     text-shadow: none !important;
 }
 
+/* 硬いおじゃまブロック：J_Block2.png */
+.cell.occupied.obstacle-hard {
+    background-image: url('assets/J_Block2.png') !important;
+    background-size: 100% 100% !important;
+    background-color: transparent !important;
+    border: none !important;
+    color: transparent !important;
+    text-shadow: none !important;
+}
+
 .cell.occupied {
     animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     transition: none;
@@ -555,6 +566,79 @@ button#history-btn {
         popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards,
         enemyBreathe 0.4s ease-in-out infinite alternate 0.5s;
     z-index: 5;
+}
+
+.cell.enemy-i {
+    background: none !important;
+    background-image: url('assets/toge_I.png') !important;
+    background-size: 90% !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    border: none !important;
+    animation: 
+        popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards,
+        enemyBreathe 0.4s ease-in-out infinite alternate 0.5s;
+    z-index: 5;
+}
+
+/* 大型ボス：toge_dai (2x2) */
+.cell.boss-dai-root {
+    z-index: 10;
+}
+.cell.boss-dai-root::after {
+    content: "";
+    position: absolute;
+    top: 5%;
+    left: 5%;
+    width: 190%; /* 2マス分強 */
+    height: 190%;
+    background-image: url('assets/toge_dai.png');
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    pointer-events: none;
+    animation: bossBreathe 1s ease-in-out infinite alternate;
+}
+
+/* 特大ボス：toge_toku (3x3) */
+.cell.boss-toku-root {
+    z-index: 10;
+}
+.cell.boss-toku-root::after {
+    content: "";
+    position: absolute;
+    top: 5%;
+    left: 5%;
+    width: 290%; /* 3マス分強 */
+    height: 290%;
+    background-image: url('assets/toge_toku.png');
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    pointer-events: none;
+    animation: bossBreathe 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes bossBreathe {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.04); }
+}
+
+/* ボスのダメージ演出 */
+.boss-hit-flash::after {
+    animation: bossHitFlash 0.3s ease-out !important;
+}
+
+@keyframes bossHitFlash {
+    0% { filter: brightness(5) contrast(2); transform: scale(1.1); }
+    100% { filter: brightness(1) contrast(1); transform: scale(1); }
+}
+
+.cell.boss-part {
+    background-image: none !important;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
 }
 
 @keyframes enemyBreathe {
@@ -971,4 +1055,45 @@ rt {
 @keyframes rouletteGuideBlink {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.3; }
+}
+
+/* Debug Button */
+#debug-skip-btn {
+    position: absolute;
+    bottom: 5px;
+    right: 80px; /* 位置をずらす */
+    padding: 2px 8px;
+    font-size: 10px;
+    opacity: 0.3;
+    z-index: 9999;
+    background: rgba(0,0,0,0.5);
+    color: #fff;
+    border: 1px solid #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+#debug-explode-btn {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    padding: 2px 8px;
+    font-size: 10px;
+    opacity: 0.3;
+    z-index: 9999;
+    background: rgba(214, 48, 49, 0.5); /* 赤っぽく */
+    color: #fff;
+    border: 1px solid #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+#debug-skip-btn:hover, #debug-explode-btn:hover {
+    opacity: 1;
+    background: rgba(0,0,0,0.8);
+}
+#debug-explode-btn:hover {
+    background: rgba(214, 48, 49, 0.8);
 }

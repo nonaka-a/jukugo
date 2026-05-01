@@ -285,6 +285,7 @@ const dictionaryData = {
     "出版界": { reading: "しゅっぱんかい", meaning: "出版に関する仕事をしている社会。" },
     "出版社": { reading: "しゅっぱんしゃ", meaning: "本を出版する会社。" },
     "出現": { reading: "しゅつげん", meaning: "姿が現れること。" },
+    "出血": { reading: "しゅっけつ", meaning: "血管の外に血液が出ること。また、その血。" },
     "出産": { reading: "しゅっさん", meaning: "赤ちゃんを産むこと。" },
     "出産後": { reading: "しゅっさんのち", meaning: "赤ちゃんを産んだ後の時期。" },
     "出発": { reading: "しゅっぱつ", meaning: "目的地に向かって出かけること。" },

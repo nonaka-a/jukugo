@@ -160,16 +160,34 @@ function damageNearbyEnemies(x, y, skipLines = false) {
     // 重複除去
     const uniqueCoords = Array.from(new Set(coords));
 
+    const damagedBosses = new Set();
+
     uniqueCoords.forEach(key => {
         if (!state.grid[key]) return;
 
         if (state.grid[key] === 'ENEMY' && state.enemies[key]) {
-            state.enemies[key].hp -= 1;
-            if (state.enemies[key].hp <= 0) {
+            const enemy = state.enemies[key];
+            
+            if (enemy.type === 'boss') {
+                if (damagedBosses.has(enemy)) return;
+                damagedBosses.add(enemy);
+            }
+
+            enemy.hp -= 1;
+            if (enemy.hp <= 0) {
                 const [ex, ey] = key.split(',').map(Number);
                 killEnemy(ex, ey);
             } else {
-                if (cellDOMs[key]) {
+                // ダメージ演出（ボスの場合はボス画像全体を光らせる）
+                if (enemy.type === 'boss') {
+                    const rootCell = cellDOMs[enemy.rootKey];
+                    if (rootCell) {
+                        rootCell.classList.remove('boss-hit-flash');
+                        void rootCell.offsetWidth; // 強制リフロー
+                        rootCell.classList.add('boss-hit-flash');
+                        setTimeout(() => { if (rootCell) rootCell.classList.remove('boss-hit-flash'); }, 300);
+                    }
+                } else if (cellDOMs[key]) {
                     cellDOMs[key].style.filter = 'brightness(2) contrast(2)';
                     setTimeout(() => {
                         if (cellDOMs[key]) cellDOMs[key].style.filter = '';
@@ -177,35 +195,148 @@ function damageNearbyEnemies(x, y, skipLines = false) {
                 }
             }
         } else {
-            const isObstacle = state.grid[key] === 'OBSTACLE';
-            delete state.grid[key];
-            const cell = cellDOMs[key];
-            if (cell) {
-                cell.textContent = '';
-                cell.classList.remove('occupied', 'obstacle', 'exploding', 'fast', 'faster');
+            const isHardObstacle = state.grid[key] === 'OBSTACLE_HARD';
+            const isObstacle = state.grid[key] === 'OBSTACLE' || state.grid[key] === '■';
+
+            if (isHardObstacle) {
+                // 硬い障害物は通常障害物に変化
+                state.grid[key] = 'OBSTACLE';
+                const cell = cellDOMs[key];
+                if (cell) {
+                    cell.classList.remove('obstacle-hard');
+                    cell.classList.add('obstacle');
+                }
+            } else {
+                // 通常ブロックまたは通常障害物は削除
+                const isRealObstacle = isObstacle;
+                delete state.grid[key];
+                const cell = cellDOMs[key];
+                if (cell) {
+                    cell.textContent = '';
+                    cell.classList.remove('occupied', 'obstacle', 'obstacle-hard', 'exploding', 'fast', 'faster');
+                }
+                const [ex, ey] = key.split(',').map(Number);
+                createParticles(ex, ey);
+                if (!isRealObstacle && state.grid[key] !== 'ENEMY') state.score++;
             }
-            const [ex, ey] = key.split(',').map(Number);
-            createParticles(ex, ey);
-            if (!isObstacle && state.grid[key] !== 'ENEMY') state.score++;
         }
     });
 }
 
 function killEnemy(x, y) {
     const key = `${x},${y}`;
-    createParticles(x, y);
-    delete state.grid[key];
-    delete state.enemies[key];
-    const cell = cellDOMs[key];
-    cell.classList.remove('enemy', 'occupied');
+    const enemy = state.enemies[key];
+    
+    if (enemy && enemy.type === 'boss') {
+        // すでに撃破処理中ならスキップ（多重処理防止）
+        if (enemy.isDying) return;
+        enemy.isDying = true;
+
+        const rootKey = enemy.rootKey;
+        const size = enemy.size;
+        const [rx, ry] = rootKey.split(',').map(Number);
+        
+        for (let dy = 0; dy < size; dy++) {
+            for (let dx = 0; dx < size; dx++) {
+                const k = `${rx + dx},${ry + dy}`;
+                if (state.grid[k] === 'ENEMY') {
+                    createParticles(rx + dx, ry + dy);
+                    delete state.grid[k];
+                    delete state.enemies[k];
+                    const cell = cellDOMs[k];
+                    if (cell) {
+                        cell.classList.remove('enemy', 'enemy-i', 'occupied', 'boss-dai-root', 'boss-toku-root', 'boss-part', 'boss-hit-flash');
+                    }
+                }
+            }
+        }
+        state.score += 50; // ボス撃破スコア
+    } else if (enemy) {
+        createParticles(x, y);
+        delete state.grid[key];
+        delete state.enemies[key];
+        const cell = cellDOMs[key];
+        if (cell) {
+            cell.classList.remove('enemy', 'enemy-i', 'occupied');
+        }
+        state.score += 10;
+    }
     updateStatsUI();
 }
 
+let isClearing = false;
 function checkStageClear() {
+    if (isClearing) return;
     const remainingEnemies = Object.keys(state.enemies).length;
     if (remainingEnemies === 0) {
+        isClearing = true;
+        if (state.moveInterval) {
+            clearInterval(state.moveInterval);
+            state.moveInterval = null;
+        }
         setTimeout(() => {
             showStageClearModal();
-        }, 500);
+            isClearing = false;
+        }, 800);
     }
+}
+
+function moveMovingEnemies() {
+    if (state.isShooting || state.isRouletteActive) return;
+
+    // 現在の移動する敵のキーを取得
+    const movingKeys = Object.keys(state.enemies).filter(key => state.enemies[key].type === 'moving');
+    
+    // 移動先を予約するためのセット（同じマスに重ならないように）
+    const reserved = new Set();
+
+    movingKeys.forEach(key => {
+        const [x, y] = key.split(',').map(Number);
+        const adjacents = [
+            {nx: x, ny: y - 1}, {nx: x, ny: y + 1},
+            {nx: x - 1, ny: y}, {nx: x + 1, ny: y}
+        ].filter(({nx, ny}) => {
+            const nKey = `${nx},${ny}`;
+            return nx >= 0 && nx < GRID_SIZE && ny >= 0 && ny < GRID_SIZE && !state.grid[nKey] && !reserved.has(nKey);
+        });
+
+        if (adjacents.length > 0) {
+            const next = adjacents[Math.floor(Math.random() * adjacents.length)];
+            const nKey = `${next.nx},${next.ny}`;
+            reserved.add(nKey);
+            
+            const enemyData = state.enemies[key];
+            delete state.grid[key];
+            delete state.enemies[key];
+            
+            state.grid[nKey] = 'ENEMY';
+            state.enemies[nKey] = enemyData;
+            
+            const oldCell = cellDOMs[key];
+            const newCell = cellDOMs[nKey];
+            
+            if (oldCell) oldCell.classList.remove('enemy-i');
+            if (newCell) {
+                newCell.classList.add('enemy-i');
+                // アニメーションの再トリガー
+                newCell.style.animation = 'none';
+                void newCell.offsetWidth;
+                newCell.style.animation = '';
+            }
+        }
+    });
+    if (typeof refreshHighlights === 'function') refreshHighlights();
+}
+
+function explodeAllEnemies() {
+    // 敵のリストをコピーしてからループ（killEnemy内で削除されるため）
+    const keys = Object.keys(state.enemies);
+    keys.forEach(key => {
+        // まだリストに残っているか確認（ボスなどで一括削除されている可能性があるため）
+        if (state.enemies[key]) {
+            const [x, y] = key.split(',').map(Number);
+            killEnemy(x, y);
+        }
+    });
+    checkStageClear();
 }
