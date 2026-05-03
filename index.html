@@ -14,14 +14,21 @@
 <body>
     <div id="app-container">
     
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">読み込み中…</div>
+    </div>
+    
     <!-- Title Screen -->
     <div id="title-screen">
-        <h1 class="title-logo">熟語花火</h1>
+        <img src="assets/logo.png" class="title-logo" alt="熟語花火">
         <div class="difficulty-selection">
             <button class="diff-btn easy" onclick="startGame('easy')">かんたん</button>
-            <button class="diff-btn normal" onclick="startGame('normal')">ふつう</button>
-            <button class="menu-btn" style="margin-top:20px; background-color: #8ab04c; border-top-color: #a3cc5a; border-left-color: #8ab04c; border-right-color: #6d8c3b; border-bottom-color: #6d8c3b;" onclick="toggleCollection()">👑 これくしょん 👑</button>
+            <button class="diff-btn normal" onclick="startGame('normal')">むずかしい</button>
+            <button class="menu-btn" style="margin-top:20px; background-color: #8ab04c; border-top-color: #a3cc5a; border-left-color: #8ab04c; border-right-color: #6d8c3b; border-bottom-color: #6d8c3b;" onclick="toggleCollection()">これくしょん</button>
         </div>
+        <button class="title-settings-btn" onclick="toggleSettings()"><img src="assets/haguruma.png" alt="settings"></button>
     </div>
 
     <div id="stats-container" style="display:none;">

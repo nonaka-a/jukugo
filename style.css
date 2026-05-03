@@ -173,7 +173,7 @@ button:active {
     border-width: 4px 6px 6px 6px;
 }
 
-button#settings-btn, button#history-btn {
+button#settings-btn, button#history-btn, .title-settings-btn {
     width: 60px;
     height: 60px;
     padding: 0;
@@ -188,16 +188,23 @@ button#settings-btn, button#history-btn {
     border: none;
     box-shadow: none;
     position: absolute;
-    top: 10px;
     z-index: 100;
 }
 
-button#settings-btn {
+button#settings-btn, button#history-btn {
+    top: 10px;
+}
+
+.title-settings-btn {
+    bottom: 10px;
+}
+
+button#settings-btn, .title-settings-btn {
     right: 10px;
     background-image: url('assets/Y_Block.png');
 }
 
-button#settings-btn img {
+button#settings-btn img, .title-settings-btn img {
     width: 35px;
     height: 35px;
 }
@@ -210,7 +217,7 @@ button#history-btn {
     padding-bottom: 4px;
 }
 
-button#settings-btn:active, button#history-btn:active {
+button#settings-btn:active, button#history-btn:active, .title-settings-btn:active {
     transform: scale(0.95);
     background-color: transparent;
 }
@@ -433,7 +440,7 @@ button#settings-btn:active, button#history-btn:active {
 
 .menu-btn {
     width: 100%;
-    padding: 15px;
+    padding: 10px;
     margin-top: 10px;
     border: none;
     border-radius: 12px;
@@ -466,52 +473,86 @@ button#settings-btn:active, button#history-btn:active {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: #eac88b;
-    background-image: radial-gradient(circle, rgba(255,255,255,0.4) 0%, rgba(234,200,139,1) 100%);
+    background-image: url('assets/title-bg.jpg');
+    background-size: cover;
+    background-position: center;
     z-index: 1000;
-    display: flex;
+    display: none; /* 初期は非表示 */
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
     color: #4e342e;
 }
 
+#loading-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
 .title-logo {
-    font-size: 80px;
-    font-weight: 900;
-    margin-bottom: 50px;
-    color: #f28d35;
-    text-shadow: 4px 4px 0px #b85b17, 0 0 30px rgba(184, 91, 23, 0.3);
-    letter-spacing: 10px;
-    animation: titlePulse 2s infinite alternate;
+    position: absolute;
+    right: 10px;
+    top: 40%;
+    transform: translateY(-50%);
+    width: 50%;
+    max-width: 450px;
+    height: auto;
+    filter: drop-shadow(0 0 20px rgba(0,0,0,0.5));
 }
 
 .difficulty-selection {
+    position: absolute;
+    left: 60px;
+    bottom: 80px;
     display: flex;
     flex-direction: column;
-    gap: 20px;
-    width: 300px;
+    gap: 12px;
+    width: 220px;
 }
 
 .diff-btn {
-    padding: 20px;
-    font-size: 24px;
+    padding: 12px;
+    font-size: 20px;
     font-weight: bold;
     cursor: pointer;
     background-color: #f28d35;
     border-style: solid;
-    border-width: 6px;
+    border-width: 4px;
     border-top-color: #fdb863;
     border-left-color: #f49f47;
     border-right-color: #d97325;
     border-bottom-color: #b85b17;
-    border-radius: 15px;
+    border-radius: 12px;
     color: white;
     text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
     transition: all 0.2s;
 }
 
-.diff-btn.easy { filter: hue-rotate(150deg); }
+.diff-btn.easy { /* Orange default */ }
 .diff-btn.hard { filter: hue-rotate(330deg); }
 
 .diff-btn:hover {
@@ -1131,8 +1172,17 @@ rt {
    7. Animations (@keyframes)
    ========================================= */
 @keyframes titlePulse {
-    from { transform: scale(1); text-shadow: 0 0 20px rgba(255, 255, 255, 0.5), 5px 5px 0px var(--primary-color); }
-    to { transform: scale(1.05); text-shadow: 0 0 40px rgba(255, 255, 255, 0.8), 8px 8px 0px var(--primary-color); }
+    from { transform: translateY(-50%) scale(1); }
+    to { transform: translateY(-50%) scale(1.05); }
+}
+
+@keyframes shuffleBlink {
+    0% { background-color: #f28d35; filter: brightness(1); }
+    100% { background-color: #ffffff; filter: brightness(1.2); box-shadow: 0 0 15px #fff; color: #f28d35; text-shadow: none; }
+}
+
+.shuffle-btn.hint-blink {
+    animation: shuffleBlink 0.6s infinite alternate !important;
 }
 
 @keyframes popIn { 

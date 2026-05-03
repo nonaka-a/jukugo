@@ -811,10 +811,11 @@ function renderHand() {
 }
 
 function refreshHighlights() {
+    const shuffleBtn = document.querySelector('.shuffle-btn');
+    if (shuffleBtn) shuffleBtn.classList.remove('hint-blink');
+
     document.querySelectorAll('.hint-highlight').forEach(c => c.classList.remove('hint-highlight'));
     document.querySelectorAll('.hint-specific').forEach(c => c.classList.remove('hint-specific'));
-
-    if (state.difficulty === 'hard') return;
 
     const hand = state.playerHand;
     if (hand.length === 0) return;
@@ -855,6 +856,14 @@ function refreshHighlights() {
             });
         });
     });
+
+    // どこにも熟語が作れない場合はしゃっふるボタンを点滅させる
+    if (uniqueValidTargets.size === 0 && hand.length > 0) {
+        if (shuffleBtn) shuffleBtn.classList.add('hint-blink');
+    }
+
+    // むずかしいモードの場合はヒント（タイルのハイライト）を表示しない
+    if (state.difficulty === 'hard') return;
 
     uniqueValidTargets.forEach(key => {
         if (cellDOMs[key]) cellDOMs[key].classList.add('hint-highlight');

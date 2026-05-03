@@ -161,6 +161,10 @@ function backToTitle() {
     document.getElementById('title-screen').style.display = 'flex';
     document.getElementById('stats-container').style.display = 'none';
     
+    // タイトルではBGMを止める
+    bgm.pause();
+    isBgmPlaying = false;
+    
     if (state.moveInterval) {
         clearInterval(state.moveInterval);
         state.moveInterval = null;
@@ -174,6 +178,44 @@ function backToTitle() {
     if (settingsOverlay && settingsOverlay.style.display === 'flex') {
         toggleSettings();
     }
+}
+
+async function preloadAssets() {
+    const images = [
+        'assets/BG.jpg', 'assets/BG2.jpg', 'assets/BG3.jpg',
+        'assets/Block.png', 'assets/G_Block.png', 'assets/J_Block.png', 'assets/J_Block2.png', 'assets/S_Block.png', 'assets/Y_Block.png',
+        'assets/Stage_Clear.png', 'assets/banmen.png', 'assets/banmen2.png', 'assets/banmen3.png',
+        'assets/haguruma.png', 'assets/logo.png', 'assets/tehuda.png', 'assets/title-bg.jpg',
+        'assets/toge.png', 'assets/toge_I.png', 'assets/toge_dai.png', 'assets/toge_toku.png', 'assets/和紙.png'
+    ];
+    const sounds = [
+        'assets/BGM.mp3', 'assets/BGM2.mp3', 'assets/BGM3.mp3', 'assets/firework.mp3'
+    ];
+
+    const imagePromises = images.map(src => {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = resolve;
+            img.onerror = resolve;
+            img.src = src;
+        });
+    });
+
+    const soundPromises = sounds.map(src => {
+        return new Promise((resolve) => {
+            const audio = new Audio();
+            audio.addEventListener('canplaythrough', resolve, { once: true });
+            audio.addEventListener('error', resolve, { once: true });
+            audio.src = src;
+            audio.load();
+            setTimeout(resolve, 3000); // 音声のロードが遅い、または制限されている場合のタイムアウト
+        });
+    });
+
+    await Promise.all([...imagePromises, ...soundPromises]);
+    
+    document.getElementById('loading-screen').style.display = 'none';
+    document.getElementById('title-screen').style.display = 'flex';
 }
 
 function init() {
@@ -194,6 +236,7 @@ function init() {
     setupEvents();
     
     startSpawnInterval();
+    preloadAssets(); // アセットのプリロード開始
     
     window.addEventListener('click', () => {
         if (!bgmInteracted) {
@@ -212,9 +255,8 @@ function init() {
             if (!bgm.src && BGM_LIST.length > 0) {
                 bgm.src = BGM_LIST[state.bgmIndex];
             }
-            bgm.play().then(() => {
-                isBgmPlaying = true;
-            }).catch(e => console.log("BGM Blocked", e));
+            // タイトル画面ではBGMを流さないため、ここでは再生しない
+            isBgmPlaying = false;
         }
     }, { once: true });
 }
