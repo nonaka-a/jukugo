@@ -936,7 +936,15 @@ function resetView() {
     const container = document.getElementById('main-area-container');
     container.style.width = `${GAME_W}px`;
     container.style.height = `${GAME_H}px`;
-    container.style.transform = `scale(${scale})`;
+    
+    // スケール後の実際の高さと画面余白を計算してY座標を調整
+    const scaledH = GAME_H * scale;
+    let extraY = 0;
+    if (availableH > scaledH) {
+        extraY = (availableH - scaledH) / 2;
+    }
+    
+    container.style.transform = `scale(${scale}) translateY(${extraY / scale}px)`;
     container.style.transformOrigin = 'top center';
     
     const mainArea = document.getElementById('main-area');

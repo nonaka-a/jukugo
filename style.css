@@ -661,6 +661,80 @@ button#settings-btn:active, button#history-btn:active, .title-settings-btn:activ
     color: #4e342e;
 }
 
+/* =========================================
+   Media Queries
+   ========================================= */
+@media (max-width: 600px), (max-height: 800px) {
+    .difficulty-selection {
+        width: 140px;
+        left: 15px;
+        bottom: 40px;
+        gap: 8px;
+    }
+    .diff-btn {
+        padding: 6px;
+        font-size: 14px;
+        border-width: 3px;
+        border-radius: 8px;
+    }
+    .menu-btn {
+        padding: 6px !important;
+        font-size: 14px !important;
+        margin-top: 10px !important;
+    }
+    .title-logo {
+        width: 55%;
+        max-width: 250px;
+    }
+    .title-settings-btn {
+        width: 44px;
+        height: 44px;
+        font-size: 24px;
+    }
+    .title-settings-btn img {
+        width: 26px;
+        height: 26px;
+    }
+
+    /* コレクション画面のスマホ最適化 */
+    #collection-overlay #history-modal h2 {
+        font-size: 18px;
+    }
+    .collection-description {
+        font-size: 13px;
+        margin-bottom: 10px;
+    }
+    #collection-rank-container {
+        padding: 8px 10px;
+        margin-bottom: 10px;
+    }
+    .rank-label {
+        font-size: 14px;
+    }
+    #rank-name {
+        font-size: 18px;
+    }
+    #rank-progress, #rank-desc {
+        font-size: 12px;
+    }
+    .collection-group {
+        padding: 6px;
+        margin-bottom: 8px;
+    }
+    .collection-title {
+        font-size: 15px;
+        margin-bottom: 4px;
+    }
+    .collection-words {
+        gap: 4px;
+    }
+    .collection-word {
+        font-size: 14px;
+        padding: 4px 6px;
+        min-width: 32px;
+    }
+}
+
 #settings-modal h2 {
     margin: 0;
     text-align: center;
