@@ -42,6 +42,19 @@ const COLLECTION_KANJI = new Set(
     COLLECTION_DATA.flatMap(group => group.words.flatMap(word => word.split("")))
 );
 
+const COLLECTION_TITLES = [
+    { rank: "熟語見習い", desc: "さあ熟語収集をスタートさせよう！" },
+    { rank: "熟語初級", desc: "熟語の集め方がつかめてきたね" },
+    { rank: "熟語愛好家", desc: "熟語を嗜んでおります" },
+    { rank: "熟語中級", desc: "この熟語力、もう素人とはいわせない" },
+    { rank: "熟語目利き", desc: "鋭い観察眼！良い熟語の構成を見抜けます" },
+    { rank: "熟語これくたー", desc: "かなりの種類の熟語たちがあなたの手元に" },
+    { rank: "熟語くろうと", desc: "熟語を変幻自在に使いこなす" },
+    { rank: "熟語博士", desc: "知識の深さは折り紙付き" },
+    { rank: "熟語ますたー", desc: "熟語ぱずるの極致" },
+    { rank: "熟語花火士", desc: "夜空に知識の大輪を咲かせる者" }
+];
+
 // --- 状態管理 ---
 const state = {
     grid: {},

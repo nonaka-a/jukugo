@@ -1046,6 +1046,19 @@ function toggleCollection() {
 }
 
 function updateCollectionUI() {
+    let completedGroupsCount = 0;
+    COLLECTION_DATA.forEach(group => {
+        if (group.words.every(w => state.collection.includes(w))) {
+            completedGroupsCount++;
+        }
+    });
+
+    const titleData = COLLECTION_TITLES[completedGroupsCount] || COLLECTION_TITLES[COLLECTION_TITLES.length - 1];
+    
+    document.getElementById('rank-name').textContent = titleData.rank;
+    document.getElementById('rank-progress').textContent = `（達成数: ${completedGroupsCount}/${COLLECTION_DATA.length}）`;
+    document.getElementById('rank-desc').textContent = titleData.desc;
+
     const list = document.getElementById('collection-list');
     list.innerHTML = '';
     

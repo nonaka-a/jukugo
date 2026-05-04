@@ -467,6 +467,44 @@ button#settings-btn:active, button#history-btn:active, .title-settings-btn:activ
     font-weight: bold;
 }
 
+#collection-rank-container {
+    background: #fff;
+    border: 3px solid #8ab04c;
+    border-radius: 8px;
+    padding: 10px 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.rank-title-row {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.rank-label {
+    font-size: 16px;
+    color: #6d8c3b;
+}
+
+#rank-name {
+    font-size: 24px;
+    color: #f28d35;
+    text-shadow: 1px 1px 0 #fff;
+}
+
+#rank-progress {
+    font-size: 14px;
+    color: #7f8c8d;
+    margin-left: 5px;
+}
+
+#rank-desc {
+    font-size: 14px;
+    color: #636e72;
+    font-weight: bold;
+}
+
 .menu-btn {
     width: 100%;
     padding: 10px;
