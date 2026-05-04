@@ -149,6 +149,19 @@ function startRoulette() {
     overlay.style.display = 'flex';
     overlay.onclick = handleRouletteClick;
 
+    // タイトルを画像に差し替え
+    const container = document.getElementById('roulette-container');
+    const titleH2 = container.querySelector('h2');
+    if (titleH2) {
+        titleH2.innerHTML = '<img src="assets/Roulette.png" alt="ぱわーあっぷるーれっと！">';
+    }
+    
+    // 説明文の特定の単語を強調
+    const description = container.querySelector('.roulette-description');
+    if (description) {
+        description.innerHTML = 'ルーレットを止めて<strong>「花火」「十字」「対角」「爆発」</strong>の熟語を作ろう！';
+    }
+
     initStrip('upper', document.getElementById('strip-upper'));
     initStrip('lower', document.getElementById('strip-lower'));
 
@@ -158,6 +171,7 @@ function startRoulette() {
     if (rouletteState.animId) cancelAnimationFrame(rouletteState.animId);
     rouletteState.animId = requestAnimationFrame(updateRoulette);
 }
+
 
 function initStrip(id, el) {
     const data = rouletteState[id].data;
