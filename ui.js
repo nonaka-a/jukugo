@@ -42,22 +42,39 @@ function backToTitleFromGameOver() {
     backToTitle();
 }
 
+let popupDelay = 0;
+let popupResetTimer = null;
+
 function showTimePlusPopup(amount) {
     const timeContainer = document.getElementById('time-container');
     if (!timeContainer) return;
 
-    const popup = document.createElement('div');
-    popup.className = 'time-plus-popup';
-    popup.textContent = `+${amount}`;
-    
-    const offsetX = (Math.random() - 0.5) * 30 + 10;
-    popup.style.left = `calc(100% + ${offsetX}px)`;
-
-    timeContainer.appendChild(popup);
-
     setTimeout(() => {
-        if (popup.parentNode) popup.remove();
-    }, 1000);
+        const popup = document.createElement('div');
+        popup.className = 'time-plus-popup';
+        popup.textContent = `+${amount}`;
+        
+        // 上下左右にランダムに少しずらす
+        const offsetX = (Math.random() - 0.5) * 20 + 10;
+        const offsetY = (Math.random() - 0.5) * 20;
+        popup.style.left = `calc(100% + ${offsetX}px)`;
+        popup.style.top = `${offsetY}px`;
+
+        timeContainer.appendChild(popup);
+
+        setTimeout(() => {
+            if (popup.parentNode) popup.remove();
+        }, 1000);
+    }, popupDelay);
+
+    // 次のポップアップを300ms遅らせる
+    popupDelay += 300;
+    
+    // 一定時間追加がなければ遅延をリセット
+    clearTimeout(popupResetTimer);
+    popupResetTimer = setTimeout(() => {
+        popupDelay = 0;
+    }, popupDelay + 100);
 }
 
 function updateStatsUI() {

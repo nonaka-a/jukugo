@@ -104,21 +104,21 @@ h1 {
 
 .time-plus-popup {
     position: absolute;
-    top: -10px;
+    top: 0;
     color: #d63031;
     font-weight: 900;
     font-size: 1.4em;
     text-shadow: 2px 2px 0 #fff, -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff;
     pointer-events: none;
-    animation: floatUpFade 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    animation: popFade 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
     z-index: 100;
 }
 
-@keyframes floatUpFade {
-    0% { transform: translateY(0) scale(0.5); opacity: 0; }
-    20% { transform: translateY(-10px) scale(1.2); opacity: 1; }
-    80% { transform: translateY(-30px) scale(1); opacity: 1; }
-    100% { transform: translateY(-40px) scale(1); opacity: 0; }
+@keyframes popFade {
+    0% { transform: scale(0.5); opacity: 0; }
+    20% { transform: scale(1.2); opacity: 1; }
+    80% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(1); opacity: 0; }
 }
 
 #stats-container span {
