@@ -156,6 +156,8 @@ bgm.addEventListener('ended', () => {
 function startGame(difficulty) {
     state.difficulty = difficulty;
     document.getElementById('title-screen').style.display = 'none';
+    const tutorialScreen = document.getElementById('tutorial-screen');
+    if (tutorialScreen) tutorialScreen.style.display = 'none';
     document.getElementById('stats-container').style.display = 'flex';
     
     updateBGM(); 
@@ -177,6 +179,8 @@ function startGame(difficulty) {
 
 function backToTitle() {
     document.getElementById('title-screen').style.display = 'flex';
+    const tutorialScreen = document.getElementById('tutorial-screen');
+    if (tutorialScreen) tutorialScreen.style.display = 'none';
     document.getElementById('stats-container').style.display = 'none';
     
     // タイトルではBGMを止める
@@ -206,7 +210,7 @@ async function preloadAssets() {
     const images = [
         'assets/BG.jpg', 'assets/BG2.jpg', 'assets/BG3.jpg',
         'assets/Block.png', 'assets/G_Block.png', 'assets/J_Block.png', 'assets/J_Block2.png', 'assets/S_Block.png', 'assets/Y_Block.png',
-        'assets/Stage_Clear.png', 'assets/banmen.png', 'assets/banmen2.png', 'assets/banmen3.png',
+        'assets/Stage_Clear.png', 'assets/Stage_Clear_zen.png', 'assets/game_over.png', 'assets/banmen.png', 'assets/banmen2.png', 'assets/banmen3.png',
         'assets/haguruma.png', 'assets/logo.png', 'assets/tehuda.png', 'assets/title-bg.jpg',
         'assets/toge.png', 'assets/toge_I.png', 'assets/toge_dai.png', 'assets/toge_toku.png', 'assets/和紙.png'
     ];
@@ -251,6 +255,7 @@ function init() {
     setupDeck();
     initGridDOM();
     initLampsUI();
+    initTutorial();
     
     resetView();
     fillHand();
@@ -285,3 +290,4 @@ function init() {
 
 window.addEventListener('DOMContentLoaded', init);
 window.addEventListener('resize', resetView);
+window.addEventListener('resize', updateTutorialLayout);

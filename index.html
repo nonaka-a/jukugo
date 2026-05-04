@@ -24,11 +24,50 @@
     <div id="title-screen">
         <img src="assets/logo.png" class="title-logo" alt="熟語花火">
         <div class="difficulty-selection">
+            <button class="diff-btn tutorial" onclick="openTutorial()">あそびかた</button>
             <button class="diff-btn easy" onclick="startGame('easy')">かんたん</button>
             <button class="diff-btn normal" onclick="startGame('normal')">むずかしい</button>
             <button class="menu-btn" style="margin-top:20px; background-color: #8ab04c; border-top-color: #a3cc5a; border-left-color: #8ab04c; border-right-color: #6d8c3b; border-bottom-color: #6d8c3b;" onclick="toggleCollection()">これくしょん</button>
         </div>
         <button class="title-settings-btn" onclick="toggleSettings()"><img src="assets/haguruma.png" alt="settings"></button>
+    </div>
+
+    <div id="tutorial-screen" style="display:none;">
+        <div id="tutorial-stats-container">
+            <div class="stats-row">
+                <div>すてーじ: <span id="tutorial-stage-val">1</span></div>
+                <div>せつめい: <span id="tutorial-step-val">1/5</span></div>
+                <div>のこり敵: <span id="tutorial-enemy-val">1</span></div>
+            </div>
+        </div>
+
+        <div id="tutorial-main-area">
+            <div class="tutorial-stage-shell">
+                <div class="tutorial-stage-scale">
+                    <div class="tutorial-game-window">
+                        <div id="tutorial-grid-container"></div>
+                        <div id="tutorial-launcher" style="display:none;"></div>
+                        <div id="tutorial-guide-line" style="display:none;"></div>
+                        <div id="tutorial-shot-tile" style="display:none;"></div>
+                    </div>
+
+                    <div id="tutorial-solo-hand-area">
+                        <div id="tutorial-hand-container" class="hand-container"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tutorial-text-panel">
+                <div id="tutorial-step-title">あそびかた 1</div>
+                <div id="tutorial-step-text"></div>
+            </div>
+
+            <div id="tutorial-controls">
+                <button id="tutorial-prev-btn" class="menu-btn" onclick="prevTutorialStep()">もどる</button>
+                <button id="tutorial-close-btn" class="menu-btn" onclick="closeTutorial()">とじる</button>
+                <button id="tutorial-next-btn" class="menu-btn" onclick="nextTutorialStep()">次へ</button>
+            </div>
+        </div>
     </div>
 
     <div id="stats-container" style="display:none;">
@@ -122,7 +161,7 @@
         <div id="roulette-overlay" style="display:none;">
             <div id="roulette-container">
                 <h2>ぱわーあっぷるーれっと！</h2>
-                <div class="roulette-description">るーれっとを止めて「花火」「十字」「対角」「爆発」の熟語を作ろう！</div>
+                <div class="roulette-description">ルーレットを止めて「花火」「十字」「対角」「爆発」の熟語を作ろう！</div>
                 <div class="slots">
                     <div id="slot-upper" class="slot">
                         <div class="slot-strip" id="strip-upper"></div>

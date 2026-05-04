@@ -1266,3 +1266,524 @@ function backToTitleFromClear() {
     if (overlay) overlay.style.display = 'none';
     backToTitle();
 }
+
+const TUTORIAL_STEPS = [
+    {
+        title: 'あそびかた 1',
+        text: '下のてふだから好きな漢字をえらび、盤面の外からすべらせて配置します。'
+    },
+    {
+        title: 'あそびかた 2',
+        text: '黄色く点滅するマスは、手札の漢字のうちどれかで熟語が作れるこうほのマスです。'
+    },
+    {
+        title: 'あそびかた 3',
+        text: 'かんたんモードのみ、選んでいる漢字で熟語が作れる場所があれば、赤いわくで知らせます。'
+    },
+    {
+        title: 'あそびかた 4',
+        text: 'どこからすべらせると置けるかを考えましょう。熟語ができると花火のように爆発し、まわりの敵やブロックをこわせます。'
+    },
+    {
+        title: 'あそびかた 5',
+        text: '制限時間内にすべての敵をたおすとステージクリアです。\n遊び方は以上です。'
+    }
+];
+
+const TUTORIAL_HAND = ['森', '火', '雨', '空'];
+const TUTORIAL_SPECIAL = ['花', '火', '爆', '発', '十', '字', '対', '角'];
+const TUTORIAL_LOGICAL_STAGE_HEIGHT = 836;
+const TUTORIAL_BOARD_BASE = [
+    { x: 0, y: 1, char: '山' },
+    { x: 6, y: 1, type: 'obstacle' },
+    { x: 7, y: 6, type: 'enemy' },
+    { x: 6, y: 7, char: '林' },
+    { x: 2, y: 3, char: '花' },
+    { x: 4, y: 3, type: 'enemy' },
+    { x: 4, y: 4, type: 'enemy' },
+    { x: 3, y: 4, type: 'obstacle' },
+    { x: 2, y: 5, char: '川' }
+];
+const TUTORIAL_BOARD_AFTER_FIRST = [
+    ...TUTORIAL_BOARD_BASE,
+    { x: 1, y: 5, char: '森' }
+];
+const TUTORIAL_BOARD_AFTER_EXPLOSION = [
+    { x: 0, y: 1, char: '山' },
+    { x: 6, y: 1, type: 'obstacle' },
+    { x: 7, y: 6, type: 'enemy' },
+    { x: 6, y: 7, char: '林' },
+    { x: 1, y: 5, char: '森' },
+    { x: 2, y: 5, char: '川' }
+];
+
+let tutorialRefs = {};
+let tutorialState = {
+    step: 0,
+    timers: [],
+    cells: {},
+    isInitialized: false
+};
+
+const TUTORIAL_TARGET_KEYS = ['2,3', '3,3'];
+const TUTORIAL_BLAST_KEYS = ['2,3', '3,3', '4,3', '4,4', '3,4'];
+
+function initTutorial() {
+    tutorialRefs.screen = document.getElementById('tutorial-screen');
+    tutorialRefs.grid = document.getElementById('tutorial-grid-container');
+    tutorialRefs.hand = document.getElementById('tutorial-hand-container');
+    tutorialRefs.launcher = document.getElementById('tutorial-launcher');
+    tutorialRefs.guide = document.getElementById('tutorial-guide-line');
+    tutorialRefs.shot = document.getElementById('tutorial-shot-tile');
+    tutorialRefs.stepTitle = document.getElementById('tutorial-step-title');
+    tutorialRefs.stepText = document.getElementById('tutorial-step-text');
+    tutorialRefs.stepVal = document.getElementById('tutorial-step-val');
+    tutorialRefs.enemyVal = document.getElementById('tutorial-enemy-val');
+    tutorialRefs.prevBtn = document.getElementById('tutorial-prev-btn');
+    tutorialRefs.nextBtn = document.getElementById('tutorial-next-btn');
+    tutorialRefs.closeBtn = document.getElementById('tutorial-close-btn');
+    tutorialRefs.stageShell = document.querySelector('.tutorial-stage-shell');
+    tutorialRefs.stageScale = document.querySelector('.tutorial-stage-scale');
+    tutorialRefs.textPanel = document.getElementById('tutorial-text-panel');
+    tutorialRefs.controls = document.getElementById('tutorial-controls');
+    tutorialRefs.stats = document.getElementById('tutorial-stats-container');
+
+    if (!tutorialRefs.grid) return;
+
+    tutorialRefs.grid.innerHTML = '';
+    tutorialState.cells = {};
+    for (let y = 0; y < GRID_SIZE; y++) {
+        for (let x = 0; x < GRID_SIZE; x++) {
+            const cell = document.createElement('div');
+            cell.className = 'cell';
+            tutorialRefs.grid.appendChild(cell);
+            tutorialState.cells[`${x},${y}`] = cell;
+        }
+    }
+
+    tutorialState.isInitialized = true;
+}
+
+function openTutorial() {
+    if (!tutorialState.isInitialized) initTutorial();
+    if (!tutorialRefs.screen) return;
+
+    clearTutorialTimers();
+    document.getElementById('title-screen').style.display = 'none';
+    tutorialRefs.screen.style.display = 'flex';
+    tutorialState.step = 0;
+    renderTutorialStep();
+    updateTutorialLayout();
+}
+
+function closeTutorial() {
+    clearTutorialTimers();
+    if (tutorialRefs.screen) tutorialRefs.screen.style.display = 'none';
+    document.getElementById('title-screen').style.display = 'flex';
+}
+
+function nextTutorialStep() {
+    if (tutorialState.step >= TUTORIAL_STEPS.length - 1) return;
+    tutorialState.step += 1;
+    renderTutorialStep();
+}
+
+function prevTutorialStep() {
+    if (tutorialState.step <= 0) return;
+    tutorialState.step -= 1;
+    renderTutorialStep();
+}
+
+function clearTutorialTimers() {
+    tutorialState.timers.forEach(timer => clearTimeout(timer));
+    tutorialState.timers = [];
+}
+
+function addTutorialTimer(callback, delay) {
+    const timer = setTimeout(callback, delay);
+    tutorialState.timers.push(timer);
+}
+
+function renderTutorialStep() {
+    const step = TUTORIAL_STEPS[tutorialState.step];
+    if (!step) return;
+
+    clearTutorialTimers();
+    resetTutorialTransientUI();
+
+    tutorialRefs.stepTitle.textContent = step.title;
+    tutorialRefs.stepText.textContent = step.text;
+    tutorialRefs.stepVal.textContent = `${tutorialState.step + 1}/${TUTORIAL_STEPS.length}`;
+    tutorialRefs.prevBtn.disabled = tutorialState.step === 0;
+    tutorialRefs.nextBtn.style.display = tutorialState.step === TUTORIAL_STEPS.length - 1 ? 'none' : 'inline-block';
+    tutorialRefs.closeBtn.classList.toggle('final-step', tutorialState.step === TUTORIAL_STEPS.length - 1);
+    updateTutorialLayout();
+
+    if (tutorialState.step === 0) {
+        renderTutorialBoard(TUTORIAL_BOARD_BASE);
+        renderTutorialHand(0);
+        setTutorialEnemyCount(3);
+        playTutorialPlacementDemo();
+    } else if (tutorialState.step === 1) {
+        renderTutorialBoard(TUTORIAL_BOARD_AFTER_FIRST);
+        renderTutorialHand(0, [0]);
+        setTutorialEnemyCount(3);
+        highlightTutorialCells(['3,3'], []);
+    } else if (tutorialState.step === 2) {
+        renderTutorialBoard(TUTORIAL_BOARD_AFTER_FIRST);
+        renderTutorialHand(0, [0]);
+        setTutorialEnemyCount(3);
+        highlightTutorialCells(['3,3'], []);
+        addTutorialTimer(() => {
+            renderTutorialHand(1, [0], 1);
+            highlightTutorialCells(['3,3'], ['3,3']);
+        }, 700);
+    } else if (tutorialState.step === 3) {
+        renderTutorialBoard(TUTORIAL_BOARD_AFTER_FIRST);
+        renderTutorialHand(1, [0]);
+        setTutorialEnemyCount(3);
+        highlightTutorialCells(['3,3'], ['3,3']);
+        playTutorialExplosionDemo();
+    } else {
+        renderTutorialBoard(TUTORIAL_BOARD_AFTER_EXPLOSION);
+        renderTutorialHand(1, [0, 1]);
+        setTutorialEnemyCount(1);
+    }
+}
+
+function resetTutorialTransientUI() {
+    tutorialRefs.hand.classList.remove('tutorial-emphasis');
+    tutorialRefs.launcher.style.display = 'none';
+    tutorialRefs.guide.style.display = 'none';
+    tutorialRefs.shot.style.display = 'none';
+    tutorialRefs.shot.style.transition = 'none';
+    tutorialRefs.shot.style.left = '-9999px';
+    tutorialRefs.shot.style.top = '-9999px';
+    const tutorialWindow = tutorialRefs.grid ? tutorialRefs.grid.parentElement : null;
+    if (tutorialWindow) {
+        tutorialWindow.classList.remove('shake');
+        tutorialWindow.querySelectorAll('.particle').forEach(p => p.remove());
+    }
+}
+
+function renderTutorialBoard(entries) {
+    Object.values(tutorialState.cells).forEach(cell => {
+        cell.textContent = '';
+        cell.className = 'cell';
+        cell.style.filter = '';
+    });
+
+    entries.forEach(entry => {
+        const cell = tutorialState.cells[`${entry.x},${entry.y}`];
+        if (!cell) return;
+
+        if (entry.type === 'enemy') {
+            cell.classList.add('enemy');
+        } else if (entry.type === 'obstacle') {
+            cell.classList.add('occupied', 'obstacle');
+            cell.textContent = '■';
+        } else if (entry.char) {
+            cell.textContent = entry.char;
+            cell.classList.add('occupied');
+            if (TUTORIAL_SPECIAL.includes(entry.char)) cell.classList.add('y-block');
+            if (COLLECTION_KANJI.has(entry.char)) cell.classList.add('g-block');
+        }
+    });
+}
+
+function renderTutorialHand(selectedIndex, hiddenIndexes = [], popIndex = null) {
+    const hiddenSet = new Set(Array.isArray(hiddenIndexes) ? hiddenIndexes : [hiddenIndexes]);
+    tutorialRefs.hand.innerHTML = '';
+    TUTORIAL_HAND.forEach((char, index) => {
+        if (hiddenSet.has(index)) return;
+        const tile = document.createElement('div');
+        tile.className = 'hand-tile';
+        tile.textContent = char;
+        if (TUTORIAL_SPECIAL.includes(char)) tile.classList.add('y-block');
+        if (COLLECTION_KANJI.has(char)) tile.classList.add('g-block');
+        if (index === selectedIndex) tile.classList.add('selected');
+        if (index === popIndex) tile.classList.add('tutorial-hand-pop');
+        tutorialRefs.hand.appendChild(tile);
+    });
+}
+
+function setTutorialEnemyCount(count) {
+    tutorialRefs.enemyVal.textContent = count;
+}
+
+function highlightTutorialCells(hintKeys, specificKeys) {
+    Object.values(tutorialState.cells).forEach(cell => {
+        cell.classList.remove('hint-highlight', 'hint-specific', 'clearing-highlight', 'success-flash', 'exploding', 'fast', 'faster');
+    });
+
+    hintKeys.forEach(key => {
+        const cell = tutorialState.cells[key];
+        if (cell) cell.classList.add('hint-highlight');
+    });
+    specificKeys.forEach(key => {
+        const cell = tutorialState.cells[key];
+        if (cell) cell.classList.add('hint-specific');
+    });
+}
+
+function applyTutorialTileStyle(el, char) {
+    el.className = '';
+    el.textContent = char;
+    el.classList.add('hand-tile');
+    if (TUTORIAL_SPECIAL.includes(char)) el.classList.add('y-block');
+    if (COLLECTION_KANJI.has(char)) el.classList.add('g-block');
+}
+
+function showTutorialLauncher(char, row) {
+    showTutorialLauncherWithDirection(char, row, 'left');
+}
+
+function hideTutorialLauncher() {
+    tutorialRefs.launcher.style.display = 'none';
+    tutorialRefs.guide.style.display = 'none';
+}
+
+function animateTutorialShot(char, row, targetX, targetY, onArrive, fromDir = 'left', removeHandIndex = null, hiddenBefore = []) {
+    const gx = (GAME_SIZE - GRID_SIZE * TILE_SIZE) / 2;
+    const gy = (GAME_SIZE - GRID_SIZE * TILE_SIZE) / 2;
+    const pos = getTutorialLauncherPosition(fromDir, row, targetX);
+    const endX = gx + targetX * TILE_SIZE;
+    const endY = gy + targetY * TILE_SIZE;
+
+    showTutorialLauncherWithDirection(char, row, fromDir, targetX);
+
+    addTutorialTimer(() => {
+        hideTutorialLauncher();
+        if (removeHandIndex !== null) {
+            renderTutorialHand(removeHandIndex, [...hiddenBefore, removeHandIndex]);
+        }
+        applyTutorialTileStyle(tutorialRefs.shot, char);
+        tutorialRefs.shot.style.display = 'flex';
+        tutorialRefs.shot.style.transition = 'none';
+        tutorialRefs.shot.style.left = `${pos.startX}px`;
+        tutorialRefs.shot.style.top = `${pos.startY}px`;
+
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                tutorialRefs.shot.style.transition = 'left 0.55s linear, top 0.55s linear';
+                tutorialRefs.shot.style.left = `${endX}px`;
+                tutorialRefs.shot.style.top = `${endY}px`;
+            });
+        });
+    }, 450);
+
+    addTutorialTimer(() => {
+        tutorialRefs.shot.style.display = 'none';
+        hideTutorialLauncher();
+        if (onArrive) onArrive();
+    }, 1050);
+}
+
+function playTutorialPlacementDemo() {
+    animateTutorialShot('森', 5, 1, 5, () => {
+        renderTutorialBoard(TUTORIAL_BOARD_AFTER_FIRST);
+        renderTutorialHand(0, [0]);
+        addTutorialTimer(() => {
+            if (tutorialState.step !== 0) return;
+            renderTutorialBoard(TUTORIAL_BOARD_BASE);
+            renderTutorialHand(0);
+            playTutorialPlacementDemo();
+        }, 1200);
+    }, 'left', 0);
+}
+
+function playTutorialExplosionDemo() {
+    showTutorialLauncherWithDirection('火', 3, 'right', 3);
+    addTutorialTimer(() => showTutorialLauncherWithDirection('火', 3, 'bottom', 3), 1000);
+    addTutorialTimer(() => {
+        animateTutorialShot('火', 3, 3, 3, () => {
+            renderTutorialBoard([
+                ...TUTORIAL_BOARD_AFTER_FIRST,
+                { x: 3, y: 3, char: '火' }
+            ]);
+            renderTutorialHand(1, [0, 1]);
+            highlightTutorialCells(TUTORIAL_TARGET_KEYS, ['3,3']);
+
+            TUTORIAL_TARGET_KEYS.forEach(key => {
+                const cell = tutorialState.cells[key];
+                if (cell) cell.classList.add('clearing-highlight', 'success-flash');
+            });
+
+            addTutorialTimer(() => {
+                TUTORIAL_TARGET_KEYS.forEach(key => {
+                    const cell = tutorialState.cells[key];
+                    if (cell) cell.classList.remove('success-flash');
+                });
+                TUTORIAL_TARGET_KEYS.forEach(key => {
+                    const cell = tutorialState.cells[key];
+                    if (cell) cell.classList.add('exploding');
+                });
+            }, 600);
+
+            addTutorialTimer(() => {
+                TUTORIAL_TARGET_KEYS.forEach(key => {
+                    const cell = tutorialState.cells[key];
+                    if (cell) cell.classList.add('fast');
+                });
+            }, 1100);
+
+            addTutorialTimer(() => {
+                TUTORIAL_TARGET_KEYS.forEach(key => {
+                    const cell = tutorialState.cells[key];
+                    if (cell) cell.classList.add('faster');
+                });
+            }, 1600);
+
+            addTutorialTimer(() => {
+                const tutorialWindow = tutorialRefs.grid.parentElement;
+                if (tutorialWindow) {
+                    tutorialWindow.classList.remove('shake');
+                    void tutorialWindow.offsetWidth;
+                    tutorialWindow.classList.add('shake');
+                }
+
+                TUTORIAL_BLAST_KEYS.forEach(key => {
+                    const [x, y] = key.split(',').map(Number);
+                    createTutorialParticles(x, y);
+                });
+            }, 2100);
+
+            addTutorialTimer(() => {
+                const tutorialWindow = tutorialRefs.grid.parentElement;
+                if (tutorialWindow) tutorialWindow.classList.remove('shake');
+                renderTutorialBoard(TUTORIAL_BOARD_AFTER_EXPLOSION);
+                setTutorialEnemyCount(1);
+                
+                addTutorialTimer(() => {
+                    if (tutorialState.step !== 3) return;
+                    renderTutorialBoard(TUTORIAL_BOARD_AFTER_FIRST);
+                    renderTutorialHand(1, [0]);
+                    setTutorialEnemyCount(3);
+                    highlightTutorialCells(['3,3'], ['3,3']);
+                    playTutorialExplosionDemo();
+                }, 1500);
+            }, 2380);
+        }, 'top', 1, [0]);
+    }, 2200);
+}
+
+function createTutorialParticles(x, y) {
+    const tutorialWindow = tutorialRefs.grid ? tutorialRefs.grid.parentElement : null;
+    const cell = tutorialState.cells[`${x},${y}`];
+    if (!tutorialWindow || !cell) return;
+
+    const gx = (GAME_SIZE - GRID_SIZE * TILE_SIZE) / 2;
+    const gy = (GAME_SIZE - GRID_SIZE * TILE_SIZE) / 2;
+    const centerX = gx + x * TILE_SIZE + TILE_SIZE / 2;
+    const centerY = gy + y * TILE_SIZE + TILE_SIZE / 2;
+    const colors = ['#f28d35', '#fdcb6e', '#d63031', '#ffffff'];
+
+    for (let i = 0; i < 18; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        p.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        p.style.boxShadow = `0 0 10px ${p.style.backgroundColor}`;
+        tutorialWindow.appendChild(p);
+
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 4 + Math.random() * 8;
+        const vx = Math.cos(angle) * speed;
+        const vy = Math.sin(angle) * speed;
+        let px = centerX;
+        let py = centerY;
+        let opacity = 1;
+        let scaleVal = 1 + Math.random() * 0.5;
+        let lastTime = performance.now();
+
+        const animate = (currentTime) => {
+            const dt = (currentTime - lastTime) / 16.666;
+            lastTime = currentTime;
+            px += vx * dt;
+            py += vy * dt;
+            opacity -= 0.02 * dt;
+            scaleVal -= 0.01 * dt;
+            p.style.left = `${px}px`;
+            p.style.top = `${py}px`;
+            p.style.opacity = opacity;
+            p.style.transform = `scale(${scaleVal})`;
+
+            if (opacity > 0) {
+                requestAnimationFrame(animate);
+            } else {
+                p.remove();
+            }
+        };
+
+        requestAnimationFrame(animate);
+    }
+}
+
+function updateTutorialLayout() {
+    if (!tutorialRefs.screen || tutorialRefs.screen.style.display !== 'flex' || !tutorialRefs.stageScale) return;
+
+    const logicalWidth = GAME_SIZE;
+    const logicalHeight = TUTORIAL_LOGICAL_STAGE_HEIGHT;
+    const availableWidth = tutorialRefs.screen.clientWidth - 8;
+    const statsHeight = tutorialRefs.stats ? tutorialRefs.stats.offsetHeight : 0;
+    const textHeight = tutorialRefs.textPanel ? tutorialRefs.textPanel.offsetHeight : 0;
+    const controlsHeight = tutorialRefs.controls ? tutorialRefs.controls.offsetHeight : 0;
+    const reservedHeight = statsHeight + textHeight + controlsHeight + 42;
+    const availableHeight = Math.max(240, tutorialRefs.screen.clientHeight - reservedHeight);
+    const tutorialScale = Math.min(availableWidth / logicalWidth, availableHeight / logicalHeight, 1.04);
+
+    tutorialRefs.stageScale.style.transform = `scale(${tutorialScale})`;
+    tutorialRefs.stageShell.style.height = `${logicalHeight * tutorialScale}px`;
+}
+
+function getTutorialLauncherPosition(fromDir, row, col = 0) {
+    const gx = (GAME_SIZE - GRID_SIZE * TILE_SIZE) / 2;
+    const gy = (GAME_SIZE - GRID_SIZE * TILE_SIZE) / 2;
+    const startY = gy + row * TILE_SIZE;
+    if (fromDir === 'right') {
+        return {
+            startX: gx + GRID_SIZE * TILE_SIZE + 10,
+            startY,
+            guideLeft: gx + (TILE_SIZE / 2),
+            guideTop: startY + (TILE_SIZE / 2)
+        };
+    }
+    if (fromDir === 'bottom') {
+        return {
+            startX: gx + col * TILE_SIZE,
+            startY: gy + GRID_SIZE * TILE_SIZE + 10,
+            guideLeft: gx + col * TILE_SIZE + (TILE_SIZE / 2),
+            guideTop: gy + (TILE_SIZE / 2),
+            vertical: true
+        };
+    }
+    if (fromDir === 'top') {
+        return {
+            startX: gx + col * TILE_SIZE,
+            startY: gy - 70,
+            guideLeft: gx + col * TILE_SIZE + (TILE_SIZE / 2),
+            guideTop: gy + (TILE_SIZE / 2),
+            vertical: true
+        };
+    }
+    return {
+        startX: gx - 70,
+        startY,
+        guideLeft: gx + (TILE_SIZE / 2),
+        guideTop: startY + (TILE_SIZE / 2)
+    };
+}
+
+function showTutorialLauncherWithDirection(char, row, fromDir, col = 0) {
+    const pos = getTutorialLauncherPosition(fromDir, row, col);
+
+    applyTutorialTileStyle(tutorialRefs.launcher, char);
+    tutorialRefs.launcher.style.display = 'flex';
+    tutorialRefs.launcher.style.left = `${pos.startX}px`;
+    tutorialRefs.launcher.style.top = `${pos.startY}px`;
+
+    tutorialRefs.guide.style.display = 'block';
+    tutorialRefs.guide.style.left = `${pos.guideLeft}px`;
+    tutorialRefs.guide.style.top = `${pos.guideTop}px`;
+    tutorialRefs.guide.style.width = pos.vertical ? '1px' : `${GRID_SIZE * TILE_SIZE}px`;
+    tutorialRefs.guide.style.height = pos.vertical ? `${GRID_SIZE * TILE_SIZE}px` : '1px';
+}
