@@ -32,10 +32,15 @@
     </div>
 
     <div id="stats-container" style="display:none;">
-        <div>すてーじ: <span id="stage-val">1</span></div>
-        <div id="lamp-container" class="lamp-container"></div>
-        <div id="powerup-label" style="color: #d63031; font-weight: 900; font-size: 1.2em; margin-left: 10px;"></div>
-        <div>のこり敵: <span id="enemy-val">0</span></div>
+        <div class="stats-row">
+            <div>すてーじ: <span id="stage-val">1</span></div>
+            <div id="time-container" style="position: relative;">制限時間: <span id="time-val">200</span></div>
+            <div>のこり敵: <span id="enemy-val">0</span></div>
+        </div>
+        <div class="stats-row" style="gap: 10px;">
+            <div id="lamp-container" class="lamp-container"></div>
+            <div id="powerup-label" style="color: #d63031; font-weight: 900; font-size: 1.2em;"></div>
+        </div>
     </div>
     
     <div id="game-layout">
@@ -126,6 +131,16 @@
                 <div class="modal-buttons">
                     <button class="clear-btn next" onclick="nextStage()">つぎへ</button>
                     <button class="clear-btn title" onclick="backToTitleFromClear()">たいとるへ</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Game Over Modal -->
+        <div id="game-over-overlay" style="display:none;">
+            <div id="stage-clear-modal">
+                <h2 id="clear-title" style="color: #636e72; text-shadow: 2px 2px 0 #2d3436;">げーむ<br>おーばー！</h2>
+                <div class="modal-buttons">
+                    <button class="clear-btn title" onclick="backToTitleFromGameOver()">たいとるへ</button>
                 </div>
             </div>
         </div>

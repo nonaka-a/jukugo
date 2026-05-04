@@ -68,7 +68,9 @@ const state = {
     },
     isRouletteActive: false,
     isPowerUpActive: false,
-    moveInterval: null
+    moveInterval: null,
+    timeLimit: 200,
+    timerInterval: null
 };
 
 // --- BGM・システム制御 ---

@@ -33,10 +33,39 @@ function toggleFullscreen() {
     }
 }
 
+function showGameOverModal() {
+    document.getElementById('game-over-overlay').style.display = 'flex';
+}
+
+function backToTitleFromGameOver() {
+    document.getElementById('game-over-overlay').style.display = 'none';
+    backToTitle();
+}
+
+function showTimePlusPopup(amount) {
+    const timeContainer = document.getElementById('time-container');
+    if (!timeContainer) return;
+
+    const popup = document.createElement('div');
+    popup.className = 'time-plus-popup';
+    popup.textContent = `+${amount}`;
+    
+    const offsetX = (Math.random() - 0.5) * 30 + 10;
+    popup.style.left = `calc(100% + ${offsetX}px)`;
+
+    timeContainer.appendChild(popup);
+
+    setTimeout(() => {
+        if (popup.parentNode) popup.remove();
+    }, 1000);
+}
+
 function updateStatsUI() {
     const stageEl = document.getElementById('stage-val');
+    const timeEl = document.getElementById('time-val');
     const enemyEl = document.getElementById('enemy-val');
     if (stageEl) stageEl.textContent = state.currentStage + 1;
+    if (timeEl) timeEl.textContent = state.timeLimit;
     const uniqueEnemies = new Set(Object.values(state.enemies));
     if (enemyEl) enemyEl.textContent = uniqueEnemies.size;
     updateLampsUI();

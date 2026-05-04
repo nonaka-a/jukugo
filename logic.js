@@ -290,6 +290,8 @@ function killEnemy(x, y) {
                     if (cell) {
                         cell.classList.remove('enemy', 'enemy-i', 'occupied', 'boss-dai-root', 'boss-toku-root', 'boss-part', 'boss-hit-flash', 'obstacle-j2');
                     }
+                    state.timeLimit += 10;
+                    if (typeof showTimePlusPopup === 'function') showTimePlusPopup(10);
                 }
             }
         }
@@ -302,6 +304,8 @@ function killEnemy(x, y) {
         if (cell) {
             cell.classList.remove('enemy', 'enemy-i', 'occupied');
         }
+        state.timeLimit += 10;
+        if (typeof showTimePlusPopup === 'function') showTimePlusPopup(10);
         state.score += 10;
     }
     updateStatsUI();
@@ -316,6 +320,10 @@ function checkStageClear() {
         if (state.moveInterval) {
             clearInterval(state.moveInterval);
             state.moveInterval = null;
+        }
+        if (state.timerInterval) {
+            clearInterval(state.timerInterval);
+            state.timerInterval = null;
         }
         setTimeout(() => {
             showStageClearModal();

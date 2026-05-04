@@ -35,6 +35,10 @@ function loadStage(index) {
         clearInterval(state.moveInterval);
         state.moveInterval = null;
     }
+    if (state.timerInterval) {
+        clearInterval(state.timerInterval);
+        state.timerInterval = null;
+    }
 
     Object.keys(cellDOMs).forEach(key => {
         const cell = cellDOMs[key];
@@ -119,6 +123,20 @@ function loadStage(index) {
         }
     }
     
+    state.timeLimit = 200;
+    if (state.timerInterval) clearInterval(state.timerInterval);
+    state.timerInterval = setInterval(() => {
+        if (!isClearing && !state.isRouletteActive) {
+            state.timeLimit--;
+            updateStatsUI();
+            if (state.timeLimit <= 0) {
+                clearInterval(state.timerInterval);
+                state.timerInterval = null;
+                showGameOverModal();
+            }
+        }
+    }, 1000);
+
     refreshHighlights();
     updateStatsUI();
 }
@@ -168,6 +186,10 @@ function backToTitle() {
     if (state.moveInterval) {
         clearInterval(state.moveInterval);
         state.moveInterval = null;
+    }
+    if (state.timerInterval) {
+        clearInterval(state.timerInterval);
+        state.timerInterval = null;
     }
     if (spawnInterval) {
         clearInterval(spawnInterval);

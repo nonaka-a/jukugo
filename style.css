@@ -84,18 +84,47 @@ h1 {
 
 #stats-container {
     display: flex;
-    gap: 30px;
+    flex-direction: column;
+    gap: 8px;
     margin-bottom: 10px;
     background: var(--panel-bg);
-    padding: 8px 30px;
-    border-radius: 50px;
+    padding: 10px 30px;
+    border-radius: 30px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.05);
     font-weight: bold;
+    align-items: center;
+}
+
+.stats-row {
+    display: flex;
+    gap: 30px;
+    align-items: center;
+    justify-content: center;
+}
+
+.time-plus-popup {
+    position: absolute;
+    top: -10px;
+    color: #d63031;
+    font-weight: 900;
+    font-size: 1.4em;
+    text-shadow: 2px 2px 0 #fff, -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff;
+    pointer-events: none;
+    animation: floatUpFade 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    z-index: 100;
+}
+
+@keyframes floatUpFade {
+    0% { transform: translateY(0) scale(0.5); opacity: 0; }
+    20% { transform: translateY(-10px) scale(1.2); opacity: 1; }
+    80% { transform: translateY(-30px) scale(1); opacity: 1; }
+    100% { transform: translateY(-40px) scale(1); opacity: 0; }
 }
 
 #stats-container span {
-    color: var(--primary-color);
-    font-size: 1.1em;
+    color: #f28d35;
+    font-size: 1.2em;
+    text-shadow: 1px 1px 0px rgba(0,0,0,0.1);
 }
 
 .lamp-container {
@@ -623,7 +652,7 @@ button#settings-btn:active, button#history-btn:active, .title-settings-btn:activ
     margin-top: 10px;
 }
 
-#stage-clear-overlay {
+#stage-clear-overlay, #game-over-overlay {
     position: absolute;
     top: 0;
     left: 0;
