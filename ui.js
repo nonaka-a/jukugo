@@ -159,7 +159,7 @@ function startRoulette() {
     // 説明文の特定の単語を強調
     const description = container.querySelector('.roulette-description');
     if (description) {
-        description.innerHTML = 'ルーレットを止めて<strong>「花火」「十字」「対角」「爆発」</strong>の熟語を作ろう！';
+        description.innerHTML = 'ルーレットを止めて<strong>「花火」「十字」「対角」「爆発」</strong>の熟語を作ろう！（爆発の全消しはルーレット限定効果です）';
     }
 
     initStrip('upper', document.getElementById('strip-upper'));
