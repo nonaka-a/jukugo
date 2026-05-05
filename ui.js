@@ -309,8 +309,9 @@ function applyPowerUp(word) {
         setTimeout(() => {
             screenShake();
             if (state.isSoundOn) {
-                seFirework.currentTime = 0;
-                seFirework.play().catch(e => {});
+                const randomSe = seFireworkList[Math.floor(Math.random() * seFireworkList.length)];
+                randomSe.currentTime = 0;
+                randomSe.play().catch(e => {});
             }
             
             Object.keys(cellDOMs).forEach(key => {
@@ -392,8 +393,9 @@ async function runExplosionEffects(centerCoord, effectQueue) {
         await sleep(150);
         screenShake();
         if (state.isSoundOn) {
-            seFirework.currentTime = 0;
-            seFirework.play().catch(e => console.log("SE再生エラー:", e));
+            const randomSe = seFireworkList[Math.floor(Math.random() * seFireworkList.length)];
+            randomSe.currentTime = 0;
+            randomSe.play().catch(e => console.log("SE再生エラー:", e));
         }
         damageEnemiesAtCoords(coords);
         clearExplosionHighlight(coords);
@@ -708,8 +710,9 @@ async function placeAndCheck(x, y, char) {
 
         screenShake();
         if (state.isSoundOn) {
-            seFirework.currentTime = 0;
-            seFirework.play().catch(e => console.log("SE再生エラー:", e));
+            const randomSe = seFireworkList[Math.floor(Math.random() * seFireworkList.length)];
+            randomSe.currentTime = 0;
+            randomSe.play().catch(e => console.log("SE再生エラー:", e));
         }
         
         coordsArray.forEach((c, idx) => {
@@ -1124,8 +1127,9 @@ function toggleCollection() {
         updateCollectionUI();
         
         if (state.newlyCompletedGroups.length > 0 && state.isSoundOn) {
-            seFirework.currentTime = 0;
-            seFirework.play().catch(()=>{});
+            const randomSe = seFireworkList[Math.floor(Math.random() * seFireworkList.length)];
+            randomSe.currentTime = 0;
+            randomSe.play().catch(()=>{});
         }
     } else {
         state.newlyCompletedGroups = [];

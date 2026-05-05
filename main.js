@@ -215,7 +215,8 @@ async function preloadAssets() {
         'assets/toge.png', 'assets/toge_I.png', 'assets/toge_dai.png', 'assets/toge_toku.png', 'assets/和紙.png'
     ];
     const sounds = [
-        'assets/BGM.mp3', 'assets/BGM2.mp3', 'assets/BGM3.mp3', 'assets/firework.mp3'
+        'assets/BGM.mp3', 'assets/BGM2.mp3', 'assets/BGM3.mp3', 
+        'assets/firework.mp3', 'assets/firework_2.mp3', 'assets/firework_3.mp3'
     ];
 
     const imagePromises = images.map(src => {
@@ -274,10 +275,12 @@ function init() {
                 window.speechSynthesis.speak(dummy);
             }
 
-            seFirework.play().then(() => {
-                seFirework.pause();
-                seFirework.currentTime = 0;
-            }).catch(e => console.log("SE Unlock Failed", e));
+            seFireworkList.forEach(se => {
+                se.play().then(() => {
+                    se.pause();
+                    se.currentTime = 0;
+                }).catch(e => console.log("SE Unlock Failed", e));
+            });
             
             if (!bgm.src && BGM_LIST.length > 0) {
                 bgm.src = BGM_LIST[state.bgmIndex];
