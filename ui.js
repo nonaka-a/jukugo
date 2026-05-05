@@ -44,6 +44,7 @@ function backToTitleFromGameOver() {
 
 let popupDelay = 0;
 let popupResetTimer = null;
+let rouletteTimer = null;
 
 function showTimePlusPopup(amount) {
     const timeContainer = document.getElementById('time-container');
@@ -115,7 +116,17 @@ function updateLampsUI() {
     });
 
     if (state.lampCount >= 5 && !state.isRouletteActive && !state.isPowerUpActive) {
-        setTimeout(startRoulette, 2500);
+        if (!rouletteTimer) {
+            rouletteTimer = setTimeout(() => {
+                startRoulette();
+                rouletteTimer = null;
+            }, 2500);
+        }
+    } else {
+        if (rouletteTimer) {
+            clearTimeout(rouletteTimer);
+            rouletteTimer = null;
+        }
     }
 
     const pLabel = document.getElementById('powerup-label');
