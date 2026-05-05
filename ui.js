@@ -336,6 +336,67 @@ function applyPowerUp(word) {
     }
 }
 
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function getSingleUseEffectFromWord(word) {
+    if (word === "十字") return { type: 'cross' };
+    if (word === "対角") return { type: 'diagonal' };
+    return null;
+}
+
+function getPersistentEffectQueue() {
+    const effects = [];
+    if (state.powerUps.isCross) effects.push({ type: 'cross' });
+    if (state.powerUps.isDiagonal) effects.push({ type: 'diagonal' });
+    return effects;
+}
+
+function buildExplosionEffectQueue(words) {
+    const singleUseEffects = words
+        .map(getSingleUseEffectFromWord)
+        .filter(Boolean);
+    return [...singleUseEffects, ...getPersistentEffectQueue()];
+}
+
+function highlightExplosionCoords(coords) {
+    coords.forEach(c => {
+        if (cellDOMs[c]) {
+            cellDOMs[c].classList.add('power-range-highlight');
+        }
+    });
+}
+
+function clearExplosionHighlight(coords) {
+    coords.forEach(c => {
+        if (cellDOMs[c]) {
+            cellDOMs[c].classList.remove('power-range-highlight');
+        }
+    });
+}
+
+async function runExplosionEffects(centerCoord, effectQueue) {
+    if (!centerCoord || effectQueue.length === 0) return;
+
+    const [x, y] = centerCoord.split(',').map(Number);
+    for (const effect of effectQueue) {
+        const coords = getExplosionPatternCoords(x, y, effect);
+        if (coords.length === 0) continue;
+
+        highlightExplosionCoords(coords);
+        await sleep(150);
+        screenShake();
+        if (state.isSoundOn) {
+            seFirework.currentTime = 0;
+            seFirework.play().catch(e => console.log("SE再生エラー:", e));
+        }
+        damageEnemiesAtCoords(coords);
+        clearExplosionHighlight(coords);
+        await sleep(150);
+    }
+}
+
 function initGridDOM() {
     gridElement.innerHTML = '';
     for (let y = 0; y < GRID_SIZE; y++) {
@@ -608,28 +669,29 @@ async function placeAndCheck(x, y, char) {
         if (h.isValid) { h.coordLists.forEach(list => list.forEach(c => coordsToClear.add(c))); foundWords.push(...h.words); }
         if (v.isValid) { v.coordLists.forEach(list => list.forEach(c => coordsToClear.add(c))); foundWords.push(...v.words); }
 
-        const allExplosionCoords = new Set();
         const coordsArray = Array.from(coordsToClear);
-        coordsArray.forEach((c, idx) => {
+        const baseExplosionCoords = new Set();
+        coordsArray.forEach(c => {
             const [cx, cy] = c.split(',').map(Number);
-            getExplosionCoords(cx, cy).forEach(ec => allExplosionCoords.add(ec));
-            if (idx === 0) {
-                getPowerUpLines(cx, cy).forEach(ec => allExplosionCoords.add(ec));
-            }
+            getAreaExplosionCoords(cx, cy, state.powerUps.explosionRange).forEach(ec => baseExplosionCoords.add(ec));
         });
+        const baseExplosionCoordsArray = Array.from(baseExplosionCoords);
+        const uniqueWords = [...new Set(foundWords)];
+        const effectQueue = buildExplosionEffectQueue(uniqueWords);
+        const effectPreviewCoords = coordsArray.length > 0
+            ? effectQueue.flatMap(effect => {
+                const [cx, cy] = coordsArray[0].split(',').map(Number);
+                return getExplosionPatternCoords(cx, cy, effect);
+            })
+            : [];
+        const allPreviewCoords = Array.from(new Set([...baseExplosionCoordsArray, ...effectPreviewCoords]));
 
-        allExplosionCoords.forEach(c => {
-            if (cellDOMs[c]) {
-                cellDOMs[c].classList.add('power-range-highlight');
-            }
-        });
+        highlightExplosionCoords(allPreviewCoords);
 
         coordsToClear.forEach(c => cellDOMs[c].classList.add('success-flash'));
-        await new Promise(r => setTimeout(r, 600)); 
+        await sleep(600);
         
-        allExplosionCoords.forEach(c => {
-            if (cellDOMs[c]) cellDOMs[c].classList.remove('power-range-highlight');
-        });
+        clearExplosionHighlight(allPreviewCoords);
         coordsToClear.forEach(c => cellDOMs[c].classList.remove('success-flash'));
 
         coordsToClear.forEach(c => cellDOMs[c].classList.add('exploding'));
@@ -637,7 +699,7 @@ async function placeAndCheck(x, y, char) {
         for (let i = 3; i > 0; i--) {
             if (i === 2) coordsToClear.forEach(c => cellDOMs[c].classList.add('fast'));
             if (i === 1) coordsToClear.forEach(c => cellDOMs[c].classList.add('faster'));
-            await new Promise(r => setTimeout(r, 500));
+            await sleep(500);
         }
 
         screenShake();
@@ -649,13 +711,15 @@ async function placeAndCheck(x, y, char) {
         coordsArray.forEach((c, idx) => {
             const [cx, cy] = c.split(',').map(Number);
             createParticles(cx, cy);
-            damageNearbyEnemies(cx, cy, idx > 0);
+            damageEnemiesAtCoords(getAreaExplosionCoords(cx, cy, state.powerUps.explosionRange));
 
             delete state.grid[c];
             const cell = cellDOMs[c];
             cell.textContent = '';
             cell.classList.remove('occupied', 'exploding', 'fast', 'faster', 'success-flash', 'obstacle-j2');
         });
+
+        await runExplosionEffects(coordsArray[0], effectQueue);
 
         refreshHighlights();
         
@@ -671,8 +735,6 @@ async function placeAndCheck(x, y, char) {
         updateLampsUI();
         
         setTimeout(() => {
-            const uniqueWords = [...new Set(foundWords)];
-            
             uniqueWords.forEach(word => checkCollection(word));
             
             displayAndSpeakWords(uniqueWords, () => {

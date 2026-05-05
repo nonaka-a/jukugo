@@ -158,9 +158,15 @@ function getLandingCell(startX, startY, dir) {
     }
 }
 
-function getExplosionCoords(x, y) {
+function getCoordsInBounds(coords) {
+    return Array.from(new Set(coords)).filter(key => {
+        const [ex, ey] = key.split(',').map(Number);
+        return ex >= 0 && ex < GRID_SIZE && ey >= 0 && ey < GRID_SIZE;
+    });
+}
+
+function getAreaExplosionCoords(x, y, range = 1) {
     const coords = new Set();
-    const range = state.powerUps.explosionRange;
 
     for (let dy = -range; dy <= range; dy++) {
         for (let dx = -range; dx <= range; dx++) {
@@ -168,39 +174,39 @@ function getExplosionCoords(x, y) {
             coords.add(`${x + dx},${y + dy}`);
         }
     }
-    return Array.from(coords).filter(key => {
-        const [ex, ey] = key.split(',').map(Number);
-        return ex >= 0 && ex < GRID_SIZE && ey >= 0 && ey < GRID_SIZE;
-    });
+    return getCoordsInBounds(coords);
 }
 
-function getPowerUpLines(x, y) {
+function getLineExplosionCoords(x, y, pattern) {
     const coords = new Set();
-    if (state.powerUps.isCross) {
+    if (pattern === 'cross') {
         for (let i = 0; i < GRID_SIZE; i++) {
             if (i !== x) coords.add(`${i},${y}`);
             if (i !== y) coords.add(`${x},${i}`);
         }
     }
-    if (state.powerUps.isDiagonal) {
+    if (pattern === 'diagonal') {
         for (let i = -GRID_SIZE; i <= GRID_SIZE; i++) {
             if (i === 0) continue;
             coords.add(`${x + i},${y + i}`);
             coords.add(`${x + i},${y - i}`);
         }
     }
-    return Array.from(coords).filter(key => {
-        const [ex, ey] = key.split(',').map(Number);
-        return ex >= 0 && ex < GRID_SIZE && ey >= 0 && ey < GRID_SIZE;
-    });
+    return getCoordsInBounds(coords);
 }
 
-function damageNearbyEnemies(x, y, skipLines = false) {
-    const coords = getExplosionCoords(x, y);
-    if (!skipLines) {
-        coords.push(...getPowerUpLines(x, y));
+function getExplosionPatternCoords(x, y, effect) {
+    if (!effect) return [];
+    if (effect.type === 'area') {
+        return getAreaExplosionCoords(x, y, effect.range || 1);
     }
-    
+    if (effect.type === 'cross' || effect.type === 'diagonal') {
+        return getLineExplosionCoords(x, y, effect.type);
+    }
+    return [];
+}
+
+function damageEnemiesAtCoords(coords) {
     const uniqueCoords = Array.from(new Set(coords));
     const damagedBosses = new Set();
 
