@@ -341,6 +341,7 @@ function sleep(ms) {
 }
 
 function getSingleUseEffectFromWord(word) {
+    if (word === "花火") return { type: 'area', range: 2 };
     if (word === "十字") return { type: 'cross' };
     if (word === "対角") return { type: 'diagonal' };
     return null;
@@ -348,6 +349,9 @@ function getSingleUseEffectFromWord(word) {
 
 function getPersistentEffectQueue() {
     const effects = [];
+    if (state.powerUps.explosionRange > 1) {
+        effects.push({ type: 'area', range: state.powerUps.explosionRange });
+    }
     if (state.powerUps.isCross) effects.push({ type: 'cross' });
     if (state.powerUps.isDiagonal) effects.push({ type: 'diagonal' });
     return effects;
@@ -673,7 +677,7 @@ async function placeAndCheck(x, y, char) {
         const baseExplosionCoords = new Set();
         coordsArray.forEach(c => {
             const [cx, cy] = c.split(',').map(Number);
-            getAreaExplosionCoords(cx, cy, state.powerUps.explosionRange).forEach(ec => baseExplosionCoords.add(ec));
+            getAreaExplosionCoords(cx, cy, 1).forEach(ec => baseExplosionCoords.add(ec));
         });
         const baseExplosionCoordsArray = Array.from(baseExplosionCoords);
         const uniqueWords = [...new Set(foundWords)];
@@ -711,7 +715,7 @@ async function placeAndCheck(x, y, char) {
         coordsArray.forEach((c, idx) => {
             const [cx, cy] = c.split(',').map(Number);
             createParticles(cx, cy);
-            damageEnemiesAtCoords(getAreaExplosionCoords(cx, cy, state.powerUps.explosionRange));
+            damageEnemiesAtCoords(getAreaExplosionCoords(cx, cy, 1));
 
             delete state.grid[c];
             const cell = cellDOMs[c];
