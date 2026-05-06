@@ -96,6 +96,7 @@ const seFireworkList = [
     new Audio('assets/firework_2.mp3'),
     new Audio('assets/firework_3.mp3')
 ];
+const seThrow = new Audio('assets/Throw.mp3');
 let isBgmPlaying = false;
 let bgmInteracted = false;
 let spawnInterval = null;

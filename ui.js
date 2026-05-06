@@ -648,6 +648,11 @@ async function shoot(startX, startY, dir, char) {
     const speed = 1200; 
     const duration = Math.max(0.15, distance / speed); 
 
+    if (state.isSoundOn) {
+        seThrow.currentTime = 0;
+        seThrow.play().catch(e => console.log("Throw SE Play Error:", e));
+    }
+
     await new Promise(resolve => {
         setTimeout(() => {
             shooter.style.transition = `all ${duration}s cubic-bezier(0.16, 1, 0.3, 1)`;
