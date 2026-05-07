@@ -1342,6 +1342,14 @@ function showStageClearModal() {
     if (state.currentStage + 1 >= STAGES.length) {
         if (titleEl) titleEl.innerHTML = '<img src="assets/Stage_Clear_zen.png" alt="全ステージクリア！" style="width: 100%; max-width: 320px; filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));">';
         if (nextBtn) nextBtn.style.display = 'none';
+
+        // 全ステージクリア時のBGM停止とSE再生
+        bgm.pause();
+        isBgmPlaying = false;
+        if (state.isSoundOn) {
+            seClear.currentTime = 0;
+            seClear.play().catch(e => console.log("Clear SE Play Error:", e));
+        }
     } else {
         if (titleEl) titleEl.innerHTML = '<img src="assets/Stage_Clear.png" alt="すてーじくりあ！" style="width: 100%; max-width: 320px; filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));">';
         if (nextBtn) nextBtn.style.display = 'inline-block';

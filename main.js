@@ -275,7 +275,7 @@ function init() {
                 window.speechSynthesis.speak(dummy);
             }
 
-            [...seFireworkList, seThrow].forEach(se => {
+            [...seFireworkList, seThrow, seClear].forEach(se => {
                 se.play().then(() => {
                     se.pause();
                     se.currentTime = 0;
