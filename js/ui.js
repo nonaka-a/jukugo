@@ -1263,13 +1263,15 @@ function displayAndSpeakWords(words, onComplete) {
             wordEl.className = 'huge-word';
             
             const entry = typeof dictionaryData !== 'undefined' ? dictionaryData[word] : null;
-            let reading, meaning;
+            let reading, meaning, speech;
             if (entry && typeof entry === 'object') {
                 reading = entry.reading;
                 meaning = entry.meaning;
+                speech = entry.speech;
             } else {
                 reading = entry;
                 meaning = null;
+                speech = null;
             }
 
             if (!state.history.some(h => h.word === word)) {
@@ -1294,7 +1296,7 @@ function displayAndSpeakWords(words, onComplete) {
             }
             
             if (state.isSoundOn !== false && window.speechSynthesis) {
-                const utterance = new SpeechSynthesisUtterance(reading || word);
+                const utterance = new SpeechSynthesisUtterance(speech || reading || word);
                 utterance.lang = 'ja-JP';
                 utterance.volume = 1.0;
                 

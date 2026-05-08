@@ -4,12 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>熟語花火</title>
+    <meta name="description" content="熟語を作ってドカンと爆発！新感覚の漢字パズルゲーム">
+    <meta property="og:title" content="熟語花火">
+    <meta property="og:description" content="熟語を作ってドカンと爆発！新感覚の漢字パズルゲーム">
+    <meta property="og:url" content="https://nonaka-a.github.io/jukugo/">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://nonaka-a.github.io/jukugo/assets/images/ogp-image.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="熟語花火">
+    <meta name="twitter:description" content="熟語を作ってドカンと爆発！新感覚の漢字パズルゲーム">
+    <meta name="twitter:image" content="https://nonaka-a.github.io/jukugo/assets/images/ogp-image.png">
+    <link rel="icon" href="favicon.ico">
     <link rel="stylesheet" href="style.css">
     <script src="js/dictionary.js"></script>
     <script src="js/config.js"></script>
     <script src="js/logic.js"></script>
     <script src="js/ui.js"></script>
     <script src="js/main.js"></script>
+    <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XE2BKG5S67"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-XE2BKG5S67');
+</script>
 </head>
 <body>
     <div id="app-container">
@@ -195,9 +215,9 @@
             </div>
         </div>
         
-        <!-- Debug Button -->
-        <button id="debug-skip-btn" onclick="loadStage(4)">Skip to S5</button>
-        <button id="debug-explode-btn" onclick="explodeAllEnemies()">Explode All</button>
+        <!-- Debug Button (一時的に非表示) -->
+        <button id="debug-skip-btn" onclick="loadStage(4)" style="display:none;">Skip to S5</button>
+        <button id="debug-explode-btn" onclick="explodeAllEnemies()" style="display:none;">Explode All</button>
     </div>
     
 </body>
