@@ -69,6 +69,65 @@ function fillHand() {
     while (state.playerHand.length < 8) {
         state.playerHand.push(popNewHandChar());
     }
+    ensureMatchInHand();
+}
+
+function ensureMatchInHand() {
+    const directions = [
+        { dir: 'down', range: Array.from({length: GRID_SIZE}, (_, i) => [i, 0]) },
+        { dir: 'up', range: Array.from({length: GRID_SIZE}, (_, i) => [i, GRID_SIZE - 1]) },
+        { dir: 'right', range: Array.from({length: GRID_SIZE}, (_, i) => [0, i]) },
+        { dir: 'left', range: Array.from({length: GRID_SIZE}, (_, i) => [GRID_SIZE - 1, i]) }
+    ];
+
+    let hasMatch = false;
+    for (const char of state.playerHand) {
+        for (const {dir, range} of directions) {
+            for (const [ex, ey] of range) {
+                if (state.grid[`${ex},${ey}`]) continue;
+                const landing = getLandingCell(ex, ey, dir);
+                if (landing) {
+                    state.grid[`${landing.x},${landing.y}`] = char;
+                    if (validateLine(landing.x, landing.y, true).isValid || 
+                        validateLine(landing.x, landing.y, false).isValid) {
+                        hasMatch = true;
+                    }
+                    delete state.grid[`${landing.x},${landing.y}`];
+                }
+                if (hasMatch) break;
+            }
+            if (hasMatch) break;
+        }
+        if (hasMatch) break;
+    }
+
+    if (!hasMatch && state.deck.length > 0) {
+        for (let i = 0; i < state.deck.length; i++) {
+            const char = state.deck[i];
+            let canForm = false;
+            for (const {dir, range} of directions) {
+                for (const [ex, ey] of range) {
+                    if (state.grid[`${ex},${ey}`]) continue;
+                    const landing = getLandingCell(ex, ey, dir);
+                    if (landing) {
+                        state.grid[`${landing.x},${landing.y}`] = char;
+                        if (validateLine(landing.x, landing.y, true).isValid || 
+                            validateLine(landing.x, landing.y, false).isValid) {
+                            canForm = true;
+                        }
+                        delete state.grid[`${landing.x},${landing.y}`];
+                    }
+                    if (canForm) break;
+                }
+                if (canForm) break;
+            }
+            if (canForm) {
+                const usefulChar = state.deck.splice(i, 1)[0];
+                state.playerHand[Math.floor(Math.random() * state.playerHand.length)] = usefulChar;
+                break;
+            }
+        }
+    }
 }
 
 function getUsefulKanji() {

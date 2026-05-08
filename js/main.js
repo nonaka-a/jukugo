@@ -277,10 +277,15 @@ function init() {
             }
 
             [...seFireworkList, seThrow, seClear, seWadaiko1, seWadaiko2].forEach(se => {
+                se.muted = true;
                 se.play().then(() => {
                     se.pause();
                     se.currentTime = 0;
-                }).catch(e => console.log("SE Unlock Failed", e));
+                    se.muted = false;
+                }).catch(e => {
+                    se.muted = false;
+                    console.log("SE Unlock Failed", e);
+                });
             });
             
             if (!bgm.src && BGM_LIST.length > 0) {
