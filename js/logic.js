@@ -106,11 +106,51 @@ function getUsefulKanji() {
     return useful;
 }
 
+function getAssistKanji() {
+    const candidates = [];
+    
+    const boardKanji = new Set(
+        Object.values(state.grid).filter(v => v && v.length === 1 && COLLECTION_KANJI.has(v))
+    );
+
+    COLLECTION_DATA.forEach(group => {
+        group.words.forEach(word => {
+            if (!state.collection.includes(word)) {
+                const char1 = word[0];
+                const char2 = word[1];
+                
+                if (boardKanji.has(char1)) candidates.push(char2);
+                if (boardKanji.has(char2)) candidates.push(char1);
+            }
+        });
+    });
+
+    if (candidates.length > 0) {
+        return candidates[Math.floor(Math.random() * candidates.length)];
+    }
+    return null;
+}
+
 function shuffleHand() {
     state.deck.push(...state.playerHand);
     state.playerHand = [];
     setupDeck();
     fillHand();
+
+    // アシスト機能 (案A: 50%の確率で1枚だけ相方の漢字を混ぜる)
+    if (Math.random() < 0.5) {
+        const assistChar = getAssistKanji();
+        if (assistChar) {
+            const deckIdx = state.deck.indexOf(assistChar);
+            if (deckIdx !== -1) {
+                state.deck.splice(deckIdx, 1);
+            }
+            const replaceIdx = Math.floor(Math.random() * state.playerHand.length);
+            state.deck.push(state.playerHand[replaceIdx]);
+            state.playerHand[replaceIdx] = assistChar;
+        }
+    }
+
     renderHand();
     refreshHighlights();
 }

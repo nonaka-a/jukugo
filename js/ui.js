@@ -160,11 +160,16 @@ function startRoulette() {
     overlay.style.display = 'flex';
     overlay.onclick = handleRouletteClick;
 
+    if (state.isSoundOn) {
+        seWadaiko2.currentTime = 0;
+        seWadaiko2.play().catch(e => console.log("wadaiko2 SE Error:", e));
+    }
+
     // タイトルを画像に差し替え
     const container = document.getElementById('roulette-container');
     const titleH2 = container.querySelector('h2');
     if (titleH2) {
-        titleH2.innerHTML = '<img src="assets/Roulette.png" alt="ぱわーあっぷるーれっと！">';
+        titleH2.innerHTML = '<img src="assets/images/Roulette.png" alt="ぱわーあっぷるーれっと！">';
     }
     
     // 説明文の特定の単語を強調
@@ -252,6 +257,11 @@ function stopSlot(id) {
     const s = rouletteState[id];
     s.active = false;
     s.stopping = true;
+
+    if (state.isSoundOn) {
+        seWadaiko1.currentTime = 0;
+        seWadaiko1.play().catch(e => console.log("wadaiko1 SE Error:", e));
+    }
     
     const charWidth = 100;
     const centerOffset = 120;
@@ -1340,7 +1350,7 @@ function showStageClearModal() {
     const nextBtn = overlay.querySelector('.clear-btn.next');
     
     if (state.currentStage + 1 >= STAGES.length) {
-        if (titleEl) titleEl.innerHTML = '<img src="assets/Stage_Clear_zen.png" alt="全ステージクリア！" style="width: 100%; max-width: 320px; filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));">';
+        if (titleEl) titleEl.innerHTML = '<img src="assets/images/Stage_Clear_zen.png" alt="全ステージクリア！" style="width: 100%; max-width: 320px; filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));">';
         if (nextBtn) nextBtn.style.display = 'none';
 
         // 全ステージクリア時のBGM停止とSE再生
@@ -1351,7 +1361,7 @@ function showStageClearModal() {
             seClear.play().catch(e => console.log("Clear SE Play Error:", e));
         }
     } else {
-        if (titleEl) titleEl.innerHTML = '<img src="assets/Stage_Clear.png" alt="すてーじくりあ！" style="width: 100%; max-width: 320px; filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));">';
+        if (titleEl) titleEl.innerHTML = '<img src="assets/images/Stage_Clear.png" alt="すてーじくりあ！" style="width: 100%; max-width: 320px; filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));">';
         if (nextBtn) nextBtn.style.display = 'inline-block';
     }
     

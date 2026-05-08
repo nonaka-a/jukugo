@@ -1,8 +1,8 @@
 import re
 
 def main():
-    input_file = 'dictionary.js'
-    output_file = 'dictionary.js'
+    input_file = 'js/dictionary.js'
+    output_file = 'js/dictionary.js'
     
     try:
         with open(input_file, 'r', encoding='utf-8') as f:

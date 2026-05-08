@@ -24,11 +24,11 @@ function loadStage(index) {
     
     const appContainer = document.getElementById('app-container');
     if (appContainer) {
-        appContainer.style.backgroundImage = `url('assets/${bgName}')`;
+        appContainer.style.backgroundImage = `url('assets/images/${bgName}')`;
     }
     const gameWindow = document.getElementById('game-window');
     if (gameWindow) {
-        gameWindow.style.backgroundImage = `url('assets/${banmenName}')`;
+        gameWindow.style.backgroundImage = `url('assets/images/${banmenName}')`;
     }
     
     if (state.moveInterval) {
@@ -208,15 +208,16 @@ function backToTitle() {
 
 async function preloadAssets() {
     const images = [
-        'assets/BG.jpg', 'assets/BG2.jpg', 'assets/BG3.jpg',
-        'assets/Block.png', 'assets/G_Block.png', 'assets/J_Block.png', 'assets/J_Block2.png', 'assets/S_Block.png', 'assets/Y_Block.png',
-        'assets/Stage_Clear.png', 'assets/Stage_Clear_zen.png', 'assets/game_over.png', 'assets/banmen.png', 'assets/banmen2.png', 'assets/banmen3.png',
-        'assets/haguruma.png', 'assets/logo.png', 'assets/tehuda.png', 'assets/title-bg.jpg',
-        'assets/toge.png', 'assets/toge_I.png', 'assets/toge_dai.png', 'assets/toge_toku.png', 'assets/和紙.png'
+        'assets/images/BG.jpg', 'assets/images/BG2.jpg', 'assets/images/BG3.jpg',
+        'assets/images/Block.png', 'assets/images/G_Block.png', 'assets/images/J_Block.png', 'assets/images/J_Block2.png', 'assets/images/S_Block.png', 'assets/images/Y_Block.png',
+        'assets/images/Stage_Clear.png', 'assets/images/Stage_Clear_zen.png', 'assets/images/game_over.png', 'assets/images/banmen.png', 'assets/images/banmen2.png', 'assets/images/banmen3.png',
+        'assets/images/haguruma.png', 'assets/images/logo.png', 'assets/images/tehuda.png', 'assets/images/title-bg.jpg',
+        'assets/images/toge.png', 'assets/images/toge_I.png', 'assets/images/toge_dai.png', 'assets/images/toge_toku.png', 'assets/images/和紙.png'
     ];
     const sounds = [
-        'assets/BGM.mp3', 'assets/BGM2.mp3', 'assets/BGM3.mp3', 
-        'assets/firework.mp3', 'assets/firework_2.mp3', 'assets/firework_3.mp3'
+        'assets/sounds/BGM.mp3', 'assets/sounds/BGM2.mp3', 'assets/sounds/BGM3.mp3', 
+        'assets/sounds/firework.mp3', 'assets/sounds/firework_2.mp3', 'assets/sounds/firework_3.mp3',
+        'assets/sounds/wadaiko1.mp3', 'assets/sounds/wadaiko2.mp3'
     ];
 
     const imagePromises = images.map(src => {
@@ -275,7 +276,7 @@ function init() {
                 window.speechSynthesis.speak(dummy);
             }
 
-            [...seFireworkList, seThrow, seClear].forEach(se => {
+            [...seFireworkList, seThrow, seClear, seWadaiko1, seWadaiko2].forEach(se => {
                 se.play().then(() => {
                     se.pause();
                     se.currentTime = 0;

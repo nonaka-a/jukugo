@@ -87,17 +87,19 @@ const state = {
 };
 
 // --- BGM・システム制御 ---
-const BGM_LIST = ['assets/BGM.mp3', 'assets/BGM2.mp3', 'assets/BGM3.mp3'];
+const BGM_LIST = ['assets/sounds/BGM.mp3', 'assets/sounds/BGM2.mp3', 'assets/sounds/BGM3.mp3'];
 const bgm = new Audio();
 bgm.loop = false;
 bgm.volume = 0.4;
 const seFireworkList = [
-    new Audio('assets/firework.mp3'),
-    new Audio('assets/firework_2.mp3'),
-    new Audio('assets/firework_3.mp3')
+    new Audio('assets/sounds/firework.mp3'),
+    new Audio('assets/sounds/firework_2.mp3'),
+    new Audio('assets/sounds/firework_3.mp3')
 ];
-const seThrow = new Audio('assets/Throw.mp3');
-const seClear = new Audio('assets/Clear.mp3');
+const seThrow = new Audio('assets/sounds/Throw.mp3');
+const seClear = new Audio('assets/sounds/Clear.mp3');
+const seWadaiko1 = new Audio('assets/sounds/wadaiko1.mp3');
+const seWadaiko2 = new Audio('assets/sounds/wadaiko2.mp3');
 let isBgmPlaying = false;
 let bgmInteracted = false;
 let spawnInterval = null;

@@ -1,8 +1,8 @@
 import re
 import json
 
-input_file = 'dictionary.js'
-output_file = 'dictionary.js'
+input_file = 'js/dictionary.js'
+output_file = 'js/dictionary.js'
 
 with open(input_file, 'r', encoding='utf-8') as f:
     content = f.read()
@@ -49,7 +49,7 @@ while True:
     for w in words_to_remove:
         del dict_data[w]
 
-# Rebuild dictionary.js
+# Rebuild js/dictionary.js
 js_output = "const dictionaryData = {\n"
 for word, reading in sorted(dict_data.items()):
     js_output += f'    "{word}": "{reading}",\n'

@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>熟語花火</title>
     <link rel="stylesheet" href="style.css">
-    <script src="dictionary.js"></script>
-    <script src="config.js"></script>
-    <script src="logic.js"></script>
-    <script src="ui.js"></script>
-    <script src="main.js"></script>
+    <script src="js/dictionary.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/logic.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/main.js"></script>
 </head>
 <body>
     <div id="app-container">
@@ -22,14 +22,14 @@
     
     <!-- Title Screen -->
     <div id="title-screen">
-        <img src="assets/logo.png" class="title-logo" alt="熟語花火">
+        <img src="assets/images/logo.png" class="title-logo" alt="熟語花火">
         <div class="difficulty-selection">
             <button class="diff-btn tutorial" onclick="openTutorial()">あそびかた</button>
             <button class="diff-btn easy" onclick="startGame('easy')">かんたん</button>
             <button class="diff-btn normal" onclick="startGame('normal')">むずかしい</button>
             <button class="menu-btn" style="margin-top:20px; background-color: #8ab04c; border-top-color: #a3cc5a; border-left-color: #8ab04c; border-right-color: #6d8c3b; border-bottom-color: #6d8c3b;" onclick="toggleCollection()">これくしょん</button>
         </div>
-        <button class="title-settings-btn" onclick="toggleSettings()"><img src="assets/haguruma.png" alt="settings"></button>
+        <button class="title-settings-btn" onclick="toggleSettings()"><img src="assets/images/haguruma.png" alt="settings"></button>
     </div>
 
     <div id="tutorial-screen" style="display:none;">
@@ -89,7 +89,7 @@
                 <div id="grid-container"></div>
                 <div id="launcher" style="display:none;"></div>
                 <div id="guide-line" style="display:none;"></div>
-                <button id="settings-btn" onclick="toggleSettings()"><img src="assets/haguruma.png" alt="settings"></button>
+                <button id="settings-btn" onclick="toggleSettings()"><img src="assets/images/haguruma.png" alt="settings"></button>
                 <button id="history-btn" onclick="toggleHistory()">熟</button>
             </div>
 
@@ -188,7 +188,7 @@
         <!-- Game Over Modal -->
         <div id="game-over-overlay" style="display:none;">
             <div id="stage-clear-modal">
-                <h2 id="clear-title"><img src="assets/game_over.png" alt="げーむおーばー！" style="width: 100%; max-width: 320px; filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));"></h2>
+                <h2 id="clear-title"><img src="assets/images/game_over.png" alt="げーむおーばー！" style="width: 100%; max-width: 320px; filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.3));"></h2>
                 <div class="modal-buttons">
                     <button class="clear-btn title" onclick="backToTitleFromGameOver()">たいとるへ</button>
                 </div>

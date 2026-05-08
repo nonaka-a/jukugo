@@ -3,7 +3,7 @@ import re
 def main():
     try:
         # Use errors='replace' to get U+FFFD for any bad bytes
-        with open('dictionary.js', 'r', encoding='utf-8', errors='replace') as f:
+        with open('js/dictionary.js', 'r', encoding='utf-8', errors='replace') as f:
             content = f.read()
     except Exception as e:
         print(f"Error reading file: {e}")
@@ -50,10 +50,10 @@ def main():
     js_output += "const dictionary = new Set(Object.keys(dictionaryData));\n\n"
     js_output += "const uniqueKanjiList = [...new Set(Object.keys(dictionaryData).join(''))].filter(char => /[\\u4E00-\\u9FFF]/.test(char));\n"
     
-    with open('dictionary.js', 'w', encoding='utf-8') as f:
+    with open('js/dictionary.js', 'w', encoding='utf-8') as f:
         f.write(js_output)
     
-    print(f"Rebuilt dictionary.js.")
+    print(f"Rebuilt js/dictionary.js.")
     print(f"Total entries: {len(sorted_keys)}")
     print(f"Removed single-character entries: {removed_single}")
 

@@ -1,7 +1,7 @@
 import re
 
-input_file = 'dictionary.js'
-output_file = 'dictionary.js'
+input_file = 'js/dictionary.js'
+output_file = 'js/dictionary.js'
 
 with open(input_file, 'r', encoding='utf-8') as f:
     content = f.read()

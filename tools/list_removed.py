@@ -2,8 +2,8 @@ import subprocess
 import re
 
 try:
-    old_content = subprocess.check_output(['git', 'show', 'HEAD:dictionary.js']).decode('utf-8')
-    with open('dictionary.js', 'r', encoding='utf-8') as f:
+    old_content = subprocess.check_output(['git', 'show', 'HEAD:js/dictionary.js']).decode('utf-8')
+    with open('js/dictionary.js', 'r', encoding='utf-8') as f:
         new_content = f.read()
 
     def get_words(content):

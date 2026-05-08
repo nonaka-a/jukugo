@@ -35,7 +35,7 @@ body {
     width: 100%;
     max-width: calc(100dvh * 3 / 4);
     height: 100%;
-    background-image: url('assets/BG.jpg');
+    background-image: url('assets/images/BG.jpg');
     padding: 0;
     background-size: cover;
     background-position: center;
@@ -230,7 +230,7 @@ button#settings-btn, button#history-btn {
 
 button#settings-btn, .title-settings-btn {
     right: 10px;
-    background-image: url('assets/Y_Block.png');
+    background-image: url('assets/images/Y_Block.png');
 }
 
 button#settings-btn img, .title-settings-btn img {
@@ -240,7 +240,7 @@ button#settings-btn img, .title-settings-btn img {
 
 button#history-btn {
     left: 10px;
-    background-image: url('assets/Y_Block.png');
+    background-image: url('assets/images/Y_Block.png');
     color: #4e342e;
     text-shadow: 1px 1px 0 rgba(255,255,255,0.7);
     padding-bottom: 4px;
@@ -271,7 +271,7 @@ button#settings-btn:active, button#history-btn:active, .title-settings-btn:activ
     background-color: #fdfaf0;
     background-image: 
         linear-gradient(rgba(253, 250, 240, 0.55), rgba(253, 250, 240, 0.55)),
-        url('assets/BG.jpg'),
+        url('assets/images/BG.jpg'),
         radial-gradient(#eac88b 0.6px, transparent 0.6px);
     background-size: cover, cover, 15px 15px;
     background-position: center;
@@ -445,7 +445,7 @@ button#settings-btn:active, button#history-btn:active, .title-settings-btn:activ
     background-color: #f8fbf2;
     background-image: 
         linear-gradient(rgba(248, 251, 242, 0.55), rgba(248, 251, 242, 0.55)),
-        url('assets/BG2.jpg'),
+        url('assets/images/BG2.jpg'),
         radial-gradient(#d1e0b8 0.6px, transparent 0.6px);
     border: 8px solid #8ab04c;
     outline: 4px solid #d1e0b8;
@@ -540,7 +540,7 @@ button#settings-btn:active, button#history-btn:active, .title-settings-btn:activ
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: url('assets/title-bg.jpg');
+    background-image: url('assets/images/title-bg.jpg');
     background-size: cover;
     background-position: center;
     z-index: 1000;
@@ -640,7 +640,7 @@ button#settings-btn:active, button#history-btn:active, .title-settings-btn:activ
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: url('assets/BG.jpg');
+    background-image: url('assets/images/BG.jpg');
     background-size: cover;
     background-position: center;
     z-index: 1000;
@@ -705,7 +705,7 @@ button#settings-btn:active, button#history-btn:active, .title-settings-btn:activ
     border: none;
     border-radius: 15px;
     position: relative;
-    background-image: url('assets/banmen.png');
+    background-image: url('assets/images/banmen.png');
     background-size: 100% 100%;
     background-position: center;
     background-repeat: no-repeat;
@@ -757,7 +757,7 @@ button#settings-btn:active, button#history-btn:active, .title-settings-btn:activ
     aspect-ratio: 1080 / 379;
     margin-top: 10px;
     padding: 22px 36px 18px;
-    background-image: url('assets/tehuda.png');
+    background-image: url('assets/images/tehuda.png');
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
@@ -781,7 +781,7 @@ button#settings-btn:active, button#history-btn:active, .title-settings-btn:activ
     background-color: rgba(253, 250, 240, 0.96);
     background-image:
         linear-gradient(rgba(253, 250, 240, 0.88), rgba(253, 250, 240, 0.88)),
-        url('assets/和紙.png');
+        url('assets/images/和紙.png');
     background-size: cover;
     background-position: center;
     border: 6px solid #b85b17;
@@ -863,7 +863,7 @@ button#settings-btn:active, button#history-btn:active, .title-settings-btn:activ
     background-color: #fdfaf0;
     background-image: 
         linear-gradient(rgba(253, 250, 240, 0.55), rgba(253, 250, 240, 0.55)),
-        url('assets/BG.jpg'),
+        url('assets/images/BG.jpg'),
         radial-gradient(#eac88b 0.6px, transparent 0.6px);
     background-size: cover, cover, 15px 15px;
     background-position: center;
@@ -1033,7 +1033,7 @@ button#settings-btn:active, button#history-btn:active, .title-settings-btn:activ
     background-color: #fdfaf0;
     background-image: 
         linear-gradient(rgba(253, 250, 240, 0.55), rgba(253, 250, 240, 0.55)),
-        url('assets/BG.jpg'),
+        url('assets/images/BG.jpg'),
         radial-gradient(#eac88b 0.6px, transparent 0.6px);
     background-size: cover, cover, 15px 15px;
     background-position: center;
@@ -1131,7 +1131,7 @@ button#settings-btn:active, button#history-btn:active, .title-settings-btn:activ
     border: none; 
     border-radius: 15px;
     position: relative;
-    background-image: url('assets/banmen.png');
+    background-image: url('assets/images/banmen.png');
     background-size: cover;
     background-position: center;
     background-color: transparent; 
@@ -1190,19 +1190,19 @@ button#settings-btn:active, button#history-btn:active, .title-settings-btn:activ
 }
 
 .cell.occupied, .hand-tile, #shooting-tile, #launcher {
-    background-image: url('assets/Block.png') !important;
+    background-image: url('assets/images/Block.png') !important;
 }
 
 .cell.occupied.g-block, .hand-tile.g-block, #shooting-tile.g-block, #launcher.g-block {
-    background-image: url('assets/G_Block.png') !important;
+    background-image: url('assets/images/G_Block.png') !important;
 }
 
 .cell.occupied.y-block, .hand-tile.y-block, #shooting-tile.y-block, #launcher.y-block {
-    background-image: url('assets/Y_Block.png') !important;
+    background-image: url('assets/images/Y_Block.png') !important;
 }
 
 .cell.occupied.obstacle {
-    background-image: url('assets/J_Block.png') !important;
+    background-image: url('assets/images/J_Block.png') !important;
     background-size: 100% 100% !important;
     background-color: transparent !important;
     border: none !important;
@@ -1210,7 +1210,7 @@ button#settings-btn:active, button#history-btn:active, .title-settings-btn:activ
     text-shadow: none !important;
 }
 .cell.occupied.obstacle-j2 {
-    background-image: url('assets/J_Block2.png') !important;
+    background-image: url('assets/images/J_Block2.png') !important;
     background-size: 100% 100% !important;
     background-color: transparent !important;
     border: none !important;
@@ -1219,7 +1219,7 @@ button#settings-btn:active, button#history-btn:active, .title-settings-btn:activ
 }
 
 .cell.occupied.obstacle-hard {
-    background-image: url('assets/J_Block2.png') !important;
+    background-image: url('assets/images/J_Block2.png') !important;
     background-size: 100% 100% !important;
     background-color: transparent !important;
     border: none !important;
@@ -1234,7 +1234,7 @@ button#settings-btn:active, button#history-btn:active, .title-settings-btn:activ
 
 .cell.enemy {
     background: none !important;
-    background-image: url('assets/toge.png') !important;
+    background-image: url('assets/images/toge.png') !important;
     background-size: 90% !important;
     background-position: center !important;
     background-repeat: no-repeat !important;
@@ -1247,7 +1247,7 @@ button#settings-btn:active, button#history-btn:active, .title-settings-btn:activ
 
 .cell.enemy-i {
     background: none !important;
-    background-image: url('assets/toge_I.png') !important;
+    background-image: url('assets/images/toge_I.png') !important;
     background-size: 90% !important;
     background-position: center !important;
     background-repeat: no-repeat !important;
@@ -1268,7 +1268,7 @@ button#settings-btn:active, button#history-btn:active, .title-settings-btn:activ
     left: 0;
     width: 200%; 
     height: 200%;
-    background-image: url('assets/toge_dai.png');
+    background-image: url('assets/images/toge_dai.png');
     background-size: 95%; 
     background-position: center;
     background-repeat: no-repeat;
@@ -1289,7 +1289,7 @@ button#settings-btn:active, button#history-btn:active, .title-settings-btn:activ
     left: 0;
     width: 300%; 
     height: 300%;
-    background-image: url('assets/toge_toku.png');
+    background-image: url('assets/images/toge_toku.png');
     background-size: 95%;
     background-position: center;
     background-repeat: no-repeat;
@@ -1490,7 +1490,7 @@ rt {
    ========================================= */
 #solo-hand-area {
     margin-top: 20px;
-    background-image: url('assets/tehuda.png');
+    background-image: url('assets/images/tehuda.png');
     background-size: 100% 100%;
     background-color: transparent;
     padding: 20px;
@@ -1543,7 +1543,7 @@ rt {
     width: 300px;
     height: 60px;
     font-size: 24px;
-    background-image: url('assets/S_Block.png');
+    background-image: url('assets/images/S_Block.png');
     background-size: 100% 100%;
     background-color: transparent !important;
     border: none !important;
@@ -1642,7 +1642,7 @@ rt {
     background-color: #fdfaf0;
     background-image: 
         linear-gradient(rgba(253, 250, 240, 0.55), rgba(253, 250, 240, 0.55)),
-        url('assets/BG.jpg'),
+        url('assets/images/BG.jpg'),
         radial-gradient(#eac88b 0.6px, transparent 0.6px);
     background-size: cover, cover, 15px 15px;
     background-position: center;
